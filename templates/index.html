@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Film Production Scheduler{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <h2>Welcome to the Film Production Scheduler</h2>
+    <p class="subtitle">A simple, powerful tool for managing film production schedules</p>
+</div>
+
+<div class="project-list">
+    <h3>Available Projects</h3>
+    {% if projects %}
+        <div class="project-grid">
+            {% for project in projects %}
+                <div class="project-card">
+                    <div class="project-card-header">
+                        <h4>{{ project.title or 'Untitled Project' }}</h4>
+                        <span class="version-tag">{{ project.version or 'v1.0' }}</span>
+                    </div>
+                    <div class="project-card-body">
+                        <p><strong>Director:</strong> {{ project.director or 'N/A' }}</p>
+                        <p><strong>First AD:</strong> {{ project.firstAD or 'N/A' }}</p>
+                        {% if project.shootStartDate %}
+                        <p><strong>Shoot Start:</strong> {{ project.shootStartDate }}</p>
+                        {% endif %}
+                    </div>
+                    <div class="project-card-footer">
+                        <a href="/viewer/{{ project.id }}" class="button">View Calendar</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <p>No projects available yet.</p>
+            <p>Go to <a href="/admin">Admin Dashboard</a> to create a new project.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

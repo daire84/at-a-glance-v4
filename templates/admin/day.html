@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Day - {{ day.date }} - Film Production Scheduler{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="/static/css/forms.css">
+<link rel="stylesheet" href="/static/css/calendar.css">
+{% endblock %}
+
+{% block content %}
+<div class="admin-header">
+    <h2>
+        {% if day.isPrep %}
+            Edit Prep Day
+        {% else %}
+            Edit Shoot Day {{ day.shootDay if day.shootDay }}
+        {% endif %}
+    </h2>
+    <div class="admin-actions">
+        <a href="/admin/calendar/{{ project.id }}" class="button secondary">Back to Calendar</a>
+    </div>
+</div>
+
+<div class="form-container">
+    <div class="day-header">
+        <h3>{{ day.dayOfWeek }}, {{ day.date }}</h3>
+    </div>
+    
+    <form method="POST" class="day-form">
+        <div class="form-section">
+            <h3>Main Unit Details</h3>
+            
+            <div class="form-row">
+                <div class="form-group full-width">
+                    <label for="mainUnit">Main Unit Description</label>
+                    <input type="text" id="mainUnit" name="mainUnit" value="{{ day.mainUnit or '' }}" placeholder="E.g., JOHN'S HOUSE - KITCHEN">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="location">Location</label>
+                    <input type="text" id="location" name="location" value="{{ day.location or '' }}" placeholder="Location name">
+                </div>
+                
+                <div class="form-group">
+                    <label for="locationArea">Location Area</label>
+                    <input type="text" id="locationArea" name="locationArea" value="{{ day.locationArea or '' }}" placeholder="Area (e.g., Dublin South)">
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <h3>Extras</h3>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="extras">Background Extras</label>
+                    <input type="number" id="extras" name="extras" value="{{ day.extras or 0 }}" min="0">
+                </div>
+                
+                <div class="form-group">
+                    <label for="featuredExtras">Featured Extras</label>
+                    <input type="number" id="featuredExtras" name="featuredExtras" value="{{ day.featuredExtras or 0 }}" min="0">
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <h3>Script Information</h3>
+            
+            <div class="form-row">
+                <div class="form-group full-width">
+                    <label for="sequence">Sequence</label>
+                    <input type="text" id="sequence" name="sequence" value="{{ day.sequence or '' }}" placeholder="Scene/Sequence numbers">
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <h3>Department Requirements</h3>
+            
+            <div class="form-row">
+                <div class="form-group full-width">
+                    <label for="departments">Departments (comma-separated)</label>
+                    <input type="text" id="departments" name="departments" value="{{ day.departments|join(', ') if day.departments else '' }}" placeholder="SFX, STN, CR, etc.">
+                    <div class="field-hint">Use short codes: SFX (Special Effects), STN (Stunts), CR (Crane), ST (Steadicam), PR (Prosthetics), LL (Low Loader)</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <h3>Notes</h3>
+            
+            <div class="form-row">
+                <div class="form-group full-width">
+                    <label for="notes">Day Notes</label>
+                    <textarea id="notes" name="notes" rows="3">{{ day.notes or '' }}</textarea>
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <h3>Second Unit (if applicable)</h3>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="secondUnit">Second Unit Description</label>
+                    <input type="text" id="secondUnit" name="secondUnit" value="{{ day.secondUnit or '' }}" placeholder="Second unit activity">
+                </div>
+                
+                <div class="form-group">
+                    <label for="secondUnitLocation">Second Unit Location</label>
+                    <input type="text" id="secondUnitLocation" name="secondUnitLocation" value="{{ day.secondUnitLocation or '' }}" placeholder="Second unit location">
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-actions">
+            <a href="/admin/calendar/{{ project.id }}" class="button secondary">Cancel</a>
+            <button type="submit" class="button">Save Changes</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

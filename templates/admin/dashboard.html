@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Film Production Scheduler{% endblock %}
+
+{% block content %}
+<div class="admin-header">
+    <h2>Admin Dashboard</h2>
+    <div class="admin-actions">
+        <a href="/admin/project/new" class="button">Create New Project</a>
+    </div>
+</div>
+
+<div class="project-list admin-projects">
+    <h3>Manage Projects</h3>
+    {% if projects %}
+        <div class="project-grid">
+            {% for project in projects %}
+                <div class="project-card">
+                    <div class="project-card-header">
+                        <h4>{{ project.title or 'Untitled Project' }}</h4>
+                        <span class="version-tag">{{ project.version or 'v1.0' }}</span>
+                    </div>
+                    <div class="project-card-body">
+                        <p><strong>Director:</strong> {{ project.director or 'N/A' }}</p>
+                        <p><strong>First AD:</strong> {{ project.firstAD or 'N/A' }}</p>
+                        {% if project.shootStartDate %}
+                        <p><strong>Shoot Start:</strong> {{ project.shootStartDate }}</p>
+                        {% endif %}
+                        <p class="updated-at">Last updated: {{ project.updated.split('T')[0] if project.updated else 'N/A' }}</p>
+                    </div>
+                    <div class="project-card-footer">
+                        <div class="button-group">
+                            <a href="/admin/project/{{ project.id }}" class="button">Edit Details</a>
+                            <a href="/admin/calendar/{{ project.id }}" class="button">Edit Calendar</a>
+                            <a href="/viewer/{{ project.id }}" class="button secondary">View</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <p>No projects available yet.</p>
+            <p>Use the "Create New Project" button to get started.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

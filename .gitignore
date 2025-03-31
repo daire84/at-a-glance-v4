@@ -1,0 +1,55 @@
+# Database files
+*.db
+*.db-shm
+*.db-wal
+mongodb_data/
+*.wt
+WiredTiger*
+*.lock
+
+# Log files
+*.log
+*.log.*
+logs/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# System files
+.storage/
+.cloud/
+node_modules/
+dist/
+build/
+
+# MongoDB specific
+diagnostic.data/
+journal/
+
+# Backup files
+backups/
+*.backup
+*.bak
+*.old
+
+# Cache and temp files
+**__pycache__**/
+.cache/
+.tmp/
+.DS_Store
+Thumbs.db
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Docker
+.docker/
+
+# Testing
+coverage/
+.nyc_output/

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Film Production Scheduler{% endblock %}</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    {% block styles %}{% endblock %}
+</head>
+<body>
+    <header class="main-header">
+        <div class="container">
+            <h1>Film Production Scheduler</h1>
+            <nav>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/admin">Admin</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    
+    {% if get_flashed_messages() %}
+    <div class="flash-messages">
+        <div class="container">
+            {% for category, message in get_flashed_messages(with_categories=true) %}
+            <div class="flash-message {{ category }}">
+                {{ message }}
+                <button class="close-button">&times;</button>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    
+    <main>
+        <div class="container">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+    
+    <footer>
+        <div class="container">
+            <p>Film Production Scheduler v4</p>
+        </div>
+    </footer>
+    
+    <script>
+        // Close flash messages
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.flash-message .close-button').forEach(function(button) {
+                button.addEventListener('click', function() {
+                    this.parentElement.style.display = 'none';
+                });
+            });
+        });
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,27 @@
+services:
+  film-scheduler:
+    build: .
+    container_name: film-scheduler-v4
+    restart: unless-stopped
+    ports:
+      - "5074:5000"
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./static:/app/static
+      - ./templates:/app/templates
+      - ./utils:/app/utils
+      - ./app.py:/app/app.py
+    environment:
+      - TZ=Europe/Dublin
+      - FLASK_ENV=development
+      - FLASK_APP=app.py
+      - SECRET_KEY=dev-secret-key
+      - FLASK_DEBUG=1
+      - PYTHONUNBUFFERED=1
+    command: >
+      sh -c "gunicorn --bind 0.0.0.0:5000 
+      --access-logfile - 
+      --error-logfile - 
+      --log-level info
+      app:app"
