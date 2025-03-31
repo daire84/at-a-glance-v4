@@ -317,3 +317,101 @@
     grid-template-columns: repeat(2, 1fr);
   }
 }
+/* Print Styles */
+@media print {
+  .main-header, .admin-header, .admin-actions, footer {
+    display: none !important;
+  }
+  
+  .calendar-container {
+    box-shadow: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .project-info-header {
+    background-color: #f0f0f0 !important;
+    color: black !important;
+    padding: 1rem !important;
+  }
+  
+  .calendar-table th {
+    background-color: #f0f0f0 !important;
+    color: black !important;
+  }
+  
+  .department-counters, .location-areas {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  
+  .counter-item, .area-tag, .department-tag {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  
+  /* Force background colors to print */
+  .calendar-row.weekend {
+    background-color: #f0f0f0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  
+  .calendar-row.prep {
+    background-color: #e3f2fd !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  
+  .calendar-row.shoot {
+    background-color: #e8f5e9 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  
+  /* Add page breaks appropriately */
+  .calendar-table {
+    page-break-inside: auto;
+  }
+  
+  tr {
+    page-break-inside: avoid;
+    page-break-after: auto;
+  }
+  
+  thead {
+    display: table-header-group;
+  }
+  
+  tfoot {
+    display: table-footer-group;
+  }
+}
+
+/* Viewer-specific styles */
+.viewer-mode .admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.print-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: var(--primary-light);
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  color: white;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.print-button svg {
+  width: 18px;
+  height: 18px;
+}
+
+.print-button:hover {
+  background-color: var(--primary-color);
+}
