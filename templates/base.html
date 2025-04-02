@@ -6,15 +6,187 @@
     <title>{% block title %}Film Production Scheduler{% endblock %}</title>
     <link rel="stylesheet" href="/static/css/style.css">
     {% block styles %}{% endblock %}
+    <style>
+        /* Navigation styles */
+        .main-header {
+            position: relative;
+        }
+        
+        .main-nav {
+            display: flex;
+            justify-content: flex-end;
+        }
+        
+        .nav-dropdown {
+            position: relative;
+        }
+        
+        .nav-dropdown-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        
+        .nav-dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: white;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            width: 200px;
+            z-index: 100;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: opacity 0.2s, visibility 0.2s, transform 0.2s;
+        }
+        
+        .nav-dropdown-menu.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        
+        .nav-dropdown-menu ul {
+            list-style: none;
+            padding: 0.5rem 0;
+            margin: 0;
+        }
+        
+        .nav-dropdown-menu li {
+            padding: 0;
+        }
+        
+        .nav-dropdown-menu a {
+            display: block;
+            padding: 0.5rem 1rem;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: background-color 0.2s;
+        }
+        
+        .nav-dropdown-menu a:hover {
+            background-color: var(--background-color);
+            color: var(--primary-color);
+        }
+        
+        .nav-dropdown-menu .divider {
+            height: 1px;
+            background-color: var(--border-color);
+            margin: 0.5rem 0;
+        }
+        
+        .dropdown-icon {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+        }
+
+        /* Mobile navigation */
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .mobile-menu-toggle {
+                display: block;
+            }
+            
+            .main-nav {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background-color: var(--primary-dark);
+                flex-direction: column;
+                padding: 0.5rem 0;
+                display: none;
+            }
+            
+            .main-nav.active {
+                display: flex;
+            }
+            
+            .main-nav ul {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .main-nav a {
+                display: block;
+                padding: 0.75rem 1rem;
+            }
+            
+            .nav-dropdown {
+                width: 100%;
+            }
+            
+            .nav-dropdown-menu {
+                position: static;
+                box-shadow: none;
+                width: 100%;
+                background-color: var(--primary-dark);
+                padding-left: 1rem;
+                transform: none;
+            }
+            
+            .nav-dropdown-menu a {
+                color: white;
+            }
+            
+            .nav-dropdown-menu a:hover {
+                background-color: rgba(255, 255, 255, 0.1);
+                color: white;
+            }
+            
+            .nav-dropdown-menu .divider {
+                background-color: rgba(255, 255, 255, 0.1);
+            }
+        }
+    </style>
 </head>
 <body>
     <header class="main-header">
         <div class="container">
             <h1>Film Production Scheduler</h1>
-            <nav>
+            
+            <button class="mobile-menu-toggle" id="mobile-menu-toggle">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+            
+            <nav class="main-nav" id="main-nav">
                 <ul>
                     <li><a href="/">Home</a></li>
-                    <li><a href="/admin">Admin</a></li>
+                    <li><a href="/admin">Dashboard</a></li>
+                    {% if request.path.startswith('/admin') %}
+                    <li class="nav-dropdown">
+                        <a href="#" class="nav-dropdown-toggle" id="admin-dropdown-toggle">
+                            Manage
+                            <svg class="dropdown-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </a>
+                        <div class="nav-dropdown-menu" id="admin-dropdown-menu">
+                            <ul>
+                                <li><a href="/admin/locations">Locations</a></li>
+                                <li><a href="/admin/departments">Departments</a></li>
+                                <li><a href="/admin/dates">Special Dates</a></li>
+                                <li class="divider"></li>
+                                <li><a href="/admin/project/new">New Project</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                    {% endif %}
                 </ul>
             </nav>
         </div>
@@ -48,11 +220,40 @@
     <script>
         // Close flash messages
         document.addEventListener('DOMContentLoaded', function() {
+            // Flash messages
             document.querySelectorAll('.flash-message .close-button').forEach(function(button) {
                 button.addEventListener('click', function() {
                     this.parentElement.style.display = 'none';
                 });
             });
+            
+            // Dropdown menu
+            const adminDropdownToggle = document.getElementById('admin-dropdown-toggle');
+            const adminDropdownMenu = document.getElementById('admin-dropdown-menu');
+            
+            if (adminDropdownToggle && adminDropdownMenu) {
+                adminDropdownToggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    adminDropdownMenu.classList.toggle('active');
+                });
+                
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!e.target.closest('.nav-dropdown') && adminDropdownMenu.classList.contains('active')) {
+                        adminDropdownMenu.classList.remove('active');
+                    }
+                });
+            }
+            
+            // Mobile menu
+            const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+            const mainNav = document.getElementById('main-nav');
+            
+            if (mobileMenuToggle && mainNav) {
+                mobileMenuToggle.addEventListener('click', function() {
+                    mainNav.classList.toggle('active');
+                });
+            }
         });
     </script>
     {% block scripts %}{% endblock %}

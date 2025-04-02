@@ -11,6 +11,7 @@
     <h2>Calendar Editor - {{ project.title or 'Untitled Project' }}</h2>
     <div class="admin-actions">
         <a href="/admin/project/{{ project.id }}" class="button">Edit Project Details</a>
+        <a href="/admin/dates/{{ project.id }}" class="button">Special Dates</a>
         <a href="/admin" class="button secondary">Back to Dashboard</a>
     </div>
 </div>
@@ -111,6 +112,17 @@
         </div>
     </div>
     
+    {% if calendar.locationAreas and calendar.locationAreas|length > 0 %}
+    <div class="location-areas">
+        <h4 class="areas-title">Location Areas</h4>
+        <div class="area-tags">
+            {% for area in calendar.locationAreas %}
+            <div class="area-tag" style="background-color: {{ area.color }}">{{ area.name }}</div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    
     <div class="calendar-table-wrapper">
         <table class="calendar-table">
             <thead>
@@ -128,7 +140,10 @@
             </thead>
             <tbody>
                 {% for day in calendar.days %}
-                <tr class="calendar-row {% if day.isWeekend %}weekend{% elif day.isPrep %}prep{% elif day.isShootDay %}shoot{% endif %}" data-date="{{ day.date }}">
+                <tr class="calendar-row {% if day.dayType %}{{ day.dayType }}{% elif day.isWeekend %}weekend{% elif day.isHoliday %}holiday{% elif day.isHiatus %}hiatus{% elif day.isPrep %}prep{% elif day.isShootDay %}shoot{% endif %}" 
+                    data-date="{{ day.date }}" 
+                    data-area="{{ day.locationArea }}"
+                >
                     <td class="date-cell">
                         <div class="date-display">{{ day.date }}</div>
                         <div class="date-day">{{ day.dayOfWeek }}</div>
@@ -161,6 +176,7 @@
 {% endblock %}
 
 {% block scripts %}
+<script src="/static/js/calendar.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Add click handlers for calendar rows

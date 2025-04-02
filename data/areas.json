@@ -1,0 +1,32 @@
+[
+  {
+    "id": "studio",
+    "name": "Studio",
+    "color": "#fffbc8"
+  },
+  {
+    "id": "north",
+    "name": "Dublin North",
+    "color": "#d4e9ff"
+  },
+  {
+    "id": "south",
+    "name": "Dublin South",
+    "color": "#ffd8d8"
+  },
+  {
+    "id": "wicklow",
+    "name": "Wicklow",
+    "color": "#e6ffd8"
+  },
+  {
+    "id": "ardmore",
+    "name": "Ardmore Studios",
+    "color": "#f2d8ff"
+  },
+  {
+    "id": "ashford",
+    "name": "Ashford Studios",
+    "color": "#ffd8e6"
+  }
+]

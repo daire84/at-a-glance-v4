@@ -1713,9 +1713,8 @@
       "locationArea": "TEST",
       "sequence": "TEST",
       "departments": [
-        "sfx",
-        "stunts",
-        "armourer"
+        "CR",
+        "PR"
       ],
       "notes": "this is a TEST",
       "secondUnit": "",
@@ -1732,14 +1731,19 @@
       "isShootDay": true,
       "isWeekend": false,
       "shootDay": 2,
-      "mainUnit": "",
-      "extras": 0,
-      "featuredExtras": 0,
-      "location": "",
-      "locationArea": "",
-      "sequence": "",
-      "departments": [],
-      "notes": "",
+      "mainUnit": "CANNON HOUSE",
+      "extras": 2,
+      "featuredExtras": 1,
+      "location": "D STAGE",
+      "locationArea": "ARDMORE STUDIO",
+      "sequence": "The Reunion",
+      "departments": [
+        "SFX",
+        "STN",
+        "CR",
+        "ST"
+      ],
+      "notes": "MIGHT REQUIRE A DRONE, CERTAINLY NEEDS A GOOD REHEARSAL",
       "secondUnit": "",
       "secondUnitLocation": ""
     },
