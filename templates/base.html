@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Film Production Scheduler{% endblock %}</title>
+    <title>{% block title %}Schedule, At a Glance!{% endblock %}</title>
     <link rel="stylesheet" href="/static/css/style.css">
     {% block styles %}{% endblock %}
     <style>
@@ -154,7 +154,7 @@
 <body>
     <header class="main-header">
         <div class="container">
-            <h1>Film Production Scheduler</h1>
+            <h1>Schedule, At a Glance!</h1>
             
             <button class="mobile-menu-toggle" id="mobile-menu-toggle">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -166,27 +166,8 @@
             
             <nav class="main-nav" id="main-nav">
                 <ul>
-                    <li><a href="/">Home</a></li>
-                    <li><a href="/admin">Dashboard</a></li>
-                    {% if request.path.startswith('/admin') %}
-                    <li class="nav-dropdown">
-                        <a href="#" class="nav-dropdown-toggle" id="admin-dropdown-toggle">
-                            Manage
-                            <svg class="dropdown-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="6 9 12 15 18 9"></polyline>
-                            </svg>
-                        </a>
-                        <div class="nav-dropdown-menu" id="admin-dropdown-menu">
-                            <ul>
-                                <li><a href="/admin/locations">Locations</a></li>
-                                <li><a href="/admin/departments">Departments</a></li>
-                                <li><a href="/admin/dates">Special Dates</a></li>
-                                <li class="divider"></li>
-                                <li><a href="/admin/project/new">New Project</a></li>
-                            </ul>
-                        </div>
-                    </li>
-                    {% endif %}
+                    <li><a href="/">Dashboard</a></li>
+                    <li><a href="/admin">Admin</a></li>
                 </ul>
             </nav>
         </div>
@@ -213,7 +194,7 @@
     
     <footer>
         <div class="container">
-            <p>Film Production Scheduler v4</p>
+            <p>Schedule, At a Glance! v4</p>
         </div>
     </footer>
     
@@ -226,24 +207,6 @@
                     this.parentElement.style.display = 'none';
                 });
             });
-            
-            // Dropdown menu
-            const adminDropdownToggle = document.getElementById('admin-dropdown-toggle');
-            const adminDropdownMenu = document.getElementById('admin-dropdown-menu');
-            
-            if (adminDropdownToggle && adminDropdownMenu) {
-                adminDropdownToggle.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    adminDropdownMenu.classList.toggle('active');
-                });
-                
-                // Close dropdown when clicking outside
-                document.addEventListener('click', function(e) {
-                    if (!e.target.closest('.nav-dropdown') && adminDropdownMenu.classList.contains('active')) {
-                        adminDropdownMenu.classList.remove('active');
-                    }
-                });
-            }
             
             // Mobile menu
             const mobileMenuToggle = document.getElementById('mobile-menu-toggle');

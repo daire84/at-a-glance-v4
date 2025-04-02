@@ -1,31 +1,32 @@
-/* Calendar Styles */
+/* Calendar Styles - Compact Version */
 
 .calendar-container {
   background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  padding: 1.5rem;
-  margin-bottom: 2rem;
+  border-radius: 6px;  /* Reduced from 8px */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);  /* Lighter shadow */
+  padding: 1.2rem;  /* Reduced from 1.5rem */
+  margin-bottom: 1.5rem;  /* Reduced from 2rem */
 }
 
-/* Project Info Header */
+/* Project Info Header - more compact */
 .project-info-header {
-  margin-bottom: 2rem;
-  padding-bottom: 1rem;
+  margin-bottom: 1.5rem;  /* Reduced from 2rem */
+  padding-bottom: 0.8rem;  /* Reduced from 1rem */
   border-bottom: 1px solid var(--border-color);
 }
 
 .project-title {
-  font-size: 1.5rem;
+  font-size: 1.3rem;  /* Reduced from 1.5rem */
   color: var(--primary-color);
-  margin-bottom: 1rem;
+  margin-bottom: 0.8rem;  /* Reduced from 1rem */
 }
 
 .project-meta {
   display: flex;
   flex-wrap: wrap;
-  gap: 1.5rem;
-  margin-bottom: 1rem;
+  gap: 1.2rem;  /* Reduced from 1.5rem */
+  margin-bottom: 0.8rem;  /* Reduced from 1rem */
+  justify-content: space-between;  /* Added to evenly space items */
 }
 
 .meta-group {
@@ -34,117 +35,121 @@
 }
 
 .meta-label {
-  font-size: 0.85rem;
+  font-size: 0.75rem;  /* Reduced from 0.85rem */
   color: var(--text-light);
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.15rem;  /* Reduced from 0.25rem */
 }
 
 .meta-value {
   font-weight: 500;
+  font-size: 0.9rem;  /* Added smaller size */
 }
 
 .script-info {
   display: flex;
   flex-wrap: wrap;
-  gap: 1.5rem;
+  gap: 1.2rem;  /* Reduced from 1.5rem */
   background-color: #f8f9fa;
-  padding: 0.75rem 1rem;
-  border-radius: 4px;
-  margin-top: 1rem;
+  padding: 0.6rem 0.8rem;  /* Reduced from 0.75rem 1rem */
+  border-radius: 3px;  /* Reduced from 4px */
+  margin-top: 0.8rem;  /* Reduced from 1rem */
+  justify-content: space-between;  /* Added to evenly space items */
 }
 
 .script-item {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.4rem;  /* Reduced from 0.5rem */
 }
 
 .script-label {
   font-weight: 500;
   color: var(--primary-color);
+  font-size: 0.85rem;  /* Added smaller size */
 }
 
 .script-value {
   color: var(--text-color);
+  font-size: 0.85rem;  /* Added smaller size */
 }
 
-/* Calendar Actions */
+/* Calendar Actions - more compact */
 .calendar-actions {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.2rem;  /* Reduced from 1.5rem */
 }
 
 .action-buttons {
   display: flex;
-  gap: 0.75rem;
+  gap: 0.5rem;  /* Reduced from 0.75rem */
 }
 
-/* Department Counters */
+/* Department Counters - reduced size by ~75% */
 .department-counters {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;  /* Reduced from 1.5rem */
   background-color: #f8f9fa;
-  padding: 1rem;
-  border-radius: 4px;
+  padding: 0.6rem;  /* Reduced from 1rem */
+  border-radius: 3px;  /* Reduced from 4px */
 }
 
 .counter-title {
-  font-size: 1.1rem;
-  margin-bottom: 0.75rem;
+  font-size: 0.9rem;  /* Reduced from 1.1rem */
+  margin-bottom: 0.5rem;  /* Reduced from 0.75rem */
   color: var(--primary-dark);
 }
 
 .counter-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));  /* Reduced from 140px */
+  gap: 0.4rem;  /* Reduced from 0.75rem */
 }
 
 .counter-item {
-  border-radius: 4px;
-  padding: 0.75rem;
+  border-radius: 3px;  /* Reduced from 4px */
+  padding: 0.5rem;  /* Reduced from 0.75rem */
   text-align: center;
 }
 
 .counter-label {
-  font-size: 0.9rem;
-  margin-bottom: 0.25rem;
+  font-size: 0.75rem;  /* Reduced from 0.9rem */
+  margin-bottom: 0.15rem;  /* Reduced from 0.25rem */
 }
 
 .counter-value {
-  font-size: 1.5rem;
+  font-size: 1.1rem;  /* Reduced from 1.5rem */
   font-weight: 600;
 }
 
-/* Location Areas */
+/* Location Areas - more compact */
 .location-areas {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;  /* Reduced from 1.5rem */
   background-color: #f8f9fa;
-  padding: 1rem;
-  border-radius: 4px;
+  padding: 0.6rem;  /* Reduced from 1rem */
+  border-radius: 3px;  /* Reduced from 4px */
 }
 
 .areas-title {
-  font-size: 1.1rem;
-  margin-bottom: 0.75rem;
+  font-size: 0.9rem;  /* Reduced from 1.1rem */
+  margin-bottom: 0.5rem;  /* Reduced from 0.75rem */
   color: var(--primary-dark);
 }
 
 .area-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.4rem;  /* Reduced from 0.5rem */
 }
 
 .area-tag {
-  border-radius: 4px;
-  padding: 0.5rem 0.75rem;
-  font-size: 0.9rem;
+  border-radius: 3px;  /* Reduced from 4px */
+  padding: 0.35rem 0.5rem;  /* Reduced from 0.5rem 0.75rem */
+  font-size: 0.75rem;  /* Reduced from 0.9rem */
   font-weight: 500;
 }
 
-/* Calendar Table */
+/* Calendar Table - more compact */
 .calendar-table-wrapper {
   overflow-x: auto;
 }
@@ -153,12 +158,13 @@
   width: 100%;
   border-collapse: collapse;
   border: 1px solid #dee2e6;
+  font-size: 0.85rem;  /* Added smaller font */
 }
 
 .calendar-table th,
 .calendar-table td {
   border: 1px solid #dee2e6;
-  padding: 0.75rem;
+  padding: 0.5rem;  /* Reduced from 0.75rem */
   vertical-align: top;
   text-align: left;
 }
@@ -170,51 +176,53 @@
   position: sticky;
   top: 0;
   z-index: 10;
+  font-size: 0.8rem;  /* Added smaller font */
+  padding: 0.4rem 0.5rem;  /* Even more compact headers */
 }
 
-/* Column widths */
+/* Column widths - adjusted for compact layout */
 .date-col {
-  width: 110px;
+  width: 90px;  /* Reduced from 110px */
 }
 
 .day-col {
-  width: 50px;
+  width: 40px;  /* Reduced from 50px */
   text-align: center;
 }
 
 .main-unit-col {
-  width: 200px;
+  width: 180px;  /* Reduced from 200px */
 }
 
 .extras-col,
 .featured-extras-col {
-  width: 50px;
+  width: 40px;  /* Reduced from 50px */
   text-align: center;
 }
 
 .location-col {
-  width: 150px;
+  width: 120px;  /* Reduced from 150px */
 }
 
 .sequence-col {
-  width: 100px;
+  width: 80px;  /* Reduced from 100px */
 }
 
 .departments-col {
-  width: 150px;
+  width: 120px;  /* Reduced from 150px */
 }
 
 .notes-col {
-  width: 200px;
+  width: 180px;  /* Reduced from 200px */
 }
 
-/* Row styling */
+/* Row styling - more subtle effects */
 .calendar-row {
   transition: background-color 0.2s;
 }
 
 .calendar-row:hover {
-  background-color: rgba(96, 125, 139, 0.05);
+  background-color: rgba(96, 125, 139, 0.03);  /* More subtle hover */
 }
 
 .calendar-row.weekend {
@@ -237,27 +245,29 @@
   background-color: #ffebee;
 }
 
-/* Cell styling */
+/* Cell styling - more compact */
 .date-cell {
   font-weight: 500;
+  font-size: 0.8rem;  /* Added smaller font */
 }
 
 .date-display {
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.15rem;  /* Reduced from 0.25rem */
 }
 
 .date-day {
-  font-size: 0.85rem;
+  font-size: 0.75rem;  /* Reduced from 0.85rem */
   color: var(--text-light);
 }
 
 .day-cell {
-  font-size: 1.1rem;
+  font-size: 1rem;  /* Reduced from 1.1rem */
   font-weight: 600;
 }
 
 .main-unit-cell {
   font-weight: 500;
+  font-size: 0.85rem;  /* Added smaller font */
 }
 
 .extras-cell,
@@ -266,26 +276,26 @@
   text-align: center;
 }
 
-/* Department tags */
+/* Department tags - more compact */
 .departments-cell {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.25rem;
+  gap: 0.2rem;  /* Reduced from 0.25rem */
 }
 
 .department-tag {
   display: inline-block;
   background-color: #e9ecef;
   color: var(--text-color);
-  padding: 0.2rem 0.4rem;
-  border-radius: 3px;
-  font-size: 0.85rem;
+  padding: 0.15rem 0.3rem;  /* Reduced from 0.2rem 0.4rem */
+  border-radius: 2px;  /* Reduced from 3px */
+  font-size: 0.75rem;  /* Reduced from 0.85rem */
   font-weight: 500;
 }
 
 /* Notes cell */
 .notes-cell {
-  font-size: 0.9rem;
+  font-size: 0.8rem;  /* Reduced from 0.9rem */
   white-space: pre-line;
 }
 
@@ -301,7 +311,7 @@
   z-index: 10;
 }
 
-/* Print Styles */
+/* Print Styles - optimized for horizontal layout */
 @media print {
   .calendar-container {
     box-shadow: none;
@@ -309,11 +319,11 @@
   }
   
   .project-info-header {
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;  /* Reduced from 1rem */
   }
   
   .project-title {
-    font-size: 1.3rem;
+    font-size: 1.1rem;  /* Reduced from 1.3rem */
   }
   
   .counter-grid {
@@ -321,29 +331,34 @@
   }
   
   .counter-item {
-    padding: 0.5rem;
+    padding: 0.3rem;  /* Reduced from 0.5rem */
   }
   
   .counter-value {
-    font-size: 1.2rem;
+    font-size: 1rem;  /* Reduced from 1.2rem */
   }
   
   .calendar-table {
-    font-size: 9pt;
+    font-size: 8pt;  /* Reduced from 9pt for more compact print */
   }
   
   .calendar-table th,
   .calendar-table td {
-    padding: 4pt;
+    padding: 3pt;  /* Reduced from 4pt */
   }
   
   .departments-cell {
-    gap: 2pt;
+    gap: 1pt;  /* Reduced from 2pt */
   }
   
   .department-tag {
-    padding: 1pt 3pt;
-    font-size: 8pt;
+    padding: 0.5pt 2pt;  /* Reduced from 1pt 3pt */
+    font-size: 7pt;  /* Reduced from 8pt */
+  }
+  
+  /* Force landscape orientation */
+  @page {
+    size: landscape;
   }
   
   /* Force page breaks between logical sections */
@@ -384,12 +399,12 @@
 @media (max-width: 768px) {
   .project-meta {
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 0.5rem;  /* Reduced from 0.75rem */
   }
   
   .script-info {
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.3rem;  /* Reduced from 0.5rem */
   }
   
   .counter-grid {
