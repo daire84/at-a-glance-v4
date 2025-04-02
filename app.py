@@ -355,3 +355,638 @@ def server_error(e):
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
+
+# Add these routes to app.py after the existing routes
+
+# Location and Area Management
+@app.route('/admin/locations')
+def admin_locations():
+    """Location management page"""
+    return render_template('admin/locations.html')
+
+# API Routes for Locations
+@app.route('/api/locations', methods=['GET', 'POST'])
+def api_locations():
+    """List or create locations"""
+    locations_file = os.path.join(DATA_DIR, 'locations.json')
+    
+    if request.method == 'GET':
+        # Get all locations
+        if os.path.exists(locations_file):
+            with open(locations_file, 'r') as f:
+                locations = json.load(f)
+        else:
+            locations = []
+        return jsonify(locations)
+    
+    elif request.method == 'POST':
+        # Create new location
+        location_data = request.get_json()
+        
+        # Add ID if not present
+        if 'id' not in location_data:
+            location_data['id'] = str(uuid.uuid4())
+        
+        # Read existing locations
+        if os.path.exists(locations_file):
+            with open(locations_file, 'r') as f:
+                locations = json.load(f)
+        else:
+            locations = []
+        
+        # Add new location
+        locations.append(location_data)
+        
+        # Save locations
+        with open(locations_file, 'w') as f:
+            json.dump(locations, f, indent=2)
+        
+        return jsonify(location_data), 201
+
+@app.route('/api/locations/<location_id>', methods=['GET', 'PUT', 'DELETE'])
+def api_location(location_id):
+    """Get, update or delete a location"""
+    locations_file = os.path.join(DATA_DIR, 'locations.json')
+    
+    # Check if locations file exists
+    if not os.path.exists(locations_file):
+        return jsonify({'error': 'Locations file not found'}), 404
+    
+    # Read locations
+    with open(locations_file, 'r') as f:
+        locations = json.load(f)
+    
+    # Find location
+    location_index = next((i for i, loc in enumerate(locations) if loc.get('id') == location_id), None)
+    
+    if location_index is None:
+        return jsonify({'error': 'Location not found'}), 404
+    
+    if request.method == 'GET':
+        return jsonify(locations[location_index])
+    
+    elif request.method == 'PUT':
+        # Update location
+        location_data = request.get_json()
+        location_data['id'] = location_id  # Ensure ID matches
+        locations[location_index] = location_data
+        
+        # Save locations
+        with open(locations_file, 'w') as f:
+            json.dump(locations, f, indent=2)
+        
+        return jsonify(location_data)
+    
+    elif request.method == 'DELETE':
+        # Delete location
+        del locations[location_index]
+        
+        # Save locations
+        with open(locations_file, 'w') as f:
+            json.dump(locations, f, indent=2)
+        
+        return jsonify({'success': True})
+
+# API Routes for Location Areas
+@app.route('/api/areas', methods=['GET', 'POST'])
+def api_areas():
+    """List or create location areas"""
+    areas_file = os.path.join(DATA_DIR, 'areas.json')
+    
+    if request.method == 'GET':
+        # Get all areas
+        if os.path.exists(areas_file):
+            with open(areas_file, 'r') as f:
+                areas = json.load(f)
+        else:
+            areas = []
+        return jsonify(areas)
+    
+    elif request.method == 'POST':
+        # Create new area
+        area_data = request.get_json()
+        
+        # Add ID if not present
+        if 'id' not in area_data:
+            area_data['id'] = str(uuid.uuid4())
+        
+        # Read existing areas
+        if os.path.exists(areas_file):
+            with open(areas_file, 'r') as f:
+                areas = json.load(f)
+        else:
+            areas = []
+        
+        # Add new area
+        areas.append(area_data)
+        
+        # Save areas
+        with open(areas_file, 'w') as f:
+            json.dump(areas, f, indent=2)
+        
+        return jsonify(area_data), 201
+
+@app.route('/api/areas/<area_id>', methods=['GET', 'PUT', 'DELETE'])
+def api_area(area_id):
+    """Get, update or delete a location area"""
+    areas_file = os.path.join(DATA_DIR, 'areas.json')
+    
+    # Check if areas file exists
+    if not os.path.exists(areas_file):
+        return jsonify({'error': 'Areas file not found'}), 404
+    
+    # Read areas
+    with open(areas_file, 'r') as f:
+        areas = json.load(f)
+    
+    # Find area
+    area_index = next((i for i, area in enumerate(areas) if area.get('id') == area_id), None)
+    
+    if area_index is None:
+        return jsonify({'error': 'Area not found'}), 404
+    
+    if request.method == 'GET':
+        return jsonify(areas[area_index])
+    
+    elif request.method == 'PUT':
+        # Update area
+        area_data = request.get_json()
+        area_data['id'] = area_id  # Ensure ID matches
+        areas[area_index] = area_data
+        
+        # Save areas
+        with open(areas_file, 'w') as f:
+            json.dump(areas, f, indent=2)
+        
+        return jsonify(area_data)
+    
+    elif request.method == 'DELETE':
+        # Delete area
+        del areas[area_index]
+        
+        # Save areas
+        with open(areas_file, 'w') as f:
+            json.dump(areas, f, indent=2)
+        
+        return jsonify({'success': True})
+
+# Add these routes to app.py after the location routes
+
+# Department Management
+@app.route('/admin/departments')
+def admin_departments():
+    """Department management page"""
+    return render_template('admin/departments.html')
+
+# API Routes for Departments
+@app.route('/api/departments', methods=['GET', 'POST'])
+def api_departments():
+    """List or create departments"""
+    departments_file = os.path.join(DATA_DIR, 'departments.json')
+    
+    if request.method == 'GET':
+        # Get all departments
+        if os.path.exists(departments_file):
+            with open(departments_file, 'r') as f:
+                departments = json.load(f)
+        else:
+            departments = []
+        return jsonify(departments)
+    
+    elif request.method == 'POST':
+        # Create new department
+        department_data = request.get_json()
+        
+        # Add ID if not present
+        if 'id' not in department_data:
+            department_data['id'] = str(uuid.uuid4())
+        
+        # Read existing departments
+        if os.path.exists(departments_file):
+            with open(departments_file, 'r') as f:
+                departments = json.load(f)
+        else:
+            departments = []
+        
+        # Add new department
+        departments.append(department_data)
+        
+        # Save departments
+        with open(departments_file, 'w') as f:
+            json.dump(departments, f, indent=2)
+        
+        return jsonify(department_data), 201
+
+@app.route('/api/departments/<department_id>', methods=['GET', 'PUT', 'DELETE'])
+def api_department(department_id):
+    """Get, update or delete a department"""
+    departments_file = os.path.join(DATA_DIR, 'departments.json')
+    
+    # Check if departments file exists
+    if not os.path.exists(departments_file):
+        return jsonify({'error': 'Departments file not found'}), 404
+    
+    # Read departments
+    with open(departments_file, 'r') as f:
+        departments = json.load(f)
+    
+    # Find department
+    department_index = next((i for i, dept in enumerate(departments) if dept.get('id') == department_id), None)
+    
+    if department_index is None:
+        return jsonify({'error': 'Department not found'}), 404
+    
+    if request.method == 'GET':
+        return jsonify(departments[department_index])
+    
+    elif request.method == 'PUT':
+        # Update department
+        department_data = request.get_json()
+        department_data['id'] = department_id  # Ensure ID matches
+        departments[department_index] = department_data
+        
+        # Save departments
+        with open(departments_file, 'w') as f:
+            json.dump(departments, f, indent=2)
+        
+        return jsonify(department_data)
+    
+    elif request.method == 'DELETE':
+        # Delete department
+        del departments[department_index]
+        
+        # Save departments
+        with open(departments_file, 'w') as f:
+            json.dump(departments, f, indent=2)
+        
+        return jsonify({'success': True})
+
+# Add these routes to app.py after the department routes
+
+# Special Dates Management
+@app.route('/admin/dates')
+@app.route('/admin/dates/<project_id>')
+def admin_dates(project_id=None):
+    """Special dates management page"""
+    projects = get_projects()
+    return render_template('admin/dates.html', projects=projects, project_id=project_id)
+
+# API Routes for Working Weekends
+@app.route('/api/projects/<project_id>/weekends', methods=['GET', 'POST'])
+def api_weekends(project_id):
+    """List or create working weekends for a project"""
+    project_dir = os.path.join(PROJECTS_DIR, project_id)
+    weekends_file = os.path.join(project_dir, 'weekends.json')
+    
+    if not os.path.exists(project_dir):
+        return jsonify({'error': 'Project not found'}), 404
+    
+    if request.method == 'GET':
+        # Get all working weekends for the project
+        if os.path.exists(weekends_file):
+            with open(weekends_file, 'r') as f:
+                weekends = json.load(f)
+        else:
+            weekends = []
+        return jsonify(weekends)
+    
+    elif request.method == 'POST':
+        # Create new working weekend
+        weekend_data = request.get_json()
+        
+        # Add ID if not present
+        if 'id' not in weekend_data:
+            weekend_data['id'] = str(uuid.uuid4())
+        
+        # Read existing weekends
+        if os.path.exists(weekends_file):
+            with open(weekends_file, 'r') as f:
+                weekends = json.load(f)
+        else:
+            weekends = []
+        
+        # Add new weekend
+        weekends.append(weekend_data)
+        
+        # Save weekends
+        with open(weekends_file, 'w') as f:
+            json.dump(weekends, f, indent=2)
+        
+        return jsonify(weekend_data), 201
+
+@app.route('/api/projects/<project_id>/weekends/<weekend_id>', methods=['GET', 'PUT', 'DELETE'])
+def api_weekend(project_id, weekend_id):
+    """Get, update or delete a working weekend"""
+    project_dir = os.path.join(PROJECTS_DIR, project_id)
+    weekends_file = os.path.join(project_dir, 'weekends.json')
+    
+    if not os.path.exists(project_dir):
+        return jsonify({'error': 'Project not found'}), 404
+    
+    if not os.path.exists(weekends_file):
+        return jsonify({'error': 'No working weekends found for this project'}), 404
+    
+    # Read weekends
+    with open(weekends_file, 'r') as f:
+        weekends = json.load(f)
+    
+    # Find weekend
+    weekend_index = next((i for i, wknd in enumerate(weekends) if wknd.get('id') == weekend_id), None)
+    
+    if weekend_index is None:
+        return jsonify({'error': 'Working weekend not found'}), 404
+    
+    if request.method == 'GET':
+        return jsonify(weekends[weekend_index])
+    
+    elif request.method == 'PUT':
+        # Update weekend
+        weekend_data = request.get_json()
+        weekend_data['id'] = weekend_id  # Ensure ID matches
+        weekends[weekend_index] = weekend_data
+        
+        # Save weekends
+        with open(weekends_file, 'w') as f:
+            json.dump(weekends, f, indent=2)
+        
+        return jsonify(weekend_data)
+    
+    elif request.method == 'DELETE':
+        # Delete weekend
+        del weekends[weekend_index]
+        
+        # Save weekends
+        with open(weekends_file, 'w') as f:
+            json.dump(weekends, f, indent=2)
+        
+        return jsonify({'success': True})
+
+# API Routes for Bank Holidays
+@app.route('/api/projects/<project_id>/holidays', methods=['GET', 'POST'])
+def api_holidays(project_id):
+    """List or create bank holidays for a project"""
+    project_dir = os.path.join(PROJECTS_DIR, project_id)
+    holidays_file = os.path.join(project_dir, 'holidays.json')
+    
+    if not os.path.exists(project_dir):
+        return jsonify({'error': 'Project not found'}), 404
+    
+    if request.method == 'GET':
+        # Get all bank holidays for the project
+        if os.path.exists(holidays_file):
+            with open(holidays_file, 'r') as f:
+                holidays = json.load(f)
+        else:
+            holidays = []
+        return jsonify(holidays)
+    
+    elif request.method == 'POST':
+        # Create new bank holiday
+        holiday_data = request.get_json()
+        
+        # Add ID if not present
+        if 'id' not in holiday_data:
+            holiday_data['id'] = str(uuid.uuid4())
+        
+        # Read existing holidays
+        if os.path.exists(holidays_file):
+            with open(holidays_file, 'r') as f:
+                holidays = json.load(f)
+        else:
+            holidays = []
+        
+        # Add new holiday
+        holidays.append(holiday_data)
+        
+        # Save holidays
+        with open(holidays_file, 'w') as f:
+            json.dump(holidays, f, indent=2)
+        
+        return jsonify(holiday_data), 201
+
+@app.route('/api/projects/<project_id>/holidays/<holiday_id>', methods=['GET', 'PUT', 'DELETE'])
+def api_holiday(project_id, holiday_id):
+    """Get, update or delete a bank holiday"""
+    project_dir = os.path.join(PROJECTS_DIR, project_id)
+    holidays_file = os.path.join(project_dir, 'holidays.json')
+    
+    if not os.path.exists(project_dir):
+        return jsonify({'error': 'Project not found'}), 404
+    
+    if not os.path.exists(holidays_file):
+        return jsonify({'error': 'No bank holidays found for this project'}), 404
+    
+    # Read holidays
+    with open(holidays_file, 'r') as f:
+        holidays = json.load(f)
+    
+    # Find holiday
+    holiday_index = next((i for i, hol in enumerate(holidays) if hol.get('id') == holiday_id), None)
+    
+    if holiday_index is None:
+        return jsonify({'error': 'Bank holiday not found'}), 404
+    
+    if request.method == 'GET':
+        return jsonify(holidays[holiday_index])
+    
+    elif request.method == 'PUT':
+        # Update holiday
+        holiday_data = request.get_json()
+        holiday_data['id'] = holiday_id  # Ensure ID matches
+        holidays[holiday_index] = holiday_data
+        
+        # Save holidays
+        with open(holidays_file, 'w') as f:
+            json.dump(holidays, f, indent=2)
+        
+        return jsonify(holiday_data)
+    
+    elif request.method == 'DELETE':
+        # Delete holiday
+        del holidays[holiday_index]
+        
+        # Save holidays
+        with open(holidays_file, 'w') as f:
+            json.dump(holidays, f, indent=2)
+        
+        return jsonify({'success': True})
+
+# API Routes for Hiatus Periods
+@app.route('/api/projects/<project_id>/hiatus', methods=['GET', 'POST'])
+def api_hiatus_periods(project_id):
+    """List or create hiatus periods for a project"""
+    project_dir = os.path.join(PROJECTS_DIR, project_id)
+    hiatus_file = os.path.join(project_dir, 'hiatus.json')
+    
+    if not os.path.exists(project_dir):
+        return jsonify({'error': 'Project not found'}), 404
+    
+    if request.method == 'GET':
+        # Get all hiatus periods for the project
+        if os.path.exists(hiatus_file):
+            with open(hiatus_file, 'r') as f:
+                hiatus_periods = json.load(f)
+        else:
+            hiatus_periods = []
+        return jsonify(hiatus_periods)
+    
+    elif request.method == 'POST':
+        # Create new hiatus period
+        hiatus_data = request.get_json()
+        
+        # Add ID if not present
+        if 'id' not in hiatus_data:
+            hiatus_data['id'] = str(uuid.uuid4())
+        
+        # Read existing hiatus periods
+        if os.path.exists(hiatus_file):
+            with open(hiatus_file, 'r') as f:
+                hiatus_periods = json.load(f)
+        else:
+            hiatus_periods = []
+        
+        # Add new hiatus period
+        hiatus_periods.append(hiatus_data)
+        
+        # Save hiatus periods
+        with open(hiatus_file, 'w') as f:
+            json.dump(hiatus_periods, f, indent=2)
+        
+        return jsonify(hiatus_data), 201
+
+@app.route('/api/projects/<project_id>/hiatus/<hiatus_id>', methods=['GET', 'PUT', 'DELETE'])
+def api_hiatus_period(project_id, hiatus_id):
+    """Get, update or delete a hiatus period"""
+    project_dir = os.path.join(PROJECTS_DIR, project_id)
+    hiatus_file = os.path.join(project_dir, 'hiatus.json')
+    
+    if not os.path.exists(project_dir):
+        return jsonify({'error': 'Project not found'}), 404
+    
+    if not os.path.exists(hiatus_file):
+        return jsonify({'error': 'No hiatus periods found for this project'}), 404
+    
+    # Read hiatus periods
+    with open(hiatus_file, 'r') as f:
+        hiatus_periods = json.load(f)
+    
+    # Find hiatus period
+    hiatus_index = next((i for i, h in enumerate(hiatus_periods) if h.get('id') == hiatus_id), None)
+    
+    if hiatus_index is None:
+        return jsonify({'error': 'Hiatus period not found'}), 404
+    
+    if request.method == 'GET':
+        return jsonify(hiatus_periods[hiatus_index])
+    
+    elif request.method == 'PUT':
+        # Update hiatus period
+        hiatus_data = request.get_json()
+        hiatus_data['id'] = hiatus_id  # Ensure ID matches
+        hiatus_periods[hiatus_index] = hiatus_data
+        
+        # Save hiatus periods
+        with open(hiatus_file, 'w') as f:
+            json.dump(hiatus_periods, f, indent=2)
+        
+        return jsonify(hiatus_data)
+    
+    elif request.method == 'DELETE':
+        # Delete hiatus period
+        del hiatus_periods[hiatus_index]
+        
+        # Save hiatus periods
+        with open(hiatus_file, 'w') as f:
+            json.dump(hiatus_periods, f, indent=2)
+        
+        return jsonify({'success': True})
+
+# API Routes for Special Dates
+@app.route('/api/projects/<project_id>/special-dates', methods=['GET', 'POST'])
+def api_special_dates(project_id):
+    """List or create special dates for a project"""
+    project_dir = os.path.join(PROJECTS_DIR, project_id)
+    special_dates_file = os.path.join(project_dir, 'special_dates.json')
+    
+    if not os.path.exists(project_dir):
+        return jsonify({'error': 'Project not found'}), 404
+    
+    if request.method == 'GET':
+        # Get all special dates for the project
+        if os.path.exists(special_dates_file):
+            with open(special_dates_file, 'r') as f:
+                special_dates = json.load(f)
+        else:
+            special_dates = []
+        return jsonify(special_dates)
+    
+    elif request.method == 'POST':
+        # Create new special date
+        special_date_data = request.get_json()
+        
+        # Add ID if not present
+        if 'id' not in special_date_data:
+            special_date_data['id'] = str(uuid.uuid4())
+        
+        # Read existing special dates
+        if os.path.exists(special_dates_file):
+            with open(special_dates_file, 'r') as f:
+                special_dates = json.load(f)
+        else:
+            special_dates = []
+        
+        # Add new special date
+        special_dates.append(special_date_data)
+        
+        # Save special dates
+        with open(special_dates_file, 'w') as f:
+            json.dump(special_dates, f, indent=2)
+        
+        return jsonify(special_date_data), 201
+
+@app.route('/api/projects/<project_id>/special-dates/<special_date_id>', methods=['GET', 'PUT', 'DELETE'])
+def api_special_date(project_id, special_date_id):
+    """Get, update or delete a special date"""
+    project_dir = os.path.join(PROJECTS_DIR, project_id)
+    special_dates_file = os.path.join(project_dir, 'special_dates.json')
+    
+    if not os.path.exists(project_dir):
+        return jsonify({'error': 'Project not found'}), 404
+    
+    if not os.path.exists(special_dates_file):
+        return jsonify({'error': 'No special dates found for this project'}), 404
+    
+    # Read special dates
+    with open(special_dates_file, 'r') as f:
+        special_dates = json.load(f)
+    
+    # Find special date
+    special_date_index = next((i for i, sd in enumerate(special_dates) if sd.get('id') == special_date_id), None)
+    
+    if special_date_index is None:
+        return jsonify({'error': 'Special date not found'}), 404
+    
+    if request.method == 'GET':
+        return jsonify(special_dates[special_date_index])
+    
+    elif request.method == 'PUT':
+        # Update special date
+        special_date_data = request.get_json()
+        special_date_data['id'] = special_date_id  # Ensure ID matches
+        special_dates[special_date_index] = special_date_data
+        
+        # Save special dates
+        with open(special_dates_file, 'w') as f:
+            json.dump(special_dates, f, indent=2)
+        
+        return jsonify(special_date_data)
+    
+    elif request.method == 'DELETE':
+        # Delete special date
+        del special_dates[special_date_index]
+        
+        # Save special dates
+        with open(special_dates_file, 'w') as f:
+            json.dump(special_dates, f, indent=2)
+        
+        return jsonify({'success': True})

@@ -83,7 +83,7 @@ select:focus,
 textarea:focus {
   border-color: var(--accent-color);
   outline: none;
-  box-shadow: 0 0 0 3px rgba(41, 182, 246, 0.1);
+  box-shadow: 0 0 0 3px rgba(31, 148, 237, 0.96);
 }
 
 select {

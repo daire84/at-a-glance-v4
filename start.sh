@@ -4,9 +4,9 @@
 cd /mnt/user/appdata/film-scheduler-v4
 
 # Check if the port is already in use
-PORT_CHECK=$(netstat -tuln | grep ":5060" || true)
+PORT_CHECK=$(netstat -tuln | grep ":5074" || true)
 if [ ! -z "$PORT_CHECK" ]; then
-  echo "WARNING: Port 5060 is already in use!"
+  echo "WARNING: Port 5074 is already in use!"
   echo "Would you like to change the port? (y/n)"
   read change_port
   
@@ -15,10 +15,10 @@ if [ ! -z "$PORT_CHECK" ]; then
     read new_port
     
     # Update the docker-compose.yml file
-    sed -i "s/- \"5060:5000\"/- \"$new_port:5000\"/g" docker-compose.yml
+    sed -i "s/- \"5074:5000\"/- \"$new_port:5000\"/g" docker-compose.yml
     echo "Port updated to $new_port"
   else
-    echo "Continuing with port 5060, but there may be conflicts..."
+    echo "Continuing with port 5074, but there may be conflicts..."
   fi
 fi
 

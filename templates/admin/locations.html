@@ -1,0 +1,713 @@
+{% extends "base.html" %}
+
+{% block title %}Location Management - Film Production Scheduler{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="/static/css/forms.css">
+<style>
+  .color-preview {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    vertical-align: middle;
+    margin-right: 8px;
+    border: 1px solid #ccc;
+  }
+  
+  .location-list {
+    margin-top: 1.5rem;
+  }
+  
+  .location-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1.5rem;
+  }
+  
+  .location-table th,
+  .location-table td {
+    padding: 0.75rem;
+    border-bottom: 1px solid var(--border-color);
+  }
+  
+  .location-table th {
+    text-align: left;
+    font-weight: 500;
+    background-color: var(--primary-light);
+    color: white;
+  }
+  
+  .location-area-section {
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+  }
+  
+  .area-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  
+  .area-card {
+    background-color: white;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+    position: relative;
+  }
+  
+  .area-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+  }
+  
+  .area-name {
+    font-weight: 500;
+    font-size: 1.1rem;
+  }
+  
+  .area-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+  
+  .area-color {
+    height: 24px;
+    border-radius: 4px;
+    margin-bottom: 0.75rem;
+  }
+  
+  .area-location-count {
+    font-size: 0.9rem;
+    color: var(--text-light);
+  }
+  
+  .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+  }
+  
+  .modal.active {
+    opacity: 1;
+    visibility: visible;
+  }
+  
+  .modal-content {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    width: 100%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  
+  .modal-header {
+    padding: 1.25rem;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .modal-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+  }
+  
+  .modal-body {
+    padding: 1.25rem;
+  }
+  
+  .modal-footer {
+    padding: 1.25rem;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-header">
+    <h2>Location Management</h2>
+    <div class="admin-actions">
+        <button id="add-location-btn" class="button">Add Location</button>
+        <button id="add-area-btn" class="button">Add Location Area</button>
+        <a href="/admin" class="button secondary">Back to Dashboard</a>
+    </div>
+</div>
+
+<div class="content-container">
+    <div class="location-list">
+        <h3>Locations</h3>
+        <p>Manage filming locations and assign them to location areas for color coding.</p>
+        
+        <table class="location-table" id="location-table">
+            <thead>
+                <tr>
+                    <th>Location Name</th>
+                    <th>Area</th>
+                    <th>Color</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="location-table-body">
+                <!-- Location rows will be added here dynamically -->
+            </tbody>
+        </table>
+        
+        <div id="no-locations" class="empty-state">
+            <p>No locations have been added yet.</p>
+            <p>Click "Add Location" to create your first location.</p>
+        </div>
+    </div>
+    
+    <div class="location-area-section">
+        <h3>Location Areas</h3>
+        <p>Create groups of locations with color coding to help visually identify areas on the calendar.</p>
+        
+        <div class="area-grid" id="area-grid">
+            <!-- Area cards will be added here dynamically -->
+        </div>
+        
+        <div id="no-areas" class="empty-state">
+            <p>No location areas have been defined yet.</p>
+            <p>Click "Add Location Area" to create your first area.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Location Modal -->
+<div id="location-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="location-modal-title">Add Location</h3>
+            <button class="close-button" data-close-modal="location-modal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="location-form">
+                <input type="hidden" id="location-id" name="id" value="">
+                
+                <div class="form-group">
+                    <label for="location-name">Location Name</label>
+                    <input type="text" id="location-name" name="name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="location-area">Location Area</label>
+                    <select id="location-area" name="area">
+                        <option value="">-- Select Area --</option>
+                        <!-- Area options will be added here dynamically -->
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="location-address">Address (Optional)</label>
+                    <input type="text" id="location-address" name="address">
+                </div>
+                
+                <div class="form-group">
+                    <label for="location-notes">Notes (Optional)</label>
+                    <textarea id="location-notes" name="notes" rows="3"></textarea>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="button secondary" data-close-modal="location-modal">Cancel</button>
+            <button class="button" id="save-location-btn">Save Location</button>
+        </div>
+    </div>
+</div>
+
+<!-- Area Modal -->
+<div id="area-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="area-modal-title">Add Location Area</h3>
+            <button class="close-button" data-close-modal="area-modal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="area-form">
+                <input type="hidden" id="area-id" name="id" value="">
+                
+                <div class="form-group">
+                    <label for="area-name">Area Name</label>
+                    <input type="text" id="area-name" name="name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="area-color">Color</label>
+                    <input type="color" id="area-color" name="color" value="#d4e9ff">
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="button secondary" data-close-modal="area-modal">Cancel</button>
+            <button class="button" id="save-area-btn">Save Area</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // DOM elements
+    const locationTableBody = document.getElementById('location-table-body');
+    const noLocationsEl = document.getElementById('no-locations');
+    const areaGridEl = document.getElementById('area-grid');
+    const noAreasEl = document.getElementById('no-areas');
+    
+    // Location modal elements
+    const locationModal = document.getElementById('location-modal');
+    const locationModalTitle = document.getElementById('location-modal-title');
+    const locationForm = document.getElementById('location-form');
+    const locationIdInput = document.getElementById('location-id');
+    const locationNameInput = document.getElementById('location-name');
+    const locationAreaSelect = document.getElementById('location-area');
+    const locationAddressInput = document.getElementById('location-address');
+    const locationNotesInput = document.getElementById('location-notes');
+    
+    // Area modal elements
+    const areaModal = document.getElementById('area-modal');
+    const areaModalTitle = document.getElementById('area-modal-title');
+    const areaForm = document.getElementById('area-form');
+    const areaIdInput = document.getElementById('area-id');
+    const areaNameInput = document.getElementById('area-name');
+    const areaColorInput = document.getElementById('area-color');
+    
+    // Data storage
+    let locations = [];
+    let areas = [];
+    
+    // Fetch data
+    fetchLocations();
+    fetchAreas();
+    
+    // Button event listeners
+    document.getElementById('add-location-btn').addEventListener('click', function() {
+        openLocationModal();
+    });
+    
+    document.getElementById('add-area-btn').addEventListener('click', function() {
+        openAreaModal();
+    });
+    
+    document.getElementById('save-location-btn').addEventListener('click', function() {
+        saveLocation();
+    });
+    
+    document.getElementById('save-area-btn').addEventListener('click', function() {
+        saveArea();
+    });
+    
+    // Close modal buttons
+    document.querySelectorAll('[data-close-modal]').forEach(button => {
+        button.addEventListener('click', function() {
+            const modalId = this.getAttribute('data-close-modal');
+            document.getElementById(modalId).classList.remove('active');
+        });
+    });
+    
+    // Functions
+    
+    // Fetch locations from the server
+    function fetchLocations() {
+        fetch('/api/locations')
+            .then(response => response.json())
+            .then(data => {
+                locations = data;
+                renderLocations();
+            })
+            .catch(error => {
+                console.error('Error fetching locations:', error);
+                alert('Failed to load locations. Please try again.');
+            });
+    }
+    
+    // Fetch areas from the server
+    function fetchAreas() {
+        fetch('/api/areas')
+            .then(response => response.json())
+            .then(data => {
+                areas = data;
+                renderAreas();
+                updateLocationAreaSelect();
+            })
+            .catch(error => {
+                console.error('Error fetching areas:', error);
+                alert('Failed to load location areas. Please try again.');
+            });
+    }
+    
+    // Render locations table
+    function renderLocations() {
+        locationTableBody.innerHTML = '';
+        
+        if (locations.length === 0) {
+            document.getElementById('location-table').style.display = 'none';
+            noLocationsEl.style.display = 'block';
+            return;
+        }
+        
+        document.getElementById('location-table').style.display = 'table';
+        noLocationsEl.style.display = 'none';
+        
+        locations.forEach(location => {
+            // Find associated area
+            const area = areas.find(a => a.id === location.areaId);
+            
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${location.name}</td>
+                <td>${area ? area.name : 'Not assigned'}</td>
+                <td>
+                    ${area ? `<span class="color-preview" style="background-color: ${area.color}"></span>` : ''}
+                    ${area ? area.color : ''}
+                </td>
+                <td>
+                    <button class="button small edit-location" data-id="${location.id}">Edit</button>
+                    <button class="button small danger delete-location" data-id="${location.id}">Delete</button>
+                </td>
+            `;
+            
+            locationTableBody.appendChild(row);
+        });
+        
+        // Add event listeners to edit/delete buttons
+        document.querySelectorAll('.edit-location').forEach(button => {
+            button.addEventListener('click', function() {
+                const locationId = this.getAttribute('data-id');
+                editLocation(locationId);
+            });
+        });
+        
+        document.querySelectorAll('.delete-location').forEach(button => {
+            button.addEventListener('click', function() {
+                const locationId = this.getAttribute('data-id');
+                deleteLocation(locationId);
+            });
+        });
+    }
+    
+    // Render area cards
+    function renderAreas() {
+        areaGridEl.innerHTML = '';
+        
+        if (areas.length === 0) {
+            areaGridEl.style.display = 'none';
+            noAreasEl.style.display = 'block';
+            return;
+        }
+        
+        areaGridEl.style.display = 'grid';
+        noAreasEl.style.display = 'none';
+        
+        areas.forEach(area => {
+            // Count locations in this area
+            const locationCount = locations.filter(loc => loc.areaId === area.id).length;
+            
+            const areaCard = document.createElement('div');
+            areaCard.className = 'area-card';
+            areaCard.innerHTML = `
+                <div class="area-card-header">
+                    <div class="area-name">${area.name}</div>
+                    <div class="area-actions">
+                        <button class="button small edit-area" data-id="${area.id}">Edit</button>
+                        <button class="button small danger delete-area" data-id="${area.id}">Delete</button>
+                    </div>
+                </div>
+                <div class="area-color" style="background-color: ${area.color}"></div>
+                <div class="area-location-count">${locationCount} location${locationCount !== 1 ? 's' : ''}</div>
+            `;
+            
+            areaGridEl.appendChild(areaCard);
+        });
+        
+        // Add event listeners to edit/delete buttons
+        document.querySelectorAll('.edit-area').forEach(button => {
+            button.addEventListener('click', function() {
+                const areaId = this.getAttribute('data-id');
+                editArea(areaId);
+            });
+        });
+        
+        document.querySelectorAll('.delete-area').forEach(button => {
+            button.addEventListener('click', function() {
+                const areaId = this.getAttribute('data-id');
+                deleteArea(areaId);
+            });
+        });
+    }
+    
+    // Update location area select options
+    function updateLocationAreaSelect() {
+        // Clear existing options except the first one
+        const firstOption = locationAreaSelect.options[0];
+        locationAreaSelect.innerHTML = '';
+        locationAreaSelect.appendChild(firstOption);
+        
+        // Add area options
+        areas.forEach(area => {
+            const option = document.createElement('option');
+            option.value = area.id;
+            option.textContent = area.name;
+            locationAreaSelect.appendChild(option);
+        });
+    }
+    
+    // Open location modal for adding a new location
+    function openLocationModal(location = null) {
+        locationModalTitle.textContent = location ? 'Edit Location' : 'Add Location';
+        
+        // Reset form
+        locationForm.reset();
+        
+        if (location) {
+            // Fill form with location data
+            locationIdInput.value = location.id;
+            locationNameInput.value = location.name;
+            locationAreaSelect.value = location.areaId || '';
+            locationAddressInput.value = location.address || '';
+            locationNotesInput.value = location.notes || '';
+        } else {
+            locationIdInput.value = '';
+        }
+        
+        // Show modal
+        locationModal.classList.add('active');
+    }
+    
+    // Open area modal for adding a new area
+    function openAreaModal(area = null) {
+        areaModalTitle.textContent = area ? 'Edit Location Area' : 'Add Location Area';
+        
+        // Reset form
+        areaForm.reset();
+        
+        if (area) {
+            // Fill form with area data
+            areaIdInput.value = area.id;
+            areaNameInput.value = area.name;
+            areaColorInput.value = area.color;
+        } else {
+            areaIdInput.value = '';
+            // Set default color
+            areaColorInput.value = '#d4e9ff';
+        }
+        
+        // Show modal
+        areaModal.classList.add('active');
+    }
+    
+    // Edit location
+    function editLocation(locationId) {
+        const location = locations.find(loc => loc.id === locationId);
+        if (location) {
+            openLocationModal(location);
+        }
+    }
+    
+    // Edit area
+    function editArea(areaId) {
+        const area = areas.find(a => a.id === areaId);
+        if (area) {
+            openAreaModal(area);
+        }
+    }
+    
+    // Save location
+    function saveLocation() {
+        const locationData = {
+            name: locationNameInput.value,
+            areaId: locationAreaSelect.value,
+            address: locationAddressInput.value,
+            notes: locationNotesInput.value
+        };
+        
+        if (locationIdInput.value) {
+            // Update existing location
+            locationData.id = locationIdInput.value;
+            
+            fetch(`/api/locations/${locationData.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(locationData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Update location in array
+                const index = locations.findIndex(loc => loc.id === locationData.id);
+                if (index !== -1) {
+                    locations[index] = data;
+                }
+                
+                renderLocations();
+                locationModal.classList.remove('active');
+            })
+            .catch(error => {
+                console.error('Error updating location:', error);
+                alert('Failed to update location. Please try again.');
+            });
+        } else {
+            // Create new location
+            fetch('/api/locations', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(locationData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Add new location to array
+                locations.push(data);
+                
+                renderLocations();
+                locationModal.classList.remove('active');
+            })
+            .catch(error => {
+                console.error('Error creating location:', error);
+                alert('Failed to create location. Please try again.');
+            });
+        }
+    }
+    
+    // Save area
+    function saveArea() {
+        const areaData = {
+            name: areaNameInput.value,
+            color: areaColorInput.value
+        };
+        
+        if (areaIdInput.value) {
+            // Update existing area
+            areaData.id = areaIdInput.value;
+            
+            fetch(`/api/areas/${areaData.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(areaData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Update area in array
+                const index = areas.findIndex(a => a.id === areaData.id);
+                if (index !== -1) {
+                    areas[index] = data;
+                }
+                
+                renderAreas();
+                updateLocationAreaSelect();
+                areaModal.classList.remove('active');
+            })
+            .catch(error => {
+                console.error('Error updating area:', error);
+                alert('Failed to update location area. Please try again.');
+            });
+        } else {
+            // Create new area
+            fetch('/api/areas', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(areaData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Add new area to array
+                areas.push(data);
+                
+                renderAreas();
+                updateLocationAreaSelect();
+                areaModal.classList.remove('active');
+            })
+            .catch(error => {
+                console.error('Error creating area:', error);
+                alert('Failed to create location area. Please try again.');
+            });
+        }
+    }
+    
+    // Delete location
+    function deleteLocation(locationId) {
+        if (!confirm('Are you sure you want to delete this location?')) {
+            return;
+        }
+        
+        fetch(`/api/locations/${locationId}`, {
+            method: 'DELETE'
+        })
+        .then(response => {
+            if (response.ok) {
+                // Remove location from array
+                locations = locations.filter(loc => loc.id !== locationId);
+                renderLocations();
+            } else {
+                throw new Error('Failed to delete location');
+            }
+        })
+        .catch(error => {
+            console.error('Error deleting location:', error);
+            alert('Failed to delete location. Please try again.');
+        });
+    }
+    
+    // Delete area
+    function deleteArea(areaId) {
+        // Check if area has locations
+        const hasLocations = locations.some(loc => loc.areaId === areaId);
+        
+        if (hasLocations) {
+            alert('This area has locations assigned to it. Please reassign or delete these locations first.');
+            return;
+        }
+        
+        if (!confirm('Are you sure you want to delete this location area?')) {
+            return;
+        }
+        
+        fetch(`/api/areas/${areaId}`, {
+            method: 'DELETE'
+        })
+        .then(response => {
+            if (response.ok) {
+                // Remove area from array
+                areas = areas.filter(a => a.id !== areaId);
+                renderAreas();
+                updateLocationAreaSelect();
+            } else {
+                throw new Error('Failed to delete location area');
+            }
+        })
+        .catch(error => {
+            console.error('Error deleting area:', error);
+            alert('Failed to delete location area. Please try again.');
+        });
+    }
+});
+</script>
+{% endblock %}

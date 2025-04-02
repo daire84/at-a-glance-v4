@@ -1,0 +1,1483 @@
+{% extends "base.html" %}
+
+{% block title %}Special Dates Management - Film Production Scheduler{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="/static/css/forms.css">
+<style>
+  .dates-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+  
+  @media (max-width: 768px) {
+    .dates-container {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  .section-card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    margin-bottom: 2rem;
+  }
+  
+  .section-header {
+    background-color: var(--primary-light);
+    color: white;
+    padding: 1rem 1.5rem;
+  }
+  
+  .section-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+  }
+  
+  .section-content {
+    padding: 1.5rem;
+  }
+  
+  .date-list {
+    margin-top: 1.5rem;
+  }
+  
+  .date-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    border-bottom: 1px solid var(--border-color);
+  }
+  
+  .date-item:last-child {
+    border-bottom: none;
+  }
+  
+  .date-info {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .date-display {
+    font-weight: 500;
+  }
+  
+  .date-description {
+    font-size: 0.9rem;
+    color: var(--text-light);
+  }
+  
+  .date-item .date-action {
+    display: flex;
+    gap: 0.5rem;
+  }
+  
+  .hiatus-period {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    border-bottom: 1px solid var(--border-color);
+  }
+  
+  .hiatus-period:last-child {
+    border-bottom: none;
+  }
+  
+  .hiatus-dates {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .hiatus-label {
+    font-weight: 500;
+  }
+  
+  .hiatus-range {
+    font-size: 0.9rem;
+    color: var(--text-light);
+  }
+  
+  .hiatus-visibility {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.9rem;
+    color: var(--text-light);
+  }
+  
+  .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+  }
+  
+  .modal.active {
+    opacity: 1;
+    visibility: visible;
+  }
+  
+  .modal-content {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    width: 100%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  
+  .modal-header {
+    padding: 1.25rem;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .modal-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+  }
+  
+  .modal-body {
+    padding: 1.25rem;
+  }
+  
+  .modal-footer {
+    padding: 1.25rem;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+  }
+  
+  .form-check {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+  
+  /* Toggle Switch */
+  .switch {
+    position: relative;
+    display: inline-block;
+    width: 48px;
+    height: 24px;
+  }
+  
+  .switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 24px;
+  }
+  
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+  }
+  
+  input:checked + .slider {
+    background-color: var(--accent-color);
+  }
+  
+  input:focus + .slider {
+    box-shadow: 0 0 1px var(--accent-color);
+  }
+  
+  input:checked + .slider:before {
+    transform: translateX(24px);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-header">
+    <h2>Special Dates Management</h2>
+    <div class="admin-actions">
+        <a href="/admin/calendar/{{ project_id }}" class="button secondary">Back to Calendar</a>
+        <a href="/admin" class="button secondary">Back to Dashboard</a>
+    </div>
+</div>
+
+<div class="content-container">
+    <div class="project-selector form-group">
+        <label for="project-select">Select Project</label>
+        <select id="project-select" name="project">
+            <option value="">-- Select Project --</option>
+            {% for project in projects %}
+            <option value="{{ project.id }}" {% if project_id == project.id %}selected{% endif %}>{{ project.title }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    
+    {% if project_id %}
+    <div class="dates-container">
+        <div>
+            <!-- Working Weekends Section -->
+            <div class="section-card">
+                <div class="section-header">
+                    <h3>Working Weekends</h3>
+                </div>
+                <div class="section-content">
+                    <p>Select weekend dates (Saturday/Sunday) that will count as shooting days.</p>
+                    
+                    <button id="add-weekend-btn" class="button">Add Working Weekend</button>
+                    
+                    <div class="date-list" id="weekend-list">
+                        <!-- Weekend dates will be added here dynamically -->
+                    </div>
+                    
+                    <div id="no-weekends" class="empty-state">
+                        <p>No working weekends have been scheduled.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Bank Holidays Section -->
+            <div class="section-card">
+                <div class="section-header">
+                    <h3>Bank Holidays</h3>
+                </div>
+                <div class="section-content">
+                    <p>Add bank holidays and specify whether they will be working days.</p>
+                    
+                    <button id="add-holiday-btn" class="button">Add Bank Holiday</button>
+                    
+                    <div class="date-list" id="holiday-list">
+                        <!-- Bank holiday dates will be added here dynamically -->
+                    </div>
+                    
+                    <div id="no-holidays" class="empty-state">
+                        <p>No bank holidays have been added.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div>
+            <!-- Hiatus Periods Section -->
+            <div class="section-card">
+                <div class="section-header">
+                    <h3>Hiatus Periods</h3>
+                </div>
+                <div class="section-content">
+                    <p>Define hiatus periods when production will be paused. Calendar days will be skipped during these periods.</p>
+                    
+                    <button id="add-hiatus-btn" class="button">Add Hiatus Period</button>
+                    
+                    <div class="date-list" id="hiatus-list">
+                        <!-- Hiatus periods will be added here dynamically -->
+                    </div>
+                    
+                    <div id="no-hiatus" class="empty-state">
+                        <p>No hiatus periods have been scheduled.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Other Special Dates Section -->
+            <div class="section-card">
+                <div class="section-header">
+                    <h3>Other Special Dates</h3>
+                </div>
+                <div class="section-content">
+                    <p>Add travel days, production meetings, or other non-shooting days that should be highlighted.</p>
+                    
+                    <button id="add-special-btn" class="button">Add Special Date</button>
+                    
+                    <div class="date-list" id="special-list">
+                        <!-- Special dates will be added here dynamically -->
+                    </div>
+                    
+                    <div id="no-special" class="empty-state">
+                        <p>No special dates have been added.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="action-row">
+        <button id="regenerate-calendar-btn" class="button">Regenerate Calendar</button>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <p>Please select a project to manage special dates.</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Working Weekend Modal -->
+<div id="weekend-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="weekend-modal-title">Add Working Weekend</h3>
+            <button class="close-button" data-close-modal="weekend-modal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="weekend-form">
+                <input type="hidden" id="weekend-id" name="id" value="">
+                
+                <div class="form-group">
+                    <label for="weekend-date">Date</label>
+                    <input type="date" id="weekend-date" name="date" required>
+                    <div class="field-hint">Select a Saturday or Sunday</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="weekend-description">Description (Optional)</label>
+                    <input type="text" id="weekend-description" name="description" placeholder="e.g., Overtime day">
+                </div>
+                
+                <div class="form-check">
+                    <input type="checkbox" id="weekend-shoot-day" name="isShootDay" checked>
+                    <label for="weekend-shoot-day">Count as shoot day</label>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="button secondary" data-close-modal="weekend-modal">Cancel</button>
+            <button class="button" id="save-weekend-btn">Save</button>
+        </div>
+    </div>
+</div>
+
+<!-- Bank Holiday Modal -->
+<div id="holiday-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="holiday-modal-title">Add Bank Holiday</h3>
+            <button class="close-button" data-close-modal="holiday-modal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="holiday-form">
+                <input type="hidden" id="holiday-id" name="id" value="">
+                
+                <div class="form-group">
+                    <label for="holiday-date">Date</label>
+                    <input type="date" id="holiday-date" name="date" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="holiday-name">Holiday Name</label>
+                    <input type="text" id="holiday-name" name="name" required placeholder="e.g., Christmas Day">
+                </div>
+                
+                <div class="form-check">
+                    <input type="checkbox" id="holiday-working" name="isWorking">
+                    <label for="holiday-working">Working holiday</label>
+                </div>
+                
+                <div class="form-check">
+                    <input type="checkbox" id="holiday-shoot-day" name="isShootDay">
+                    <label for="holiday-shoot-day">Count as shoot day (if working)</label>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="button secondary" data-close-modal="holiday-modal">Cancel</button>
+            <button class="button" id="save-holiday-btn">Save</button>
+        </div>
+    </div>
+</div>
+
+<!-- Hiatus Period Modal -->
+<div id="hiatus-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="hiatus-modal-title">Add Hiatus Period</h3>
+            <button class="close-button" data-close-modal="hiatus-modal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="hiatus-form">
+                <input type="hidden" id="hiatus-id" name="id" value="">
+                
+                <div class="form-group">
+                    <label for="hiatus-name">Hiatus Name</label>
+                    <input type="text" id="hiatus-name" name="name" required placeholder="e.g., Christmas Break, Production Pause">
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="hiatus-start">Start Date</label>
+                        <input type="date" id="hiatus-start" name="startDate" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="hiatus-end">End Date</label>
+                        <input type="date" id="hiatus-end" name="endDate" required>
+                    </div>
+                </div>
+                
+                <div class="form-check">
+                    <input type="checkbox" id="hiatus-visible" name="visible" checked>
+                    <label for="hiatus-visible">Show on calendar</label>
+                    <div class="field-hint">When checked, hiatus days will be displayed on the calendar</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="hiatus-notes">Notes (Optional)</label>
+                    <textarea id="hiatus-notes" name="notes" rows="2"></textarea>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="button secondary" data-close-modal="hiatus-modal">Cancel</button>
+            <button class="button" id="save-hiatus-btn">Save</button>
+        </div>
+    </div>
+</div>
+
+<!-- Special Date Modal -->
+<div id="special-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="special-modal-title">Add Special Date</h3>
+            <button class="close-button" data-close-modal="special-modal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="special-form">
+                <input type="hidden" id="special-id" name="id" value="">
+                
+                <div class="form-group">
+                    <label for="special-date">Date</label>
+                    <input type="date" id="special-date" name="date" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="special-type">Type</label>
+                    <select id="special-type" name="type" required>
+                        <option value="travel">Travel Day</option>
+                        <option value="meeting">Production Meeting</option>
+                        <option value="press">Press Day</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="special-description">Description</label>
+                    <input type="text" id="special-description" name="description" required placeholder="e.g., Tech Scout, Camera Tests">
+                </div>
+                
+                <div class="form-check">
+                    <input type="checkbox" id="special-shoot-day" name="isShootDay">
+                    <label for="special-shoot-day">Count as shoot day</label>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="button secondary" data-close-modal="special-modal">Cancel</button>
+            <button class="button" id="save-special-btn">Save</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // DOM elements for project selection
+    const projectSelect = document.getElementById('project-select');
+    
+    // DOM elements for lists
+    const weekendList = document.getElementById('weekend-list');
+    const noWeekends = document.getElementById('no-weekends');
+    const holidayList = document.getElementById('holiday-list');
+    const noHolidays = document.getElementById('no-holidays');
+    const hiatusList = document.getElementById('hiatus-list');
+    const noHiatus = document.getElementById('no-hiatus');
+    const specialList = document.getElementById('special-list');
+    const noSpecial = document.getElementById('no-special');
+    
+    // Button elements
+    const addWeekendBtn = document.getElementById('add-weekend-btn');
+    const addHolidayBtn = document.getElementById('add-holiday-btn');
+    const addHiatusBtn = document.getElementById('add-hiatus-btn');
+    const addSpecialBtn = document.getElementById('add-special-btn');
+    const regenerateCalendarBtn = document.getElementById('regenerate-calendar-btn');
+    
+    // Modal elements
+    const weekendModal = document.getElementById('weekend-modal');
+    const holidayModal = document.getElementById('holiday-modal');
+    const hiatusModal = document.getElementById('hiatus-modal');
+    const specialModal = document.getElementById('special-modal');
+    
+    // Save button elements
+    const saveWeekendBtn = document.getElementById('save-weekend-btn');
+    const saveHolidayBtn = document.getElementById('save-holiday-btn');
+    const saveHiatusBtn = document.getElementById('save-hiatus-btn');
+    const saveSpecialBtn = document.getElementById('save-special-btn');
+    
+    // Form elements
+    const weekendForm = document.getElementById('weekend-form');
+    const holidayForm = document.getElementById('holiday-form');
+    const hiatusForm = document.getElementById('hiatus-form');
+    const specialForm = document.getElementById('special-form');
+    
+    // Data storage
+    let currentProjectId = projectSelect.value;
+    let workingWeekends = [];
+    let bankHolidays = [];
+    let hiatusPeriods = [];
+    let specialDates = [];
+    
+    // Handle project selection change
+    projectSelect.addEventListener('change', function() {
+        if (this.value) {
+            window.location.href = `/admin/dates/${this.value}`;
+        } else {
+            window.location.href = '/admin/dates';
+        }
+    });
+    
+    // Load data if project is selected
+    if (currentProjectId) {
+        loadWorkingWeekends();
+        loadBankHolidays();
+        loadHiatusPeriods();
+        loadSpecialDates();
+    }
+    
+    // Button event listeners
+    if (addWeekendBtn) {
+        addWeekendBtn.addEventListener('click', function() {
+            openWeekendModal();
+        });
+    }
+    
+    if (addHolidayBtn) {
+        addHolidayBtn.addEventListener('click', function() {
+            openHolidayModal();
+        });
+    }
+    
+    if (addHiatusBtn) {
+        addHiatusBtn.addEventListener('click', function() {
+            openHiatusModal();
+        });
+    }
+    
+    if (addSpecialBtn) {
+        addSpecialBtn.addEventListener('click', function() {
+            openSpecialModal();
+        });
+    }
+    
+    if (regenerateCalendarBtn) {
+        regenerateCalendarBtn.addEventListener('click', function() {
+            regenerateCalendar();
+        });
+    }
+    
+    // Save button event listeners
+    if (saveWeekendBtn) {
+        saveWeekendBtn.addEventListener('click', function() {
+            saveWorkingWeekend();
+        });
+    }
+    
+    if (saveHolidayBtn) {
+        saveHolidayBtn.addEventListener('click', function() {
+            saveBankHoliday();
+        });
+    }
+    
+    if (saveHiatusBtn) {
+        saveHiatusBtn.addEventListener('click', function() {
+            saveHiatusPeriod();
+        });
+    }
+    
+    if (saveSpecialBtn) {
+        saveSpecialBtn.addEventListener('click', function() {
+            saveSpecialDate();
+        });
+    }
+    
+    // Close modal buttons
+    document.querySelectorAll('[data-close-modal]').forEach(button => {
+        button.addEventListener('click', function() {
+            const modalId = this.getAttribute('data-close-modal');
+            document.getElementById(modalId).classList.remove('active');
+        });
+    });
+    
+    // Functions
+    
+    // Load working weekends
+    function loadWorkingWeekends() {
+        fetch(`/api/projects/${currentProjectId}/weekends`)
+            .then(response => response.json())
+            .then(data => {
+                workingWeekends = data;
+                renderWorkingWeekends();
+            })
+            .catch(error => {
+                console.error('Error loading working weekends:', error);
+            });
+    }
+    
+    // Load bank holidays
+    function loadBankHolidays() {
+        fetch(`/api/projects/${currentProjectId}/holidays`)
+            .then(response => response.json())
+            .then(data => {
+                bankHolidays = data;
+                renderBankHolidays();
+            })
+            .catch(error => {
+                console.error('Error loading bank holidays:', error);
+            });
+    }
+    
+    // Load hiatus periods
+    function loadHiatusPeriods() {
+        fetch(`/api/projects/${currentProjectId}/hiatus`)
+            .then(response => response.json())
+            .then(data => {
+                hiatusPeriods = data;
+                renderHiatusPeriods();
+            })
+            .catch(error => {
+                console.error('Error loading hiatus periods:', error);
+            });
+    }
+    
+    // Load special dates
+    function loadSpecialDates() {
+        fetch(`/api/projects/${currentProjectId}/special-dates`)
+            .then(response => response.json())
+            .then(data => {
+                specialDates = data;
+                renderSpecialDates();
+            })
+            .catch(error => {
+                console.error('Error loading special dates:', error);
+            });
+    }
+    
+    // Render working weekends
+    function renderWorkingWeekends() {
+        weekendList.innerHTML = '';
+        
+        if (workingWeekends.length === 0) {
+            weekendList.style.display = 'none';
+            noWeekends.style.display = 'block';
+            return;
+        }
+        
+        weekendList.style.display = 'block';
+        noWeekends.style.display = 'none';
+        
+        workingWeekends.forEach(weekend => {
+            const item = document.createElement('div');
+            item.className = 'date-item';
+            
+            const dateObj = new Date(weekend.date);
+            const formattedDate = dateObj.toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            
+            item.innerHTML = `
+                <div class="date-info">
+                    <span class="date-display">${formattedDate}</span>
+                    <span class="date-description">
+                        ${weekend.description || 'Working Weekend'}
+                        ${weekend.isShootDay ? ' (Counts as shoot day)' : ''}
+                    </span>
+                </div>
+                <div class="date-action">
+                    <button class="button small edit-weekend" data-id="${weekend.id}">Edit</button>
+                    <button class="button small danger delete-weekend" data-id="${weekend.id}">Delete</button>
+                </div>
+            `;
+            
+            weekendList.appendChild(item);
+        });
+        
+        // Add event listeners to edit/delete buttons
+        document.querySelectorAll('.edit-weekend').forEach(button => {
+            button.addEventListener('click', function() {
+                const id = this.getAttribute('data-id');
+                editWorkingWeekend(id);
+            });
+        });
+        
+        document.querySelectorAll('.delete-weekend').forEach(button => {
+            button.addEventListener('click', function() {
+                const id = this.getAttribute('data-id');
+                deleteWorkingWeekend(id);
+            });
+        });
+    }
+    
+    // Render bank holidays
+    function renderBankHolidays() {
+        holidayList.innerHTML = '';
+        
+        if (bankHolidays.length === 0) {
+            holidayList.style.display = 'none';
+            noHolidays.style.display = 'block';
+            return;
+        }
+        
+        holidayList.style.display = 'block';
+        noHolidays.style.display = 'none';
+        
+        bankHolidays.forEach(holiday => {
+            const item = document.createElement('div');
+            item.className = 'date-item';
+            
+            const dateObj = new Date(holiday.date);
+            const formattedDate = dateObj.toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            
+            item.innerHTML = `
+                <div class="date-info">
+                    <span class="date-display">${formattedDate}</span>
+                    <span class="date-description">
+                        ${holiday.name}
+                        ${holiday.isWorking ? ' (Working)' : ' (Non-working)'}
+                        ${holiday.isWorking && holiday.isShootDay ? ' (Counts as shoot day)' : ''}
+                    </span>
+                </div>
+                <div class="date-action">
+                    <button class="button small edit-holiday" data-id="${holiday.id}">Edit</button>
+                    <button class="button small danger delete-holiday" data-id="${holiday.id}">Delete</button>
+                </div>
+            `;
+            
+            holidayList.appendChild(item);
+        });
+        
+        // Add event listeners to edit/delete buttons
+        document.querySelectorAll('.edit-holiday').forEach(button => {
+            button.addEventListener('click', function() {
+                const id = this.getAttribute('data-id');
+                editBankHoliday(id);
+            });
+        });
+        
+        document.querySelectorAll('.delete-holiday').forEach(button => {
+            button.addEventListener('click', function() {
+                const id = this.getAttribute('data-id');
+                deleteBankHoliday(id);
+            });
+        });
+    }
+    
+    // Render hiatus periods
+    function renderHiatusPeriods() {
+        hiatusList.innerHTML = '';
+        
+        if (hiatusPeriods.length === 0) {
+            hiatusList.style.display = 'none';
+            noHiatus.style.display = 'block';
+            return;
+        }
+        
+        hiatusList.style.display = 'block';
+        noHiatus.style.display = 'none';
+        
+        hiatusPeriods.forEach(hiatus => {
+            const item = document.createElement('div');
+            item.className = 'hiatus-period';
+            
+            const startDate = new Date(hiatus.startDate);
+            const endDate = new Date(hiatus.endDate);
+            
+            const formattedStartDate = startDate.toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric'
+            });
+            
+            const formattedEndDate = endDate.toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric'
+            });
+            
+            item.innerHTML = `
+                <div class="hiatus-dates">
+                    <span class="hiatus-label">${hiatus.name}</span>
+                    <span class="hiatus-range">${formattedStartDate} - ${formattedEndDate}</span>
+                </div>
+                <div class="hiatus-info">
+                    <div class="hiatus-visibility">
+                        ${hiatus.visible ? 'Visible on calendar' : 'Hidden on calendar'}
+                    </div>
+                    <div class="date-action">
+                        <button class="button small edit-hiatus" data-id="${hiatus.id}">Edit</button>
+                        <button class="button small danger delete-hiatus" data-id="${hiatus.id}">Delete</button>
+                    </div>
+                </div>
+            `;
+            
+            hiatusList.appendChild(item);
+        });
+        
+        // Add event listeners to edit/delete buttons
+        document.querySelectorAll('.edit-hiatus').forEach(button => {
+            button.addEventListener('click', function() {
+                const id = this.getAttribute('data-id');
+                editHiatusPeriod(id);
+            });
+        });
+        
+        document.querySelectorAll('.delete-hiatus').forEach(button => {
+            button.addEventListener('click', function() {
+                const id = this.getAttribute('data-id');
+                deleteHiatusPeriod(id);
+            });
+        });
+    }
+    
+    // Render special dates
+    function renderSpecialDates() {
+        specialList.innerHTML = '';
+        
+        if (specialDates.length === 0) {
+            specialList.style.display = 'none';
+            noSpecial.style.display = 'block';
+            return;
+        }
+        
+        specialList.style.display = 'block';
+        noSpecial.style.display = 'none';
+        
+        specialDates.forEach(special => {
+            const item = document.createElement('div');
+            item.className = 'date-item';
+            
+            const dateObj = new Date(special.date);
+            const formattedDate = dateObj.toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            
+            const typeLabels = {
+                travel: 'Travel',
+                meeting: 'Meeting',
+                press: 'Press',
+                other: 'Other'
+            };
+            
+            item.innerHTML = `
+                <div class="date-info">
+                    <span class="date-display">${formattedDate}</span>
+                    <span class="date-description">
+                        ${typeLabels[special.type] || special.type}: ${special.description}
+                        ${special.isShootDay ? ' (Counts as shoot day)' : ''}
+                    </span>
+                </div>
+                <div class="date-action">
+                    <button class="button small edit-special" data-id="${special.id}">Edit</button>
+                    <button class="button small danger delete-special" data-id="${special.id}">Delete</button>
+                </div>
+            `;
+            
+            specialList.appendChild(item);
+        });
+        
+        // Add event listeners to edit/delete buttons
+        document.querySelectorAll('.edit-special').forEach(button => {
+            button.addEventListener('click', function() {
+                const id = this.getAttribute('data-id');
+                editSpecialDate(id);
+            });
+        });
+        
+        document.querySelectorAll('.delete-special').forEach(button => {
+            button.addEventListener('click', function() {
+                const id = this.getAttribute('data-id');
+                deleteSpecialDate(id);
+            });
+        });
+    }
+    
+    // Open working weekend modal
+    function openWeekendModal(weekend = null) {
+        const weekendIdInput = document.getElementById('weekend-id');
+        const weekendDateInput = document.getElementById('weekend-date');
+        const weekendDescriptionInput = document.getElementById('weekend-description');
+        const weekendShootDayInput = document.getElementById('weekend-shoot-day');
+        
+        document.getElementById('weekend-modal-title').textContent = weekend ? 'Edit Working Weekend' : 'Add Working Weekend';
+        weekendForm.reset();
+        
+        if (weekend) {
+            weekendIdInput.value = weekend.id;
+            weekendDateInput.value = weekend.date;
+            weekendDescriptionInput.value = weekend.description || '';
+            weekendShootDayInput.checked = weekend.isShootDay;
+        } else {
+            weekendIdInput.value = '';
+            // Set default to next Saturday
+            const today = new Date();
+            const nextSaturday = new Date(today);
+            nextSaturday.setDate(today.getDate() + (6 - today.getDay() + 7) % 7);
+            weekendDateInput.value = nextSaturday.toISOString().split('T')[0];
+            weekendShootDayInput.checked = true;
+        }
+        
+        weekendModal.classList.add('active');
+    }
+    
+    // Open bank holiday modal
+    function openHolidayModal(holiday = null) {
+        const holidayIdInput = document.getElementById('holiday-id');
+        const holidayDateInput = document.getElementById('holiday-date');
+        const holidayNameInput = document.getElementById('holiday-name');
+        const holidayWorkingInput = document.getElementById('holiday-working');
+        const holidayShootDayInput = document.getElementById('holiday-shoot-day');
+        
+        document.getElementById('holiday-modal-title').textContent = holiday ? 'Edit Bank Holiday' : 'Add Bank Holiday';
+        holidayForm.reset();
+        
+        if (holiday) {
+            holidayIdInput.value = holiday.id;
+            holidayDateInput.value = holiday.date;
+            holidayNameInput.value = holiday.name;
+            holidayWorkingInput.checked = holiday.isWorking;
+            holidayShootDayInput.checked = holiday.isShootDay;
+        } else {
+            holidayIdInput.value = '';
+        }
+        
+        holidayModal.classList.add('active');
+    }
+    
+    // Open hiatus period modal
+    function openHiatusModal(hiatus = null) {
+        const hiatusIdInput = document.getElementById('hiatus-id');
+        const hiatusNameInput = document.getElementById('hiatus-name');
+        const hiatusStartInput = document.getElementById('hiatus-start');
+        const hiatusEndInput = document.getElementById('hiatus-end');
+        const hiatusVisibleInput = document.getElementById('hiatus-visible');
+        const hiatusNotesInput = document.getElementById('hiatus-notes');
+        
+        document.getElementById('hiatus-modal-title').textContent = hiatus ? 'Edit Hiatus Period' : 'Add Hiatus Period';
+        hiatusForm.reset();
+        
+        if (hiatus) {
+            hiatusIdInput.value = hiatus.id;
+            hiatusNameInput.value = hiatus.name;
+            hiatusStartInput.value = hiatus.startDate;
+            hiatusEndInput.value = hiatus.endDate;
+            hiatusVisibleInput.checked = hiatus.visible;
+            hiatusNotesInput.value = hiatus.notes || '';
+        } else {
+            hiatusIdInput.value = '';
+            hiatusVisibleInput.checked = true;
+        }
+        
+        hiatusModal.classList.add('active');
+    }
+    
+    // Open special date modal
+    function openSpecialModal(special = null) {
+        const specialIdInput = document.getElementById('special-id');
+        const specialDateInput = document.getElementById('special-date');
+        const specialTypeInput = document.getElementById('special-type');
+        const specialDescriptionInput = document.getElementById('special-description');
+        const specialShootDayInput = document.getElementById('special-shoot-day');
+        
+        document.getElementById('special-modal-title').textContent = special ? 'Edit Special Date' : 'Add Special Date';
+        specialForm.reset();
+        
+        if (special) {
+            specialIdInput.value = special.id;
+            specialDateInput.value = special.date;
+            specialTypeInput.value = special.type;
+            specialDescriptionInput.value = special.description;
+            specialShootDayInput.checked = special.isShootDay;
+        } else {
+            specialIdInput.value = '';
+        }
+        
+        specialModal.classList.add('active');
+    }
+    
+    // Edit working weekend
+    function editWorkingWeekend(id) {
+        const weekend = workingWeekends.find(w => w.id === id);
+        if (weekend) {
+            openWeekendModal(weekend);
+        }
+    }
+    
+    // Edit bank holiday
+    function editBankHoliday(id) {
+        const holiday = bankHolidays.find(h => h.id === id);
+        if (holiday) {
+            openHolidayModal(holiday);
+        }
+    }
+    
+    // Edit hiatus period
+    function editHiatusPeriod(id) {
+        const hiatus = hiatusPeriods.find(h => h.id === id);
+        if (hiatus) {
+            openHiatusModal(hiatus);
+        }
+    }
+    
+    // Edit special date
+    function editSpecialDate(id) {
+        const special = specialDates.find(s => s.id === id);
+        if (special) {
+            openSpecialModal(special);
+        }
+    }
+    
+    // Save working weekend
+    function saveWorkingWeekend() {
+        if (!weekendForm.checkValidity()) {
+            weekendForm.reportValidity();
+            return;
+        }
+        
+        const weekendIdInput = document.getElementById('weekend-id');
+        const weekendDateInput = document.getElementById('weekend-date');
+        const weekendDescriptionInput = document.getElementById('weekend-description');
+        const weekendShootDayInput = document.getElementById('weekend-shoot-day');
+        
+        const weekendData = {
+            date: weekendDateInput.value,
+            description: weekendDescriptionInput.value,
+            isShootDay: weekendShootDayInput.checked
+        };
+        
+        // Ensure the date is a weekend
+        const date = new Date(weekendData.date);
+        const dayOfWeek = date.getDay();
+        
+        if (dayOfWeek !== 0 && dayOfWeek !== 6) { // 0 = Sunday, 6 = Saturday
+            alert('Please select a Saturday or Sunday for working weekends.');
+            return;
+        }
+        
+        if (weekendIdInput.value) {
+            // Edit existing
+            weekendData.id = weekendIdInput.value;
+            
+            fetch(`/api/projects/${currentProjectId}/weekends/${weekendData.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(weekendData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Update in array
+                const index = workingWeekends.findIndex(w => w.id === weekendData.id);
+                if (index !== -1) {
+                    workingWeekends[index] = data;
+                }
+                
+                renderWorkingWeekends();
+                weekendModal.classList.remove('active');
+            })
+            .catch(error => {
+                console.error('Error updating working weekend:', error);
+                alert('Failed to update working weekend.');
+            });
+        } else {
+            // Create new
+            fetch(`/api/projects/${currentProjectId}/weekends`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(weekendData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                workingWeekends.push(data);
+                renderWorkingWeekends();
+                weekendModal.classList.remove('active');
+            })
+            .catch(error => {
+                console.error('Error creating working weekend:', error);
+                alert('Failed to create working weekend.');
+            });
+        }
+    }
+    
+    // Save bank holiday
+    function saveBankHoliday() {
+        if (!holidayForm.checkValidity()) {
+            holidayForm.reportValidity();
+            return;
+        }
+        
+        const holidayIdInput = document.getElementById('holiday-id');
+        const holidayDateInput = document.getElementById('holiday-date');
+        const holidayNameInput = document.getElementById('holiday-name');
+        const holidayWorkingInput = document.getElementById('holiday-working');
+        const holidayShootDayInput = document.getElementById('holiday-shoot-day');
+        
+        const holidayData = {
+            date: holidayDateInput.value,
+            name: holidayNameInput.value,
+            isWorking: holidayWorkingInput.checked,
+            isShootDay: holidayWorkingInput.checked && holidayShootDayInput.checked
+        };
+        
+        if (holidayIdInput.value) {
+            // Edit existing
+            holidayData.id = holidayIdInput.value;
+            
+            fetch(`/api/projects/${currentProjectId}/holidays/${holidayData.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(holidayData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Update in array
+                const index = bankHolidays.findIndex(h => h.id === holidayData.id);
+                if (index !== -1) {
+                    bankHolidays[index] = data;
+                }
+                
+                renderBankHolidays();
+                holidayModal.classList.remove('active');
+            })
+            .catch(error => {
+                console.error('Error updating bank holiday:', error);
+                alert('Failed to update bank holiday.');
+            });
+        } else {
+            // Create new
+            fetch(`/api/projects/${currentProjectId}/holidays`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(holidayData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                bankHolidays.push(data);
+                renderBankHolidays();
+                holidayModal.classList.remove('active');
+            })
+            .catch(error => {
+                console.error('Error creating bank holiday:', error);
+                alert('Failed to create bank holiday.');
+            });
+        }
+    }
+    
+    // Save hiatus period
+    function saveHiatusPeriod() {
+        if (!hiatusForm.checkValidity()) {
+            hiatusForm.reportValidity();
+            return;
+        }
+        
+        const hiatusIdInput = document.getElementById('hiatus-id');
+        const hiatusNameInput = document.getElementById('hiatus-name');
+        const hiatusStartInput = document.getElementById('hiatus-start');
+        const hiatusEndInput = document.getElementById('hiatus-end');
+        const hiatusVisibleInput = document.getElementById('hiatus-visible');
+        const hiatusNotesInput = document.getElementById('hiatus-notes');
+        
+        // Validate dates
+        const startDate = new Date(hiatusStartInput.value);
+        const endDate = new Date(hiatusEndInput.value);
+        
+        if (startDate > endDate) {
+            alert('End date must be after start date.');
+            return;
+        }
+        
+        const hiatusData = {
+            name: hiatusNameInput.value,
+            startDate: hiatusStartInput.value,
+            endDate: hiatusEndInput.value,
+            visible: hiatusVisibleInput.checked,
+            notes: hiatusNotesInput.value
+        };
+        
+        if (hiatusIdInput.value) {
+            // Edit existing
+            hiatusData.id = hiatusIdInput.value;
+            
+            fetch(`/api/projects/${currentProjectId}/hiatus/${hiatusData.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(hiatusData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Update in array
+                const index = hiatusPeriods.findIndex(h => h.id === hiatusData.id);
+                if (index !== -1) {
+                    hiatusPeriods[index] = data;
+                }
+                
+                renderHiatusPeriods();
+                hiatusModal.classList.remove('active');
+            })
+            .catch(error => {
+                console.error('Error updating hiatus period:', error);
+                alert('Failed to update hiatus period.');
+            });
+        } else {
+            // Create new
+            fetch(`/api/projects/${currentProjectId}/hiatus`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(hiatusData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                hiatusPeriods.push(data);
+                renderHiatusPeriods();
+                hiatusModal.classList.remove('active');
+            })
+            .catch(error => {
+                console.error('Error creating hiatus period:', error);
+                alert('Failed to create hiatus period.');
+            });
+        }
+    }
+    
+    // Save special date
+    function saveSpecialDate() {
+        if (!specialForm.checkValidity()) {
+            specialForm.reportValidity();
+            return;
+        }
+        
+        const specialIdInput = document.getElementById('special-id');
+        const specialDateInput = document.getElementById('special-date');
+        const specialTypeInput = document.getElementById('special-type');
+        const specialDescriptionInput = document.getElementById('special-description');
+        const specialShootDayInput = document.getElementById('special-shoot-day');
+        
+        const specialData = {
+            date: specialDateInput.value,
+            type: specialTypeInput.value,
+            description: specialDescriptionInput.value,
+            isShootDay: specialShootDayInput.checked
+        };
+        
+        if (specialIdInput.value) {
+            // Edit existing
+            specialData.id = specialIdInput.value;
+            
+            fetch(`/api/projects/${currentProjectId}/special-dates/${specialData.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(specialData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Update in array
+                const index = specialDates.findIndex(s => s.id === specialData.id);
+                if (index !== -1) {
+                    specialDates[index] = data;
+                }
+                
+                renderSpecialDates();
+                specialModal.classList.remove('active');
+            })
+            .catch(error => {
+                console.error('Error updating special date:', error);
+                alert('Failed to update special date.');
+            });
+        } else {
+            // Create new
+            fetch(`/api/projects/${currentProjectId}/special-dates`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(specialData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                specialDates.push(data);
+                renderSpecialDates();
+                specialModal.classList.remove('active');
+            })
+            .catch(error => {
+                console.error('Error creating special date:', error);
+                alert('Failed to create special date.');
+            });
+        }
+    }
+    
+    // Delete working weekend
+    function deleteWorkingWeekend(id) {
+        if (!confirm('Are you sure you want to delete this working weekend?')) {
+            return;
+        }
+        
+        fetch(`/api/projects/${currentProjectId}/weekends/${id}`, {
+            method: 'DELETE'
+        })
+        .then(response => {
+            if (response.ok) {
+                // Remove from array
+                workingWeekends = workingWeekends.filter(w => w.id !== id);
+                renderWorkingWeekends();
+            } else {
+                throw new Error('Failed to delete working weekend');
+            }
+        })
+        .catch(error => {
+            console.error('Error deleting working weekend:', error);
+            alert('Failed to delete working weekend.');
+        });
+    }
+    
+    // Delete bank holiday
+    function deleteBankHoliday(id) {
+        if (!confirm('Are you sure you want to delete this bank holiday?')) {
+            return;
+        }
+        
+        fetch(`/api/projects/${currentProjectId}/holidays/${id}`, {
+            method: 'DELETE'
+        })
+        .then(response => {
+            if (response.ok) {
+                // Remove from array
+                bankHolidays = bankHolidays.filter(h => h.id !== id);
+                renderBankHolidays();
+            } else {
+                throw new Error('Failed to delete bank holiday');
+            }
+        })
+        .catch(error => {
+            console.error('Error deleting bank holiday:', error);
+            alert('Failed to delete bank holiday.');
+        });
+    }
+    
+    // Delete hiatus period
+    function deleteHiatusPeriod(id) {
+        if (!confirm('Are you sure you want to delete this hiatus period?')) {
+            return;
+        }
+        
+        fetch(`/api/projects/${currentProjectId}/hiatus/${id}`, {
+            method: 'DELETE'
+        })
+        .then(response => {
+            if (response.ok) {
+                // Remove from array
+                hiatusPeriods = hiatusPeriods.filter(h => h.id !== id);
+                renderHiatusPeriods();
+            } else {
+                throw new Error('Failed to delete hiatus period');
+            }
+        })
+        .catch(error => {
+            console.error('Error deleting hiatus period:', error);
+            alert('Failed to delete hiatus period.');
+        });
+    }
+    
+    // Delete special date
+    function deleteSpecialDate(id) {
+        if (!confirm('Are you sure you want to delete this special date?')) {
+            return;
+        }
+        
+        fetch(`/api/projects/${currentProjectId}/special-dates/${id}`, {
+            method: 'DELETE'
+        })
+        .then(response => {
+            if (response.ok) {
+                // Remove from array
+                specialDates = specialDates.filter(s => s.id !== id);
+                renderSpecialDates();
+            } else {
+                throw new Error('Failed to delete special date');
+            }
+        })
+        .catch(error => {
+            console.error('Error deleting special date:', error);
+            alert('Failed to delete special date.');
+        });
+    }
+    
+    // Regenerate calendar
+    function regenerateCalendar() {
+        if (!confirm('Are you sure you want to regenerate the calendar? This will update all shoot days based on your special dates settings.')) {
+            return;
+        }
+        
+        fetch(`/api/projects/${currentProjectId}/calendar/generate`, {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert('Calendar has been regenerated successfully.');
+            window.location.href = `/admin/calendar/${currentProjectId}`;
+        })
+        .catch(error => {
+            console.error('Error regenerating calendar:', error);
+            alert('Failed to regenerate calendar.');
+        });
+    }
+});
+</script>
+{% endblock %}
