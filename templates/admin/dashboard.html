@@ -1,6 +1,49 @@
 {% extends "base.html" %}
 
-{% block title %}Admin Dashboard - Film Production Scheduler{% endblock %}
+{% block title %}Admin - Schedule, At a Glance!{% endblock %}
+
+{% block styles %}
+<style>
+  /* Admin navigation tabs */
+  .admin-tabs {
+    display: flex;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    overflow-x: auto;
+  }
+  
+  .admin-tabs a {
+    padding: 0.6rem 1rem;
+    color: var(--text-color);
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+    font-weight: 500;
+    font-size: 0.9rem;
+    white-space: nowrap;
+  }
+  
+  .admin-tabs a.active,
+  .admin-tabs a:hover {
+    color: var(--accent-color);
+    border-bottom-color: var(--accent-color);
+  }
+  
+  /* Improved project cards for admin */
+  .admin-projects .project-card {
+    transition: all 0.2s ease;
+  }
+  
+  .admin-projects .project-card:hover {
+    border-left: 3px solid var(--accent-color);
+  }
+  
+  .admin-projects .project-card-footer .button-group {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+  }
+</style>
+{% endblock %}
 
 {% block content %}
 <div class="admin-header">
@@ -8,6 +51,14 @@
     <div class="admin-actions">
         <a href="/admin/project/new" class="button">Create New Project</a>
     </div>
+</div>
+
+<!-- Admin Navigation Tabs -->
+<div class="admin-tabs">
+    <a href="/admin" class="active">Projects</a>
+    <a href="/admin/locations">Locations</a>
+    <a href="/admin/departments">Departments</a>
+    <a href="/admin/dates">Special Dates</a>
 </div>
 
 <div class="project-list admin-projects">
@@ -30,9 +81,9 @@
                     </div>
                     <div class="project-card-footer">
                         <div class="button-group">
-                            <a href="/admin/project/{{ project.id }}" class="button">Edit Details</a>
-                            <a href="/admin/calendar/{{ project.id }}" class="button">Edit Calendar</a>
-                            <a href="/viewer/{{ project.id }}" class="button secondary">View</a>
+                            <a href="/admin/project/{{ project.id }}" class="button small">Edit Details</a>
+                            <a href="/admin/calendar/{{ project.id }}" class="button small">Edit Calendar</a>
+                            <a href="/viewer/{{ project.id }}" class="button small secondary">View</a>
                         </div>
                     </div>
                 </div>
