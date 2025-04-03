@@ -47,5 +47,12 @@
     "areaId": "north",
     "address": "Phoenix Park, Dublin 8",
     "notes": "Large urban park with various locations"
+  },
+  {
+    "name": "Mexico",
+    "areaId": "4459abff-cd87-4fdc-a238-1ff355b2e970",
+    "address": "",
+    "notes": "",
+    "id": "93c2d018-4023-40e7-a2fd-0096848186b5"
   }
 ]

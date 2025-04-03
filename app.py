@@ -276,6 +276,43 @@ def admin_day(project_id, date):
     
     return render_template('admin/day.html', project=project, day=day)
 
+def update_day_from_form(day, form_data):
+    """
+    Update a day object with data from the submitted form
+    
+    Args:
+        day (dict): The day object to update
+        form_data (dict): Form data from request
+        
+    Returns:
+        dict: The updated day object
+    """
+    try:
+        # Update basic fields
+        for field in ['mainUnit', 'sequence', 'location', 'locationArea', 'notes', 'secondUnit', 'secondUnitLocation']:
+            if field in form_data:
+                day[field] = form_data[field]
+        
+        # Handle numeric fields
+        for field in ['extras', 'featuredExtras']:
+            if field in form_data:
+                day[field] = int(form_data[field]) if form_data[field] else 0
+        
+        # Handle departments (now comes as comma-separated string)
+        if 'departments' in form_data:
+            if form_data['departments']:
+                # Split by comma and remove any empty entries
+                departments = [d.strip() for d in form_data['departments'].split(',') if d.strip()]
+                day['departments'] = departments
+            else:
+                day['departments'] = []
+        
+        return day
+    
+    except Exception as e:
+        logger.error(f"Error updating day from form: {str(e)}")
+        return day
+
 @app.route('/viewer/<project_id>')
 def viewer(project_id):
     """Calendar viewer"""
@@ -522,6 +559,51 @@ def server_error(e):
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
+
+def save_day_changes(project_id, date, form_data):
+    """
+    Save changes to a calendar day
+    
+    Args:
+        project_id (str): Project ID
+        date (str): Date in YYYY-MM-DD format
+        form_data (dict): Form data from request
+        
+    Returns:
+        bool: True if successful, False otherwise
+    """
+    try:
+        data_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        project_dir = os.path.join(data_dir, 'data', 'projects', project_id)
+        calendar_file = os.path.join(project_dir, 'calendar.json')
+        
+        # Load calendar data
+        if os.path.exists(calendar_file):
+            with open(calendar_file, 'r') as f:
+                calendar_data = json.load(f)
+        else:
+            logger.error(f"Calendar file not found for project {project_id}")
+            return False
+        
+        # Find the day
+        day_index = next((i for i, d in enumerate(calendar_data.get('days', [])) if d.get('date') == date), None)
+        
+        if day_index is None:
+            logger.error(f"Day not found: {date}")
+            return False
+        
+        # Update day with form data
+        calendar_data['days'][day_index] = update_day_from_form(calendar_data['days'][day_index], form_data)
+        
+        # Save calendar data
+        with open(calendar_file, 'w') as f:
+            json.dump(calendar_data, f, indent=2)
+        
+        return True
+    
+    except Exception as e:
+        logger.error(f"Error saving day changes: {str(e)}")
+        return False
 
 # Add these routes to app.py after the existing routes
 

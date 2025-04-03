@@ -1,36 +1,84 @@
 {% extends "base.html" %}
 
-{% block title %}Edit Day - {{ day.date }} - Schedule, At a Glance!{% endblock %}
+{% block title %}Edit Day - {{ day.date }} - Film Production Scheduler{% endblock %}
 
 {% block styles %}
 <link rel="stylesheet" href="/static/css/forms.css">
 <link rel="stylesheet" href="/static/css/calendar.css">
 <style>
-  /* Additional styles for the department tag selection */
-  .department-tag-selector {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-top: 0.5rem;
-  }
-  
-  .department-tag-option {
-    display: inline-block;
-    padding: 0.4rem 0.7rem;
-    border-radius: 3px;
-    font-size: 0.8rem;
-    cursor: pointer;
-    user-select: none;
-    border: 1px solid rgba(0, 0, 0, 0.1);
-  }
-  
-  .department-tag-option.selected {
-    outline: 2px solid var(--accent-color);
-  }
-  
-  .selected-departments {
-    margin-top: 0.5rem;
-  }
+    .location-area-display {
+        font-size: 0.85rem;
+        color: var(--text-light);
+        margin-top: 0.25rem;
+        padding: 0.3rem 0.5rem;
+        background-color: var(--background-color);
+        border-radius: 3px;
+        display: inline-block;
+    }
+    
+    .department-tags-container {
+        margin-top: 0.5rem;
+    }
+    
+    .department-tag-selector {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+        max-height: 150px;
+        overflow-y: auto;
+        padding: 0.5rem;
+        background-color: var(--background-color);
+        border-radius: 3px;
+        border: 1px solid var(--border-color);
+    }
+    
+    .department-tag-option {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 0.3rem 0.5rem;
+        border-radius: 3px;
+        cursor: pointer;
+        transition: transform 0.1s;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+    
+    .department-tag-option:hover {
+        transform: scale(1.05);
+    }
+    
+    .department-tag-option.selected {
+        box-shadow: 0 0 0 1px var(--text-color);
+    }
+    
+    .selected-departments {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+    }
+    
+    .selected-department {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 0.3rem 0.5rem;
+        border-radius: 3px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+    
+    .remove-tag {
+        cursor: pointer;
+        opacity: 0.7;
+        transition: opacity 0.2s;
+    }
+    
+    .remove-tag:hover {
+        opacity: 1;
+    }
 </style>
 {% endblock %}
 
@@ -53,10 +101,7 @@
         <h3>{{ day.dayOfWeek }}, {{ day.date }}</h3>
     </div>
     
-    <form method="POST" class="day-form" id="day-form">
-        <!-- Hidden field to store department tags -->
-        <input type="hidden" id="departments-input" name="departments" value="{{ day.departments|join(',') if day.departments else '' }}">
-        
+    <form method="POST" class="day-form">
         <div class="form-section">
             <h3>Main Unit Details</h3>
             
@@ -72,16 +117,12 @@
                     <label for="location">Location</label>
                     <select id="location" name="location" class="location-select">
                         <option value="">-- Select Location --</option>
-                        <!-- Locations will be populated via AJAX -->
+                        <!-- Options will be populated by JavaScript -->
                     </select>
-                </div>
-                
-                <div class="form-group">
-                    <label for="locationArea">Location Area</label>
-                    <select id="locationArea" name="locationArea">
-                        <option value="">-- Select Area --</option>
-                        <!-- Areas will be populated via AJAX -->
-                    </select>
+                    <div class="location-area-display" id="location-area-display">
+                        {% if day.locationArea %}{{ day.locationArea }}{% endif %}
+                    </div>
+                    <input type="hidden" id="locationArea" name="locationArea" value="{{ day.locationArea or '' }}">
                 </div>
             </div>
         </div>
@@ -118,17 +159,16 @@
             
             <div class="form-row">
                 <div class="form-group full-width">
-                    <label>Select Department Tags</label>
-                    <div class="department-tag-selector" id="department-selector">
-                        <!-- Department tags will be populated via AJAX -->
-                    </div>
+                    <label for="departments">Departments</label>
+                    <input type="hidden" id="departments" name="departments" value="{{ day.departments|join(',') if day.departments else '' }}">
                     
-                    <div class="selected-departments">
-                        <label>Selected Departments:</label>
-                        <div id="selected-departments-display">
-                            {% for dept in day.departments %}
-                            <span class="department-tag">{{ dept }}</span>
-                            {% endfor %}
+                    <div class="department-tags-container">
+                        <div class="selected-departments" id="selected-departments">
+                            <!-- Selected departments will be displayed here -->
+                        </div>
+                        
+                        <div class="department-tag-selector" id="department-tag-selector">
+                            <!-- Department tags will be populated by JavaScript -->
                         </div>
                     </div>
                 </div>
@@ -171,283 +211,5 @@
 {% endblock %}
 
 {% block scripts %}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Load locations
-    fetchLocations();
-    
-    // Load areas
-    fetchAreas();
-    
-    // Load departments
-    fetchDepartments();
-    
-    // Handle form submission
-    const dayForm = document.getElementById('day-form');
-    if (dayForm) {
-        dayForm.addEventListener('submit', function(e) {
-            // Make sure departments are correctly set before submitting
-            updateDepartmentsInput();
-        });
-    }
-    
-    // Function to fetch locations from API
-    function fetchLocations() {
-        fetch('/api/locations')
-            .then(response => response.json())
-            .then(locations => {
-                populateLocationDropdown(locations);
-            })
-            .catch(error => {
-                console.error('Error fetching locations:', error);
-            });
-    }
-    
-    // Function to fetch areas from API
-    function fetchAreas() {
-        fetch('/api/areas')
-            .then(response => response.json())
-            .then(areas => {
-                populateAreaDropdown(areas);
-            })
-            .catch(error => {
-                console.error('Error fetching areas:', error);
-            });
-    }
-    
-    // Function to fetch departments from API
-    function fetchDepartments() {
-        fetch('/api/departments')
-            .then(response => response.json())
-            .then(departments => {
-                populateDepartmentSelector(departments);
-            })
-            .catch(error => {
-                console.error('Error fetching departments:', error);
-            });
-    }
-    
-    // Function to populate location dropdown
-    function populateLocationDropdown(locations) {
-        const locationSelect = document.getElementById('location');
-        if (!locationSelect) return;
-        
-        // Get current value
-        const currentValue = locationSelect.value;
-        
-        // Clear existing options except first one
-        const firstOption = locationSelect.options[0];
-        locationSelect.innerHTML = '';
-        locationSelect.appendChild(firstOption);
-        
-        // Add location options
-        locations.forEach(location => {
-            const option = document.createElement('option');
-            option.value = location.name;
-            option.textContent = location.name;
-            locationSelect.appendChild(option);
-        });
-        
-        // Restore current value if it exists
-        if (currentValue) {
-            locationSelect.value = currentValue;
-        } else {
-            // Set to value from day if available
-            const dayLocation = '{{ day.location }}';
-            if (dayLocation) {
-                for (let i = 0; i < locationSelect.options.length; i++) {
-                    if (locationSelect.options[i].value === dayLocation) {
-                        locationSelect.selectedIndex = i;
-                        break;
-                    }
-                }
-            }
-        }
-        
-        // Add event listener to update location area when location changes
-        locationSelect.addEventListener('change', function() {
-            const selectedLocation = this.value;
-            const locationObj = locations.find(loc => loc.name === selectedLocation);
-            
-            if (locationObj && locationObj.areaId) {
-                const areaSelect = document.getElementById('locationArea');
-                if (areaSelect) {
-                    for (let i = 0; i < areaSelect.options.length; i++) {
-                        if (areaSelect.options[i].value === locationObj.areaId) {
-                            areaSelect.selectedIndex = i;
-                            break;
-                        }
-                    }
-                }
-            }
-        });
-    }
-    
-    // Function to populate area dropdown
-    function populateAreaDropdown(areas) {
-        const areaSelect = document.getElementById('locationArea');
-        if (!areaSelect) return;
-        
-        // Get current value
-        const currentValue = areaSelect.value;
-        
-        // Clear existing options except first one
-        const firstOption = areaSelect.options[0];
-        areaSelect.innerHTML = '';
-        areaSelect.appendChild(firstOption);
-        
-        // Add area options
-        areas.forEach(area => {
-            const option = document.createElement('option');
-            option.value = area.name;
-            option.textContent = area.name;
-            // Add data attribute for color
-            option.setAttribute('data-color', area.color);
-            areaSelect.appendChild(option);
-        });
-        
-        // Restore current value if it exists
-        if (currentValue) {
-            areaSelect.value = currentValue;
-        } else {
-            // Set to value from day if available
-            const dayArea = '{{ day.locationArea }}';
-            if (dayArea) {
-                for (let i = 0; i < areaSelect.options.length; i++) {
-                    if (areaSelect.options[i].value === dayArea) {
-                        areaSelect.selectedIndex = i;
-                        break;
-                    }
-                }
-            }
-        }
-        
-        // Add color indicators to area options
-        addColorIndicatorsToSelect(areaSelect);
-    }
-    
-    // Function to add color indicators to select options
-    function addColorIndicatorsToSelect(selectElement) {
-        const options = selectElement.querySelectorAll('option');
-        
-        options.forEach(option => {
-            if (option.getAttribute('data-color')) {
-                const color = option.getAttribute('data-color');
-                option.style.backgroundColor = color;
-                
-                // Set text color based on background brightness
-                const rgb = hexToRgb(color);
-                if (rgb) {
-                    const brightness = (rgb.r * 299 + rgb.g * 587 + rgb.b * 114) / 1000;
-                    option.style.color = brightness > 128 ? '#000000' : '#ffffff';
-                }
-            }
-        });
-    }
-    
-    // Function to populate department selector
-    function populateDepartmentSelector(departments) {
-        const departmentSelector = document.getElementById('department-selector');
-        if (!departmentSelector) return;
-        
-        // Clear existing department tags
-        departmentSelector.innerHTML = '';
-        
-        // Get currently selected departments
-        const selectedDepts = '{{ day.departments|join(",") if day.departments else "" }}'.split(',').filter(Boolean);
-        
-        // Add department options
-        departments.forEach(dept => {
-            const deptTag = document.createElement('div');
-            deptTag.className = 'department-tag-option';
-            if (selectedDepts.includes(dept.code)) {
-                deptTag.classList.add('selected');
-            }
-            
-            deptTag.textContent = dept.code;
-            deptTag.style.backgroundColor = dept.color;
-            
-            // Set text color based on background brightness
-            const rgb = hexToRgb(dept.color);
-            if (rgb) {
-                const brightness = (rgb.r * 299 + rgb.g * 587 + rgb.b * 114) / 1000;
-                deptTag.style.color = brightness > 128 ? '#000000' : '#ffffff';
-            }
-            
-            // Set data attribute for department code
-            deptTag.setAttribute('data-code', dept.code);
-            
-            // Add click handler
-            deptTag.addEventListener('click', function() {
-                this.classList.toggle('selected');
-                updateSelectedDepartmentsDisplay();
-                updateDepartmentsInput();
-            });
-            
-            departmentSelector.appendChild(deptTag);
-        });
-        
-        // Initialize selected departments display
-        updateSelectedDepartmentsDisplay();
-    }
-    
-    // Function to update selected departments display
-    function updateSelectedDepartmentsDisplay() {
-        const selectedDepartmentsDisplay = document.getElementById('selected-departments-display');
-        if (!selectedDepartmentsDisplay) return;
-        
-        // Clear current display
-        selectedDepartmentsDisplay.innerHTML = '';
-        
-        // Get selected department tags
-        const selectedTags = document.querySelectorAll('.department-tag-option.selected');
-        
-        if (selectedTags.length === 0) {
-            selectedDepartmentsDisplay.textContent = 'None selected';
-            return;
-        }
-        
-        // Add each selected department to the display
-        selectedTags.forEach(tag => {
-            const deptCode = tag.getAttribute('data-code');
-            const deptSpan = document.createElement('span');
-            deptSpan.className = 'department-tag';
-            deptSpan.textContent = deptCode;
-            deptSpan.style.backgroundColor = tag.style.backgroundColor;
-            deptSpan.style.color = tag.style.color;
-            
-            selectedDepartmentsDisplay.appendChild(deptSpan);
-        });
-    }
-    
-    // Function to update departments input field before form submission
-    function updateDepartmentsInput() {
-        const departmentsInput = document.getElementById('departments-input');
-        if (!departmentsInput) return;
-        
-        // Get selected department tags
-        const selectedTags = document.querySelectorAll('.department-tag-option.selected');
-        
-        // Create comma-separated list of department codes
-        const deptCodes = Array.from(selectedTags).map(tag => tag.getAttribute('data-code'));
-        departmentsInput.value = deptCodes.join(',');
-    }
-    
-    // Helper function to convert hex color to RGB
-    function hexToRgb(hex) {
-        if (!hex) return null;
-        
-        // Remove # if present
-        hex = hex.replace(/^#/, '');
-        
-        // Parse hex values
-        const bigint = parseInt(hex, 16);
-        const r = (bigint >> 16) & 255;
-        const g = (bigint >> 8) & 255;
-        const b = bigint & 255;
-        
-        return { r, g, b };
-    }
-});
-</script>
+<script src="/static/js/day-editor.js"></script>
 {% endblock %}
