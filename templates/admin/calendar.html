@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Calendar Editor - Film Production Scheduler{% endblock %}
+{% block title %}Calendar Editor - Schedule, At a Glance!{% endblock %}
 
 {% block styles %}
 <link rel="stylesheet" href="/static/css/calendar.css">
@@ -12,12 +12,29 @@
     <div class="admin-actions">
         <a href="/admin/project/{{ project.id }}" class="button">Edit Project Details</a>
         <a href="/admin/dates/{{ project.id }}" class="button">Special Dates</a>
+        <a href="/admin/locations" class="button">Locations</a>
+        <a href="/admin/departments" class="button">Departments</a>
+        <a href="/viewer/{{ project.id }}" class="button secondary">View Calendar</a>
         <a href="/admin" class="button secondary">Back to Dashboard</a>
     </div>
 </div>
 
 {% if calendar and calendar.days %}
-<div class="calendar-container">
+<div class="calendar-container admin-calendar">
+    <input type="hidden" id="project-id" value="{{ project.id }}">
+    <!-- Hidden element for department data -->
+    <script id="department-data" type="application/json">
+        {% if calendar.departments %}
+            {
+                {% for dept in calendar.departments %}
+                "{{ dept.code }}": "{{ dept.color }}"{% if not loop.last %},{% endif %}
+                {% endfor %}
+            }
+        {% else %}
+            {}
+        {% endif %}
+    </script>
+
     <div class="project-info-header">
         <h3 class="project-title">{{ project.title or 'Untitled Project' }}</h3>
         <div class="project-meta">
@@ -35,7 +52,7 @@
             </div>
             <div class="meta-group">
                 <div class="meta-label">Version</div>
-                <div class="meta-value">{{ project.version or 'V1.0' }}</div>
+                <div class="meta-value version-badge">{{ project.version or 'V1.0' }}</div>
             </div>
         </div>
         
@@ -60,7 +77,17 @@
             {% if project.scriptColor %}
             <div class="script-item">
                 <div class="script-label">Color:</div>
-                <div class="script-value">{{ project.scriptColor }}</div>
+                <div class="script-value">
+                    <span class="script-color-block" style="background-color: 
+                        {% if project.scriptColor == 'White' %}#ffffff
+                        {% elif project.scriptColor == 'Blue' %}#add8e6
+                        {% elif project.scriptColor == 'Pink' %}#ffb6c1
+                        {% elif project.scriptColor == 'Yellow' %}#ffff99
+                        {% elif project.scriptColor == 'Green' %}#90ee90
+                        {% elif project.scriptColor == 'Goldenrod' %}#daa520
+                        {% else %}#ffffff{% endif %}"></span>
+                    {{ project.scriptColor }}
+                </div>
             </div>
             {% endif %}
         </div>
@@ -176,18 +203,10 @@
 {% endblock %}
 
 {% block scripts %}
+<script src="/static/js/calendar-dragdrop.js"></script>
 <script src="/static/js/calendar.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Add click handlers for calendar rows
-        const calendarRows = document.querySelectorAll('.calendar-row');
-        calendarRows.forEach(row => {
-            row.addEventListener('click', function() {
-                const date = this.dataset.date;
-                window.location.href = `/admin/day/{{ project.id }}/${date}`;
-            });
-        });
-        
         // Add click handler for regenerate calendar button
         const regenerateBtn = document.getElementById('regenerate-calendar');
         if (regenerateBtn) {

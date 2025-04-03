@@ -347,6 +347,8 @@ def get_hiatus_data(date_str, hiatus_periods):
     
     return None
 
+# Add these improved functions to your calendar_generator.py file
+
 def update_calendar_with_location_areas(calendar_data):
     """
     Update calendar data with location area information for color coding
@@ -369,11 +371,19 @@ def update_calendar_with_location_areas(calendar_data):
         # Create lookup maps
         location_map = {loc['name']: loc for loc in locations}
         area_map = {area['id']: area for area in areas}
+        area_name_map = {area['name']: area for area in areas}
         
         # Update days with location area info
         for day in calendar_data.get('days', []):
             location_name = day.get('location', '')
+            area_name = day.get('locationArea', '')
             
+            # If day already has an area name, make sure it has the corresponding color
+            if area_name and area_name in area_name_map:
+                # The area exists in our map, keep using it
+                continue
+            
+            # If not, try to find it from the location
             if location_name and location_name in location_map:
                 location = location_map[location_name]
                 area_id = location.get('areaId')
@@ -418,4 +428,75 @@ def update_calendar_with_departments(calendar_data):
     
     except Exception as e:
         logger.error(f"Error updating calendar with departments: {str(e)}")
+        return calendar_data
+
+def calculate_department_counts(calendar_data):
+    """
+    Calculate department counts based on the calendar days
+    """
+    try:
+        days = calendar_data.get('days', [])
+        counts = initialize_department_counts()
+        
+        # Load departments to get code mappings
+        data_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        departments_file = os.path.join(data_dir, 'data', 'departments.json')
+        
+        dept_map = {}
+        if os.path.exists(departments_file):
+            with open(departments_file, 'r') as f:
+                departments = json.load(f)
+            dept_map = {dept['code']: dept['id'].lower() for dept in departments}
+        
+        # Default mapping for common departments
+        default_map = {
+            "ST": "steadicam",
+            "SFX": "sfx",
+            "STN": "stunts",
+            "CR": "crane",
+            "PR": "prosthetics",
+            "LL": "lowLoader",
+            "VFX": "vfx",
+            "ANI": "animals",
+            "UW": "underwater",
+            "INCY": "intimacy"
+        }
+        
+        # Combine mappings with default as fallback
+        combined_map = {**default_map, **dept_map}
+        
+        # Count days
+        counts["main"] = sum(1 for d in days if d.get("isShootDay"))
+        counts["secondUnit"] = sum(1 for d in days if d.get("secondUnit"))
+        
+        # Count sixth day (working Saturdays)
+        counts["sixthDay"] = sum(
+            1 for d in days 
+            if d.get("isShootDay") and 
+            datetime.strptime(d["date"], "%Y-%m-%d").weekday() == 5  # Saturday
+        )
+        
+        # Count split days (if applicable)
+        counts["splitDay"] = sum(
+            1 for d in days 
+            if d.get("isShootDay") and 
+            d.get("isSplitDay", False)
+        )
+        
+        # Count department days
+        for day in days:
+            for dept in day.get("departments", []):
+                if dept in combined_map:
+                    key = combined_map[dept]
+                    if key in counts:
+                        counts[key] += 1
+                    else:
+                        # If not a standard key, add it dynamically
+                        counts[key] = 1
+        
+        calendar_data["departmentCounts"] = counts
+        return calendar_data
+    
+    except Exception as e:
+        logger.error(f"Error calculating department counts: {str(e)}")
         return calendar_data

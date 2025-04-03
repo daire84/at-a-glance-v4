@@ -192,6 +192,8 @@ def admin_calendar(project_id):
     calendar_data = get_project_calendar(project_id)
     return render_template('admin/calendar.html', project=project, calendar=calendar_data)
 
+# Replace the existing admin_day route in app.py with this enhanced version
+
 @app.route('/admin/day/<project_id>/<date>', methods=['GET', 'POST'])
 def admin_day(project_id, date):
     """Day editor"""
@@ -223,11 +225,46 @@ def admin_day(project_id, date):
             if 'departments' in form_data:
                 form_data['departments'] = [d.strip() for d in form_data['departments'].split(',') if d.strip()]
             
+            # Update locationArea from selected location if needed
+            if 'location' in form_data and form_data['location']:
+                # Try to find location in the database to get its area
+                locations_file = os.path.join(DATA_DIR, 'locations.json')
+                if os.path.exists(locations_file):
+                    with open(locations_file, 'r') as f:
+                        locations = json.load(f)
+                    
+                    location = next((loc for loc in locations if loc['name'] == form_data['location']), None)
+                    if location and 'areaId' in location:
+                        # Get area name from area ID
+                        areas_file = os.path.join(DATA_DIR, 'areas.json')
+                        if os.path.exists(areas_file):
+                            with open(areas_file, 'r') as f:
+                                areas = json.load(f)
+                            
+                            area = next((a for a in areas if a['id'] == location['areaId']), None)
+                            if area:
+                                form_data['locationArea'] = area['name']
+            
             # Update day data
             for key, value in form_data.items():
                 day[key] = value
             
+            # Check if this is a prep day being converted to a shoot day
+            if day.get('isPrep', False) and not day.get('isShootDay', False):
+                is_shoot_period = datetime.strptime(day['date'], "%Y-%m-%d").date() >= datetime.strptime(project['shootStartDate'], "%Y-%m-%d").date()
+                
+                if is_shoot_period and day.get('mainUnit') or day.get('sequence'):
+                    day['isPrep'] = False
+                    day['isShootDay'] = True
+                    
+                    # Recalculate shoot days
+                    recalculate_shoot_days(calendar_data['days'])
+            
             # Save calendar data
+            save_project_calendar(project_id, calendar_data)
+            
+            # Update department counts
+            calculate_department_counts(calendar_data)
             save_project_calendar(project_id, calendar_data)
             
             flash('Day updated successfully', 'success')
@@ -333,6 +370,136 @@ def api_calendar_day(project_id, date):
         save_project_calendar(project_id, calendar_data)
         
         return jsonify(calendar_data['days'][day_index])
+
+# Add this new endpoint to app.py after the other calendar-related API routes
+
+@app.route('/api/projects/<project_id>/calendar/move-day', methods=['POST'])
+def api_move_calendar_day(project_id):
+    """Move a shoot day from one date to another and recalculate the shoot days"""
+    try:
+        # Get request data
+        move_data = request.get_json()
+        from_date = move_data.get('fromDate')
+        to_date = move_data.get('toDate')
+        
+        if not from_date or not to_date:
+            return jsonify({'error': 'Missing required parameters'}), 400
+        
+        # Get calendar data
+        calendar_data = get_project_calendar(project_id)
+        if not calendar_data or not calendar_data.get('days'):
+            return jsonify({'error': 'Calendar not found'}), 404
+        
+        # Find the source and destination days
+        days = calendar_data.get('days', [])
+        from_day_index = next((i for i, d in enumerate(days) if d.get('date') == from_date), None)
+        to_day_index = next((i for i, d in enumerate(days) if d.get('date') == to_date), None)
+        
+        if from_day_index is None or to_day_index is None:
+            return jsonify({'error': 'Source or destination day not found'}), 404
+        
+        # Get the days to move
+        from_day = days[from_day_index]
+        to_day = days[to_day_index]
+        
+        # Only shoot days can be moved
+        if not from_day.get('isShootDay', False):
+            return jsonify({'error': 'Can only move shoot days'}), 400
+        
+        # Cannot move to a weekend, holiday, or hiatus day unless it's explicitly marked as a working day
+        if ((to_day.get('isWeekend', False) and not to_day.get('isWorkingWeekend', False)) or
+            (to_day.get('isHoliday', False) and not to_day.get('isWorking', False)) or
+            to_day.get('isHiatus', False)):
+            return jsonify({'error': 'Cannot move to a non-working day'}), 400
+        
+        # Swap the day details but keep the dates
+        # Save the date and day-specific info
+        to_date_info = {
+            'date': to_day.get('date'),
+            'dayOfWeek': to_day.get('dayOfWeek'),
+            'monthName': to_day.get('monthName'),
+            'day': to_day.get('day'),
+            'month': to_day.get('month'),
+            'year': to_day.get('year'),
+            'isPrep': to_day.get('isPrep', False),
+            'isWeekend': to_day.get('isWeekend', False),
+            'isHoliday': to_day.get('isHoliday', False),
+            'isHiatus': to_day.get('isHiatus', False),
+            'isWorkingWeekend': to_day.get('isWorkingWeekend', False),
+            'dayType': to_day.get('dayType')
+        }
+        
+        from_date_info = {
+            'date': from_day.get('date'),
+            'dayOfWeek': from_day.get('dayOfWeek'),
+            'monthName': from_day.get('monthName'),
+            'day': from_day.get('day'),
+            'month': from_day.get('month'),
+            'year': from_day.get('year'),
+            'isPrep': from_day.get('isPrep', False),
+            'isWeekend': from_day.get('isWeekend', False),
+            'isHoliday': from_day.get('isHoliday', False),
+            'isHiatus': from_day.get('isHiatus', False),
+            'isWorkingWeekend': from_day.get('isWorkingWeekend', False),
+            'dayType': from_day.get('dayType')
+        }
+        
+        # Create copies of the days
+        new_to_day = from_day.copy()
+        new_from_day = to_day.copy()
+        
+        # Update the date-specific information
+        for key, value in to_date_info.items():
+            new_to_day[key] = value
+        
+        for key, value in from_date_info.items():
+            new_from_day[key] = value
+        
+        # Set the shoot day status
+        new_to_day['isShootDay'] = True
+        if not to_day.get('isPrep', False):
+            new_from_day['isShootDay'] = False
+        
+        # Update the calendar
+        days[from_day_index] = new_from_day
+        days[to_day_index] = new_to_day
+        
+        # Now recalculate shoot day numbers
+        # Sort days by date
+        days.sort(key=lambda d: d.get('date', ''))
+        
+        # Reset shoot day numbers
+        shoot_day = 0
+        for day in days:
+            if day.get('isShootDay', False):
+                shoot_day += 1
+                day['shootDay'] = shoot_day
+            else:
+                day['shootDay'] = None
+        
+        # Save the updated calendar
+        calendar_data['days'] = days
+        save_project_calendar(project_id, calendar_data)
+        
+        return jsonify({'success': True}), 200
+    
+    except Exception as e:
+        logger.error(f"Error moving calendar day: {str(e)}")
+        return jsonify({'error': f'Error moving calendar day: {str(e)}'}), 500
+
+def recalculate_shoot_days(days):
+    """Recalculate shoot day numbers after moving days"""
+    shoot_day_counter = 0
+    
+    # Sort days by date
+    sorted_days = sorted(days, key=lambda d: d['date'])
+    
+    for day in sorted_days:
+        if day.get('isShootDay', False):
+            shoot_day_counter += 1
+            day['shootDay'] = shoot_day_counter
+        else:
+            day['shootDay'] = None
 
 # Health check endpoint
 @app.route('/health')
