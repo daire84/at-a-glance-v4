@@ -4,6 +4,7 @@ import uuid
 import logging
 from datetime import datetime, timedelta
 from flask import Flask, render_template, request, jsonify, redirect, url_for, send_from_directory, flash, session
+from utils.calendar_generator import generate_calendar_days, calculate_department_counts, update_calendar_with_location_areas
 
 # Create logger
 logging.basicConfig(
@@ -122,7 +123,6 @@ def save_project_calendar(project_id, calendar_data):
 def generate_calendar(project):
     """Generate calendar days based on project dates"""
     try:
-        from utils.calendar_generator import generate_calendar_days
         calendar_data = generate_calendar_days(project)
         return save_project_calendar(project['id'], calendar_data)
     except Exception as e:
@@ -264,7 +264,8 @@ def admin_day(project_id, date):
             save_project_calendar(project_id, calendar_data)
             
             # Update department counts
-            calculate_department_counts(calendar_data)
+            calendar_data = update_calendar_with_location_areas(calendar_data)
+            calendar_data = calculate_department_counts(calendar_data)
             save_project_calendar(project_id, calendar_data)
             
             flash('Day updated successfully', 'success')
@@ -420,14 +421,14 @@ def api_move_calendar_day(project_id):
         # Log received data for debugging
         logger.info(f"Move day request received: {move_data}")
         
-        # Get parameters
-        from_date = move_data.get('fromDate')
-        to_date = move_data.get('toDate')
+        # Get parameters - support both naming conventions
+        from_date = move_data.get('fromDate') or move_data.get('sourceDate')
+        to_date = move_data.get('toDate') or move_data.get('targetDate')
         
         # Validate parameters
         if not from_date or not to_date:
-            logger.error("Missing required parameters: fromDate or toDate")
-            return jsonify({'error': 'Missing required parameters: fromDate or toDate'}), 400
+            logger.error("Missing required parameters: fromDate/sourceDate or toDate/targetDate")
+            return jsonify({'error': 'Missing required parameters: fromDate/sourceDate or toDate/targetDate'}), 400
         
         # Get calendar data
         calendar_data = get_project_calendar(project_id)
@@ -548,7 +549,7 @@ def recalculate_shoot_days(days):
     to all days marked as shoot days, in chronological order.
     """
     try:
-        # Sort days by date
+        # Sort days by date first to ensure proper sequence
         sorted_days = sorted(days, key=lambda d: d['date'])
         
         # Reset shoot day counter
@@ -564,7 +565,9 @@ def recalculate_shoot_days(days):
                 if day.get('dayType') != 'shoot':
                     day['dayType'] = 'shoot'
             else:
-                day['shootDay'] = None
+                # Important: set shootDay to None for non-shoot days
+                if 'shootDay' in day:
+                    day['shootDay'] = None
                 
                 # Update day type if needed
                 if day.get('isWeekend', False):
@@ -578,7 +581,13 @@ def recalculate_shoot_days(days):
                 else:
                     day['dayType'] = 'normal'
         
-        # Return the updated days array
+        # Update the original days array - IMPORTANT
+        for i, day in enumerate(days):
+            for sorted_day in sorted_days:
+                if day['date'] == sorted_day['date']:
+                    days[i] = sorted_day
+                    break
+        
         return days
     except Exception as e:
         logger.error(f"Error recalculating shoot days: {str(e)}")

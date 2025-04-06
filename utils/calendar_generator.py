@@ -166,55 +166,6 @@ def initialize_department_counts():
         "lowLoader": 0
     }
 
-def calculate_department_counts(calendar_data):
-    """
-    Calculate department counts based on the calendar days
-    """
-    try:
-        days = calendar_data.get('days', [])
-        counts = initialize_department_counts()
-        
-        # Map department codes to count keys
-        dept_map = {
-            "ST": "steadicam",
-            "SFX": "sfx",
-            "STN": "stunts",
-            "CR": "crane",
-            "PR": "prosthetics",
-            "LL": "lowLoader"
-        }
-        
-        # Count days
-        counts["main"] = sum(1 for d in days if d.get("isShootDay"))
-        counts["secondUnit"] = sum(1 for d in days if d.get("secondUnit"))
-        
-        # Count sixth day (working Saturdays)
-        counts["sixthDay"] = sum(
-            1 for d in days 
-            if d.get("isShootDay") and 
-            parser.parse(d["date"]).weekday() == 5  # Saturday
-        )
-        
-        # Count split days (if applicable)
-        counts["splitDay"] = sum(
-            1 for d in days 
-            if d.get("isShootDay") and 
-            d.get("isSplitDay", False)
-        )
-        
-        # Count department days
-        for day in days:
-            for dept in day.get("departments", []):
-                if dept in dept_map:
-                    counts[dept_map[dept]] += 1
-        
-        calendar_data["departmentCounts"] = counts
-        return calendar_data
-    
-    except Exception as e:
-        logger.error(f"Error calculating department counts: {str(e)}")
-        return calendar_data
-
 def get_day_type(is_prep, is_shoot_day, is_weekend, is_holiday, is_hiatus, is_working_weekend):
     """Determine the type of day for styling purposes"""
     if is_hiatus:
