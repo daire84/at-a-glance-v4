@@ -413,78 +413,64 @@ def api_calendar_day(project_id, date):
 
 @app.route('/api/projects/<project_id>/calendar/move-day', methods=['POST'])
 def api_move_calendar_day(project_id):
-    """
-    Improved function to move a shoot day from one date to another
-    Properly handles day rearrangement and renumbering
-    """
+    """Move a shoot day from one date to another and recalculate the shoot days"""
     try:
         # Get request data
-        data = request.get_json()
-        from_date = data.get('sourceDate')
-        to_date = data.get('targetDate')
-        mode = data.get('mode', 'swap')  # Default to swap mode
+        move_data = request.get_json()
         
-        logger.info(f"Move day request: from {from_date} to {to_date} using mode {mode}")
+        # Log received data for debugging
+        logger.info(f"Move day request received: {move_data}")
         
-        # Basic validation
+        # Get parameters - support both naming conventions
+        from_date = move_data.get('fromDate') or move_data.get('sourceDate')
+        to_date = move_data.get('toDate') or move_data.get('targetDate')
+        
+        # Validate parameters
         if not from_date or not to_date:
-            logger.error("Missing source or target date")
-            return jsonify({'error': 'Missing sourceDate or targetDate'}), 400
-            
+            logger.error("Missing required parameters: fromDate/sourceDate or toDate/targetDate")
+            return jsonify({'error': 'Missing required parameters: fromDate/sourceDate or toDate/targetDate'}), 400
+        
         # Get calendar data
         calendar_data = get_project_calendar(project_id)
-        if not calendar_data or 'days' not in calendar_data:
-            logger.error("Calendar not found")
+        if not calendar_data or not calendar_data.get('days'):
+            logger.error(f"Calendar not found for project {project_id}")
             return jsonify({'error': 'Calendar not found'}), 404
-            
-        days = calendar_data['days']
         
-        # Find source and target day indices and objects
-        from_day = None
-        to_day = None
-        from_index = None
-        to_index = None
+        # Find the source and destination days
+        days = calendar_data.get('days', [])
+        from_day_index = next((i for i, d in enumerate(days) if d.get('date') == from_date), None)
+        to_day_index = next((i for i, d in enumerate(days) if d.get('date') == to_date), None)
         
-        for i, day in enumerate(days):
-            if day.get('date') == from_date:
-                from_day = day
-                from_index = i
-            if day.get('date') == to_date:
-                to_day = day
-                to_index = i
-        
-        # Validate days were found
-        if from_day is None:
+        # Validate that we found the days
+        if from_day_index is None:
             logger.error(f"Source day not found: {from_date}")
-            return jsonify({'error': 'Source day not found'}), 404
-        if to_day is None:
-            logger.error(f"Target day not found: {to_date}")
-            return jsonify({'error': 'Target day not found'}), 404
+            return jsonify({'error': f'Source day not found: {from_date}'}), 404
             
-        # Validate source day is actually a shoot day
-        if not from_day.get('isShootDay', False) or from_day.get('shootDay') is None:
-            logger.error("Source must be a shoot day")
-            return jsonify({'error': 'Source must be a shoot day'}), 400
-            
-        # Check if target is a valid day for shooting
-        if to_day.get('isWeekend', False) and not to_day.get('isWorkingWeekend', False):
-            logger.error("Cannot move to a non-working weekend")
-            return jsonify({'error': 'Cannot move to a non-working weekend'}), 400
-            
-        if to_day.get('isHoliday', False) and not to_day.get('isWorking', False):
-            logger.error("Cannot move to a non-working holiday")
-            return jsonify({'error': 'Cannot move to a non-working holiday'}), 400
-            
-        if to_day.get('isHiatus', False):
-            logger.error("Cannot move to a hiatus day")
-            return jsonify({'error': 'Cannot move to a hiatus day'}), 400
+        if to_day_index is None:
+            logger.error(f"Destination day not found: {to_date}")
+            return jsonify({'error': f'Destination day not found: {to_date}'}), 404
         
-        # Store the original shoot day number for reference
-        original_shoot_day = from_day.get('shootDay')
-        target_shoot_day = to_day.get('shootDay')
+        # Get the days to move
+        from_day = days[from_day_index]
+        to_day = days[to_day_index]
         
-        # Store the source day content that needs to be moved
-        source_content = {
+        logger.info(f"Moving day: From {from_date} (index: {from_day_index}) to {to_date} (index: {to_day_index})")
+        
+        # Validate day types
+        if not from_day.get('isShootDay', False):
+            logger.error("Can only move shoot days")
+            return jsonify({'error': 'Can only move shoot days'}), 400
+        
+        # Check if destination is valid
+        if ((to_day.get('isWeekend', False) and not to_day.get('isWorkingWeekend', False)) or
+            (to_day.get('isHoliday', False) and not to_day.get('isWorking', False)) or
+            to_day.get('isHiatus', False)):
+            logger.error("Cannot move to a non-working day")
+            return jsonify({'error': 'Cannot move to a non-working day. Choose a weekday or a working weekend/holiday.'}), 400
+        
+        # Instead of swapping entire day objects, we'll move just the shoot day content
+        # Save shoot day content to be moved
+        shoot_day_content = {
             'mainUnit': from_day.get('mainUnit', ''),
             'extras': from_day.get('extras', 0),
             'featuredExtras': from_day.get('featuredExtras', 0),
@@ -497,99 +483,73 @@ def api_move_calendar_day(project_id):
             'secondUnitLocation': from_day.get('secondUnitLocation', '')
         }
         
-        # If the target is already a shoot day, save its content to swap
-        target_content = None
-        if to_day.get('isShootDay', False):
-            target_content = {
-                'mainUnit': to_day.get('mainUnit', ''),
-                'extras': to_day.get('extras', 0),
-                'featuredExtras': to_day.get('featuredExtras', 0),
-                'location': to_day.get('location', ''),
-                'locationArea': to_day.get('locationArea', ''),
-                'sequence': to_day.get('sequence', ''),
-                'departments': to_day.get('departments', []),
-                'notes': to_day.get('notes', ''),
-                'secondUnit': to_day.get('secondUnit', ''),
-                'secondUnitLocation': to_day.get('secondUnitLocation', '')
-            }
-        
-        # Perform the move operation
-        
-        # Transfer source content to target day
-        to_day['isShootDay'] = True
-        for key, value in source_content.items():
-            to_day[key] = value
-        
-        # If we're in swap mode and target had content, transfer it to source
-        if mode == 'swap' and target_content:
-            from_day['isShootDay'] = True
-            for key, value in target_content.items():
-                from_day[key] = value
-        else:
-            # Otherwise, clear the source day
-            from_day['isShootDay'] = False
-            from_day['mainUnit'] = ''
-            from_day['extras'] = 0
-            from_day['featuredExtras'] = 0
-            from_day['location'] = ''
-            from_day['locationArea'] = ''
-            from_day['sequence'] = ''
-            from_day['departments'] = []
-            from_day['notes'] = ''
-            from_day['secondUnit'] = ''
-            from_day['secondUnitLocation'] = ''
-            
-            # Set the day type appropriately
-            if from_day.get('isPrep', False):
-                from_day['dayType'] = 'prep'
-            elif from_day.get('isWeekend', False):
-                from_day['dayType'] = 'weekend'
-            elif from_day.get('isHoliday', False):
-                from_day['dayType'] = 'holiday'
-            elif from_day.get('isHiatus', False):
-                from_day['dayType'] = 'hiatus'
-            else:
-                from_day['dayType'] = 'normal'
-        
-        # Set target day type
-        to_day['dayType'] = 'shoot'
-        
-        # Sort days by date for shoot day renumbering
-        days.sort(key=lambda d: d['date'])
-        
-        # Recalculate shoot days
-        shoot_day_counter = 0
-        for day in days:
-            if day.get('isShootDay', False):
-                shoot_day_counter += 1
-                day['shootDay'] = shoot_day_counter
-            else:
-                day['shootDay'] = None
-        
-        # Update calendar data
-        calendar_data['days'] = days
-        
-        # Update timestamp
-        calendar_data['lastUpdated'] = datetime.utcnow().isoformat() + 'Z'
-        
-        # Save updated calendar
-        save_project_calendar(project_id, calendar_data)
-        
-        # Return success with details
-        response_data = {
-            'success': True,
-            'message': 'Day moved successfully',
-            'originalDay': original_shoot_day,
-            'targetDay': target_shoot_day,
-            'mode': mode
+        # Save target day content that will be cleared
+        target_day_content = {
+            'mainUnit': to_day.get('mainUnit', ''),
+            'extras': to_day.get('extras', 0),
+            'featuredExtras': to_day.get('featuredExtras', 0),
+            'location': to_day.get('location', ''),
+            'locationArea': to_day.get('locationArea', ''),
+            'sequence': to_day.get('sequence', ''),
+            'departments': to_day.get('departments', []),
+            'notes': to_day.get('notes', ''),
+            'secondUnit': to_day.get('secondUnit', ''),
+            'secondUnitLocation': to_day.get('secondUnitLocation', '')
         }
         
-        logger.info(f"Day moved successfully: {response_data}")
-        return jsonify(response_data), 200
+        # Update shoot status and content
+        # Target day becomes a shoot day
+        to_day['isShootDay'] = True
+        for key, value in shoot_day_content.items():
+            to_day[key] = value
         
+        # Source day gets cleared and is no longer a shoot day (unless it was already a prep day)
+        from_day['isShootDay'] = False
+        for key, value in target_day_content.items():
+            if key == 'notes' and from_day.get('isPrep', False):
+                # Don't overwrite notes for prep days
+                continue
+            from_day[key] = ''  # Clear the field
+            if key == 'departments':
+                from_day[key] = []  # For arrays, use empty array
+            elif key in ['extras', 'featuredExtras']:
+                from_day[key] = 0   # For numbers, use 0
+        
+        # Adjust day types
+        if from_day.get('isPrep', False):
+            from_day['dayType'] = 'prep'
+        elif from_day.get('isWeekend', False):
+            from_day['dayType'] = 'weekend'
+        elif from_day.get('isHoliday', False):
+            from_day['dayType'] = 'holiday'
+        elif from_day.get('isHiatus', False):
+            from_day['dayType'] = 'hiatus'
+        else:
+            from_day['dayType'] = 'normal'
+        
+        to_day['dayType'] = 'shoot'
+        
+        logger.info("Day content moved, recalculating shoot days")
+        
+        # Recalculate shoot day numbers
+        recalculate_shoot_days(days)
+        
+        # Save the updated calendar
+        calendar_data['days'] = days
+        
+        # Update the lastUpdated timestamp
+        calendar_data['lastUpdated'] = datetime.utcnow().isoformat() + 'Z'
+        
+        # Save calendar data
+        save_project_calendar(project_id, calendar_data)
+        
+        logger.info("Calendar updated successfully")
+        
+        return jsonify({'success': True, 'message': 'Day moved successfully'}), 200
+    
     except Exception as e:
-        logger.error(f"Error moving day: {str(e)}")
-        return jsonify({'error': f'Error: {str(e)}'}), 500
+        logger.error(f"Error moving calendar day: {str(e)}")
+        return jsonify({'error': f'Error moving calendar day: {str(e)}'}), 500
 
 def recalculate_shoot_days(days):
     """
