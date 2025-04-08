@@ -387,36 +387,56 @@ def calculate_department_counts(calendar_data):
     """
     try:
         days = calendar_data.get('days', [])
+        # Initialize with standard counts
         counts = initialize_department_counts()
         
         # Load departments to get code mappings
-        data_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        departments_file = os.path.join(data_dir, 'data', 'departments.json')
+        data_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data')
+        departments_file = os.path.join(data_dir, 'departments.json')
         
         dept_map = {}
+        departments = []
         if os.path.exists(departments_file):
-            with open(departments_file, 'r') as f:
-                departments = json.load(f)
-            dept_map = {dept['code']: dept['id'].lower() for dept in departments}
+            try:
+                with open(departments_file, 'r') as f:
+                    departments = json.load(f)
+                
+                # Create a mapping from department code to key for counting
+                for dept in departments:
+                    if 'code' in dept and ('id' in dept or 'name' in dept):
+                        code = dept['code']
+                        # Use id if available, otherwise use name converted to snake_case
+                        id_key = dept.get('id', '').lower()
+                        name_key = dept.get('name', '').lower().replace(' ', '_')
+                        key = id_key if id_key else name_key
+                        
+                        if code and key:
+                            dept_map[code] = key
+                            # Pre-initialize count for this department
+                            counts[key] = 0
+                            logger.debug(f"Mapped department code {code} to key {key}")
+            except Exception as e:
+                logger.error(f"Error loading departments: {str(e)}")
         
-        # Default mapping for common departments
+        # Default mapping for common department codes to count keys
         default_map = {
-            "ST": "steadicam",
             "SFX": "sfx",
             "STN": "stunts",
             "CR": "crane",
+            "ST": "steadicam",
             "PR": "prosthetics",
             "LL": "lowLoader",
             "VFX": "vfx",
             "ANI": "animals",
             "UW": "underwater",
-            "INCY": "intimacy"
+            "INCY": "intimacy",
+            "TEST": "test"
         }
         
-        # Combine mappings with default as fallback
+        # Combine mappings with dept_map taking precedence
         combined_map = {**default_map, **dept_map}
         
-        # Count days
+        # Count days for standard metrics
         counts["main"] = sum(1 for d in days if d.get("isShootDay"))
         counts["secondUnit"] = sum(1 for d in days if d.get("secondUnit"))
         
@@ -436,18 +456,37 @@ def calculate_department_counts(calendar_data):
         
         # Count department days
         for day in days:
-            for dept in day.get("departments", []):
-                if dept in combined_map:
-                    key = combined_map[dept]
-                    if key in counts:
-                        counts[key] += 1
-                    else:
-                        # If not a standard key, add it dynamically
-                        counts[key] = 1
+            for dept_code in day.get("departments", []):
+                dept_code = dept_code.strip()  # Clean the code
+                
+                if not dept_code:
+                    continue
+                    
+                logger.debug(f"Processing department tag: {dept_code}")
+                
+                # Try to find the key in our combined map
+                if dept_code in combined_map:
+                    key = combined_map[dept_code]
+                    counts[key] = counts.get(key, 0) + 1
+                    logger.debug(f"Counted {dept_code} using key {key}, new count: {counts[key]}")
+                else:
+                    # If we don't have a mapping, use the code directly or a cleaned version
+                    key = dept_code.lower().replace(' ', '_')
+                    counts[key] = counts.get(key, 0) + 1
+                    logger.debug(f"Using direct key {key} for {dept_code}, count: {counts[key]}")
         
+        # Store counts in calendar data
         calendar_data["departmentCounts"] = counts
+        logger.info(f"Department counts updated: {counts}")
+        
+        # Make sure departments are included in calendar data
+        if departments and 'departments' not in calendar_data:
+            calendar_data['departments'] = departments
+            logger.info(f"Added {len(departments)} departments to calendar data")
+        
         return calendar_data
     
     except Exception as e:
         logger.error(f"Error calculating department counts: {str(e)}")
+        return calendar_data
         return calendar_data

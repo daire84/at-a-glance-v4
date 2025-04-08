@@ -190,10 +190,26 @@ def admin_calendar(project_id):
         return redirect(url_for('admin_dashboard'))
     
     calendar_data = get_project_calendar(project_id)
+    
+    # Make sure we have department data available in the calendar
+    departments = []
+    departments_file = os.path.join(DATA_DIR, 'departments.json')
+    if os.path.exists(departments_file):
+        try:
+            with open(departments_file, 'r') as f:
+                departments = json.load(f)
+        except Exception as e:
+            logger.error(f"Error loading departments: {str(e)}")
+    
+    # Ensure the departments are available in the calendar data
+    calendar_data['departments'] = departments
+    
+    # Make sure department counts are up to date
+    calculate_department_counts(calendar_data)
+    
     return render_template('admin/calendar.html', project=project, calendar=calendar_data)
 
 # Replace the existing admin_day route in app.py with this enhanced version
-
 @app.route('/admin/day/<project_id>/<date>', methods=['GET', 'POST'])
 def admin_day(project_id, date):
     """Day editor"""
@@ -323,6 +339,23 @@ def viewer(project_id):
         return redirect(url_for('index'))
     
     calendar_data = get_project_calendar(project_id)
+    
+    # Make sure we have department data available in the calendar
+    departments = []
+    departments_file = os.path.join(DATA_DIR, 'departments.json')
+    if os.path.exists(departments_file):
+        try:
+            with open(departments_file, 'r') as f:
+                departments = json.load(f)
+        except Exception as e:
+            logger.error(f"Error loading departments: {str(e)}")
+    
+    # Ensure the departments are available in the calendar data
+    calendar_data['departments'] = departments
+    
+    # Make sure department counts are up to date
+    calculate_department_counts(calendar_data)
+    
     return render_template('viewer.html', project=project, calendar=calendar_data)
 
 # API Routes

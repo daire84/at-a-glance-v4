@@ -101,9 +101,11 @@
         </div>
     </div>
     
+    <!-- Replace the department counters section in both calendar.html and viewer.html -->
     <div class="department-counters">
         <h4 class="counter-title">Department Counts</h4>
         <div class="counter-grid">
+            <!-- Standard production departments -->
             <div class="counter-item" style="background-color: #fffbc8;">
                 <div class="counter-label">Main Unit</div>
                 <div class="counter-value">{{ calendar.departmentCounts.main or 0 }}</div>
@@ -120,22 +122,43 @@
                 <div class="counter-label">6th Day</div>
                 <div class="counter-value">{{ calendar.departmentCounts.sixthDay or 0 }}</div>
             </div>
-            <div class="counter-item" style="background-color: #f2d8ff;">
-                <div class="counter-label">Steadicam</div>
-                <div class="counter-value">{{ calendar.departmentCounts.steadicam or 0 }}</div>
-            </div>
-            <div class="counter-item" style="background-color: #ffd8e6;">
-                <div class="counter-label">SFX</div>
-                <div class="counter-value">{{ calendar.departmentCounts.sfx or 0 }}</div>
-            </div>
-            <div class="counter-item" style="background-color: #ffecd8;">
-                <div class="counter-label">Stunts</div>
-                <div class="counter-value">{{ calendar.departmentCounts.stunts or 0 }}</div>
-            </div>
-            <div class="counter-item" style="background-color: #d8fff2;">
-                <div class="counter-label">Crane</div>
-                <div class="counter-value">{{ calendar.departmentCounts.crane or 0 }}</div>
-            </div>
+            
+            <!-- Standard departments with fixed mapping -->
+            {% set standard_depts = {
+                'steadicam': {'label': 'Steadicam', 'color': '#f2d8ff'},
+                'sfx': {'label': 'SFX', 'color': '#ffd8e6'},
+                'stunts': {'label': 'Stunts', 'color': '#ffecd8'},
+                'crane': {'label': 'Crane', 'color': '#d8fff2'},
+                'prosthetics': {'label': 'Prosthetics', 'color': '#d8fdff'},
+                'lowLoader': {'label': 'Low Loader', 'color': '#e6ffd8'},
+                'vfx': {'label': 'VFX', 'color': '#d8e5ff'},
+                'animals': {'label': 'Animals', 'color': '#ffedd8'},
+                'underwater': {'label': 'Underwater', 'color': '#d8f8ff'},
+                'intimacy': {'label': 'Intimacy', 'color': '#f542dd'},
+                'test': {'label': 'Testing', 'color': '#067bf9'}
+            } %}
+            
+            <!-- Loop through standard departments -->
+            {% for key, info in standard_depts.items() %}
+                <div class="counter-item" style="background-color: {{ info.color }};">
+                    <div class="counter-label">{{ info.label }}</div>
+                    <div class="counter-value">{{ calendar.departmentCounts[key] or 0 }}</div>
+                </div>
+            {% endfor %}
+            
+            <!-- Custom departments from the departments list -->
+            {% if calendar.departments %}
+                {% for dept in calendar.departments %}
+                    {% set dept_key = dept.id.lower() if dept.id else dept.name|lower|replace(' ', '_') %}
+                    {% set dept_code = dept.code|lower %}
+                    {% if dept_key not in standard_depts and dept_code not in ['sfx', 'stn', 'cr', 'st', 'pr', 'll', 'vfx', 'ani', 'uw', 'incy', 'test'] and dept_key in calendar.departmentCounts %}
+                    <div class="counter-item" style="background-color: {{ dept.color }};">
+                        <div class="counter-label">{{ dept.name }}</div>
+                        <div class="counter-value">{{ calendar.departmentCounts[dept_key] or 0 }}</div>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
         </div>
     </div>
     

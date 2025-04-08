@@ -69,7 +69,7 @@ function applyLocationAreaColors(areas) {
 }
 
 /**
- * Apply department tag colors
+ * Apply department tag colors - UPDATED
  */
 function applyDepartmentTagColors() {
   // Fetch department colors from the hidden data element if available
@@ -78,9 +78,11 @@ function applyDepartmentTagColors() {
   
   if (departmentDataElement) {
     try {
-      departmentColors = JSON.parse(departmentDataElement.textContent);
+      departmentColors = JSON.parse(departmentDataElement.textContent.trim());
+      console.log("Parsed department colors:", departmentColors);
     } catch (e) {
       console.error('Error parsing department data:', e);
+      console.log("Raw department data:", departmentDataElement.textContent);
       
       // Fallback to default colors
       departmentColors = {
@@ -92,10 +94,13 @@ function applyDepartmentTagColors() {
         "LL": "#e6ffd8",
         "VFX": "#d8e5ff",
         "ANI": "#ffedd8",
-        "UW": "#d8f8ff"
+        "UW": "#d8f8ff",
+        "INCY": "#f542dd",
+        "TEST": "#067bf9"
       };
     }
   } else {
+    console.warn("Department data element not found");
     // Fallback to default colors
     departmentColors = {
       "SFX": "#ffd8e6",
@@ -106,7 +111,9 @@ function applyDepartmentTagColors() {
       "LL": "#e6ffd8",
       "VFX": "#d8e5ff",
       "ANI": "#ffedd8",
-      "UW": "#d8f8ff"
+      "UW": "#d8f8ff",
+      "INCY": "#f542dd",
+      "TEST": "#067bf9"
     };
   }
   
@@ -124,6 +131,8 @@ function applyDepartmentTagColors() {
         const brightness = (rgb.r * 299 + rgb.g * 587 + rgb.b * 114) / 1000;
         tag.style.color = brightness > 128 ? '#000000' : '#ffffff';
       }
+    } else {
+      console.warn(`No color found for department code: ${deptCode}`);
     }
   });
 }
@@ -199,12 +208,12 @@ function setupDragAndDrop() {
       e.preventDefault();
       row.classList.remove('drop-target');
       
-      const sourceDate = e.dataTransfer.getData('text/plain');
-      const targetDate = row.getAttribute('data-date');
+      const fromDate = e.dataTransfer.getData('text/plain');
+      const toDate = row.getAttribute('data-date');
       const projectId = document.getElementById('project-id').value;
       
-      if (sourceDate && targetDate && projectId && sourceDate !== targetDate) {
-        moveShootDay(projectId, sourceDate, targetDate);
+      if (fromDate && toDate && projectId && fromDate !== toDate) {
+        moveShootDay(projectId, fromDate, toDate);
       }
     });
   });
@@ -213,7 +222,7 @@ function setupDragAndDrop() {
 /**
  * Move a shoot day from sourceDate to targetDate
  */
-function moveShootDay(projectId, sourceDate, targetDate) {
+function moveShootDay(projectId, fromDate, toDate) {
   const url = `/api/projects/${projectId}/calendar/move-day`;
   
   // Create a spinner or loading indicator
@@ -228,8 +237,8 @@ function moveShootDay(projectId, sourceDate, targetDate) {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      sourceDate: sourceDate,
-      targetDate: targetDate
+      fromDate: fromDate,
+      toDate: toDate
     })
   })
   .then(response => {
