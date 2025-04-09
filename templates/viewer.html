@@ -72,10 +72,6 @@
                 <div class="meta-value">{{ project.wrapDate or 'N/A' }}</div>
             </div>
             <div class="meta-group">
-                <div class="meta-label">Version</div>
-                <div class="meta-value version-badge">{{ project.version or 'V1.0' }}</div>
-            </div>
-            <div class="meta-group">
                 <div class="meta-label">Last Updated</div>
                 <div class="meta-value">{{ project.updated.split('T')[0] if project.updated else 'N/A' }}</div>
             </div>

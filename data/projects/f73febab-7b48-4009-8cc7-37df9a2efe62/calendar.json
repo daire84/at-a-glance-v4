@@ -1864,14 +1864,19 @@
       "isWorkingWeekend": false,
       "dayType": "shoot",
       "shootDay": 1,
-      "mainUnit": "",
-      "extras": 0,
-      "featuredExtras": 0,
-      "location": "",
-      "locationArea": "",
-      "sequence": "",
-      "departments": [],
-      "notes": ""
+      "mainUnit": "TEST",
+      "extras": 2,
+      "featuredExtras": 2,
+      "location": "D Stage",
+      "locationArea": "Ardmore Studios",
+      "sequence": "testing",
+      "departments": [
+        "STN",
+        "SFX"
+      ],
+      "notes": "whats your name?",
+      "secondUnit": "",
+      "secondUnitLocation": ""
     },
     {
       "date": "2025-03-25",
@@ -3819,13 +3824,13 @@
     }
   ],
   "departmentCounts": {
-    "main": 0,
+    "main": 61,
     "secondUnit": 0,
     "splitDay": 0,
-    "sixthDay": 0,
+    "sixthDay": 1,
     "steadicam": 0,
-    "sfx": 0,
-    "stunts": 0,
+    "sfx": 1,
+    "stunts": 1,
     "crane": 0,
     "prosthetics": 0,
     "lowLoader": 0

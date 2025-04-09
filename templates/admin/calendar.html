@@ -53,10 +53,6 @@
                 <div class="meta-label">Shoot Start</div>
                 <div class="meta-value">{{ project.shootStartDate or 'N/A' }}</div>
             </div>
-            <div class="meta-group">
-                <div class="meta-label">Version</div>
-                <div class="meta-value version-badge">{{ project.version or 'V1.0' }}</div>
-            </div>
         </div>
         
         {% if project.scriptTitle %}
@@ -100,7 +96,7 @@
     <div class="calendar-actions">
         <h3>Shoot Days</h3>
         <div class="action-buttons">
-            <a href="/api/projects/{{ project.id }}/calendar/generate" class="button" id="regenerate-calendar">Regenerate Calendar</a>
+            <button class="button" id="regenerate-calendar">Regenerate Calendar</button>
         </div>
     </div>
     
@@ -230,7 +226,7 @@
 <div class="empty-state">
     <p>Calendar data is not available for this project.</p>
     <p>Click "Regenerate Calendar" to create the calendar based on project dates.</p>
-    <a href="/api/projects/{{ project.id }}/calendar/generate" class="button" id="regenerate-calendar">Regenerate Calendar</a>
+    <button class="button" id="regenerate-calendar">Regenerate Calendar</button>
 </div>
 {% endif %}
 {% endblock %}
@@ -239,39 +235,42 @@
 <script src="/static/js/calendar-move.js"></script>
 <script src="/static/js/calendar.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener("DOMContentLoaded", function() {
         // Add click handler for regenerate calendar button
-        const regenerateBtn = document.getElementById('regenerate-calendar');
+        const regenerateBtn = document.getElementById("regenerate-calendar");
         if (regenerateBtn) {
-            regenerateBtn.addEventListener('click', function(e) {
+            regenerateBtn.addEventListener("click", function(e) {
                 e.preventDefault();
                 
-                // Show loading state
-                this.textContent = 'Generating...';
-                this.disabled = true;
-                
-                // Call the API to regenerate calendar
-                fetch(this.href, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Failed to regenerate calendar');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    // Reload page to show updated calendar
-                    window.location.reload();
-                })
-                .catch(error => {
-                    alert('Error: ' + error.message);
-                    this.textContent = 'Regenerate Calendar';
-                    this.disabled = false;
-                });
+                // Show confirmation dialog
+                if (confirm("WARNING: Regenerating the calendar will reset all day information to defaults based on project dates. This cannot be undone. Are you sure you want to proceed?")) {
+                    // Show loading state
+                    this.textContent = "Generating...";
+                    this.disabled = true;
+                    
+                    // Call the API to regenerate calendar
+                    fetch("/api/projects/{{ project.id }}/calendar/generate", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        }
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error("Failed to regenerate calendar");
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Reload page to show updated calendar
+                        window.location.reload();
+                    })
+                    .catch(error => {
+                        alert("Error: " + error.message);
+                        this.textContent = "Regenerate Calendar";
+                        this.disabled = false;
+                    });
+                }
             });
         }
     });
