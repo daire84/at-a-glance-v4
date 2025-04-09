@@ -282,3 +282,36 @@ function hexToRgb(hex) {
     b: parseInt(result[3], 16)
   } : null;
 }
+
+/**
+ * Better department tag color handling
+ * Ensures all department tags get their proper colors
+ */
+document.addEventListener('DOMContentLoaded', function() {
+    // Better department tag color handling
+    const deptTags = document.querySelectorAll('.department-tag');
+    const deptData = document.getElementById('department-data');
+    
+    if (deptData) {
+        try {
+            const deptColors = JSON.parse(deptData.textContent.trim());
+            
+            deptTags.forEach(tag => {
+                const deptCode = tag.getAttribute('data-dept-code') || tag.textContent.trim();
+                
+                if (deptColors[deptCode]) {
+                    tag.style.backgroundColor = deptColors[deptCode];
+                    
+                    // Set text color based on background brightness
+                    const rgb = hexToRgb(deptColors[deptCode]);
+                    if (rgb) {
+                        const brightness = (rgb.r * 299 + rgb.g * 587 + rgb.b * 114) / 1000;
+                        tag.style.color = brightness > 128 ? '#000000' : '#ffffff';
+                    }
+                }
+            });
+        } catch (e) {
+            console.error('Error parsing department colors:', e);
+        }
+    }
+});

@@ -565,4 +565,139 @@
   .counter-grid {
     grid-template-columns: repeat(2, 1fr);
   }
+}/* UI Refinements - Added $(date +%Y-%m-%d) */
+
+/* Make the calendar more compact overall */
+.calendar-table th,
+.calendar-table td {
+    padding: 0.4rem;  /* Reduced from 0.5rem */
+    font-size: 0.8rem;  /* Slightly smaller font */
+}
+
+/* Column width adjustments */
+.date-col {
+    width: 85px;  /* Reduced from 90px */
+}
+
+.day-col {
+    width: 35px;  /* Reduced from 40px */
+    text-align: center;
+}
+
+.extras-col,
+.featured-extras-col {
+    width: 30px;  /* Reduced from 40px */
+    text-align: center;
+}
+
+/* Allow main unit to have line breaks */
+.main-unit-cell {
+    white-space: pre-line;
+    line-height: 1.2;
+}
+
+/* Reduced notes font size */
+.notes-cell {
+    font-size: 0.75rem;  /* Reduced from 0.8rem */
+    line-height: 1.2;
+    white-space: pre-line;
+}
+
+/* Reduce row height overall */
+.calendar-row {
+    max-height: 4.5rem;  /* Limit maximum height */
+}
+
+/* Reduced height for department tags */
+.department-tag {
+    padding: 0.1rem 0.25rem;  /* Reduced from 0.15rem 0.3rem */
+    font-size: 0.7rem;  /* Reduced from 0.75rem */
+    line-height: 1;
+    margin: 0.1rem 0.1rem;
+    display: inline-block;
+}
+
+/* Script color badge styling */
+.script-color-badge {
+    display: inline-block;
+    padding: 0.25rem 0.6rem;
+    border-radius: 3px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    border: 1px solid rgba(0,0,0,0.1);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+/* Project header top with version badge */
+.project-header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.8rem;
+}
+
+.version-badge {
+    background-color: var(--accent-color);
+    color: white;
+    padding: 0.25rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+}
+
+/* Fix the double line in department tags box */
+.departments-cell {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.15rem;  /* Smaller gap instead of margin on individual tags */
+    padding: 0.1rem;
+    max-height: 3.5rem;  /* Limit max height */
+    overflow-y: auto;
+}
+
+/* Two-tiered location/area display */
+.location-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    vertical-align: middle;
+}
+
+.location-name {
+    font-weight: 500;
+    font-size: 0.8rem;
+}
+
+.location-area {
+    font-size: 0.7rem;
+    color: var(--text-light);
+    font-style: italic;
+    opacity: 0.9;
+}
+
+/* Improved department tags display */
+.departments-cell {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.15rem;
+    padding: 0.15rem;
+    align-items: flex-start;
+    max-height: 3.2rem;
+    overflow-y: auto;
+}
+
+.department-tag {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 3px;
+    padding: 0.1rem 0.3rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    box-shadow: 0 1px 1px rgba(0,0,0,0.05);
+    margin: 0;
+    border: 1px solid rgba(0,0,0,0.05);
+    line-height: 1;
 }

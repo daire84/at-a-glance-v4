@@ -1864,20 +1864,14 @@
       "isWorkingWeekend": false,
       "dayType": "shoot",
       "shootDay": 1,
-      "mainUnit": "DONUT SHOP - SHUT THE FUCK UP COP",
-      "extras": 3,
-      "featuredExtras": 2,
+      "mainUnit": "",
+      "extras": 0,
+      "featuredExtras": 0,
       "location": "",
-      "locationArea": "Dublin North",
-      "sequence": "SOMETHING GOOD",
-      "departments": [
-        "SFX",
-        "STN",
-        "TEST"
-      ],
-      "notes": "",
-      "secondUnit": "",
-      "secondUnitLocation": ""
+      "locationArea": "",
+      "sequence": "",
+      "departments": [],
+      "notes": ""
     },
     {
       "date": "2025-03-25",
@@ -1894,21 +1888,14 @@
       "isWorkingWeekend": false,
       "dayType": "shoot",
       "shootDay": 2,
-      "mainUnit": "CAIRO HOUSE - REAR GARDEN",
-      "extras": 2,
-      "featuredExtras": 1,
-      "location": "Mexico",
-      "locationArea": "South America",
-      "sequence": "Kidnapping",
-      "departments": [
-        "STN",
-        "LL",
-        "CR",
-        "PR"
-      ],
-      "notes": "Might use a Drone here",
-      "secondUnit": "",
-      "secondUnitLocation": ""
+      "mainUnit": "",
+      "extras": 0,
+      "featuredExtras": 0,
+      "location": "",
+      "locationArea": "",
+      "sequence": "",
+      "departments": [],
+      "notes": ""
     },
     {
       "date": "2025-03-26",
@@ -1925,19 +1912,14 @@
       "isWorkingWeekend": false,
       "dayType": "shoot",
       "shootDay": 3,
-      "mainUnit": "CANNON HOUSE",
-      "extras": 2,
-      "featuredExtras": 1,
-      "location": "A Stage",
-      "locationArea": "Ardmore Studios",
-      "sequence": "mom v kids",
-      "departments": [
-        "SFX",
-        "STN"
-      ],
-      "notes": "this is a test",
-      "secondUnit": "",
-      "secondUnitLocation": ""
+      "mainUnit": "",
+      "extras": 0,
+      "featuredExtras": 0,
+      "location": "",
+      "locationArea": "",
+      "sequence": "",
+      "departments": [],
+      "notes": ""
     },
     {
       "date": "2025-03-27",
@@ -1954,20 +1936,14 @@
       "isWorkingWeekend": false,
       "dayType": "shoot",
       "shootDay": 4,
-      "mainUnit": "CAIRO POLICE STATION",
-      "extras": 20,
-      "featuredExtras": 2,
-      "location": "Dublin City Hall",
-      "locationArea": "Dublin South",
-      "sequence": "The Arrest",
-      "departments": [
-        "INCY",
-        "STN",
-        "ST"
-      ],
-      "notes": "",
-      "secondUnit": "",
-      "secondUnitLocation": ""
+      "mainUnit": "",
+      "extras": 0,
+      "featuredExtras": 0,
+      "location": "",
+      "locationArea": "",
+      "sequence": "",
+      "departments": [],
+      "notes": ""
     },
     {
       "date": "2025-03-28",
@@ -1984,20 +1960,14 @@
       "isWorkingWeekend": false,
       "dayType": "shoot",
       "shootDay": 5,
-      "mainUnit": "CANNON HOUSE - BEDROOM",
+      "mainUnit": "",
       "extras": 0,
       "featuredExtras": 0,
-      "location": "D Stage",
-      "locationArea": "Ardmore Studios",
-      "sequence": "WAKING UP",
-      "departments": [
-        "SFX",
-        "VFX",
-        "ANI"
-      ],
-      "notes": "TESTING IS WHAT WE DO!",
-      "secondUnit": "",
-      "secondUnitLocation": ""
+      "location": "",
+      "locationArea": "",
+      "sequence": "",
+      "departments": [],
+      "notes": ""
     },
     {
       "date": "2025-03-29",
@@ -2062,21 +2032,14 @@
       "isWorkingWeekend": false,
       "dayType": "shoot",
       "shootDay": 6,
-      "mainUnit": "JOHNS HOUSE",
-      "extras": 4,
-      "featuredExtras": 2,
-      "location": "Kilruddery House",
-      "locationArea": "Wicklow",
-      "sequence": "John gets a fright",
-      "departments": [
-        "LL",
-        "SFX",
-        "ST",
-        "VFX"
-      ],
-      "notes": "This is nonsense to be honest",
-      "secondUnit": "2nd Unit stuff is happening",
-      "secondUnitLocation": "MONAGHAN"
+      "mainUnit": "",
+      "extras": 0,
+      "featuredExtras": 0,
+      "location": "",
+      "locationArea": "",
+      "sequence": "",
+      "departments": [],
+      "notes": ""
     },
     {
       "date": "2025-04-01",
@@ -3856,20 +3819,16 @@
     }
   ],
   "departmentCounts": {
-    "main": 61,
-    "secondUnit": 1,
+    "main": 0,
+    "secondUnit": 0,
     "splitDay": 0,
-    "sixthDay": 1,
-    "steadicam": 2,
-    "sfx": 4,
-    "stunts": 4,
-    "crane": 1,
-    "prosthetics": 1,
-    "lowLoader": 2,
-    "test": 1,
-    "vfx": 2,
-    "animals": 1,
-    "intimacy": 1
+    "sixthDay": 0,
+    "steadicam": 0,
+    "sfx": 0,
+    "stunts": 0,
+    "crane": 0,
+    "prosthetics": 0,
+    "lowLoader": 0
   },
   "locationAreas": [
     {
@@ -3908,5 +3867,5 @@
       "id": "4459abff-cd87-4fdc-a238-1ff355b2e970"
     }
   ],
-  "lastUpdated": "2025-04-08T22:27:15.685346Z"
+  "lastUpdated": "2025-04-09T21:32:12.510363Z"
 }

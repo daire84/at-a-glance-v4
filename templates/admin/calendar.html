@@ -36,7 +36,10 @@
     </script>
 
     <div class="project-info-header">
+        <div class="project-header-top">
         <h3 class="project-title">{{ project.title or 'Untitled Project' }}</h3>
+        <div class="version-badge">{{ project.version or 'V1.0' }}</div>
+    </div>
         <div class="project-meta">
             <div class="meta-group">
                 <div class="meta-label">Director</div>
@@ -202,7 +205,14 @@
                     <td class="main-unit-cell">{{ day.mainUnit }}</td>
                     <td class="extras-cell">{{ day.extras if day.extras > 0 else '' }}</td>
                     <td class="featured-extras-cell">{{ day.featuredExtras if day.featuredExtras > 0 else '' }}</td>
-                    <td class="location-cell">{{ day.location }}</td>
+                    <td class="location-cell">
+                        {% if day.location %}
+                            <div class="location-name">{{ day.location }}</div>
+                            {% if day.locationArea %}
+                                <div class="location-area">{{ day.locationArea }}</div>
+                            {% endif %}
+                        {% endif %}
+                    </td>
                     <td class="sequence-cell">{{ day.sequence }}</td>
                     <td class="departments-cell">
                         {% for dept in day.departments %}
