@@ -1,3 +1,17 @@
+#!/bin/bash
+
+echo "Fixing move-day functionality in Film Scheduler v4"
+echo "================================================="
+
+# Backup the current files
+echo "Creating backup..."
+backup_dir="/mnt/user/backups/film-scheduler-v4/$(date +%Y%m%d_%H%M%S)"
+mkdir -p "$backup_dir"
+cp static/js/calendar.js "$backup_dir/"
+
+# Update calendar.js with the fixed version
+echo "Updating calendar.js..."
+cat > static/js/calendar.js << 'EOT'
 /**
  * Enhanced Calendar utility functions
  */
@@ -282,3 +296,10 @@ function hexToRgb(hex) {
     b: parseInt(result[3], 16)
   } : null;
 }
+EOT
+
+echo "Making the script executable..."
+chmod +x fix-move-day.sh
+
+echo "Done! Please run the script to update your calendar.js file."
+echo "After that, restart your container with: docker-compose restart film-scheduler-v4"
