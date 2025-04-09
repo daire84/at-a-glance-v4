@@ -701,3 +701,50 @@
     border: 1px solid rgba(0,0,0,0.05);
     line-height: 1;
 }
+/* Updated color scheme as requested - April 2025 */
+.calendar-row.prep {
+  background-color: color-mix(in srgb, #e0ffe0 75%, var(--row-area-color, white)) !important; /* Green for prep days */
+}
+
+.calendar-row.shoot {
+  background-color: color-mix(in srgb, #e0f0ff 75%, var(--row-area-color, white)) !important; /* Light/teal blue for shoot days */
+}
+
+.calendar-row.weekend {
+  background-color: color-mix(in srgb, #f0f0f0 75%, var(--row-area-color, white)) !important; /* Subtle light gray for weekends */
+}
+
+/* Ensure print styles match */
+@media print {
+  .calendar-row.prep {
+    background-color: color-mix(in srgb, #e0ffe0 75%, var(--row-area-color, white)) !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  
+  .calendar-row.shoot {
+    background-color: color-mix(in srgb, #e0f0ff 75%, var(--row-area-color, white)) !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  
+  .calendar-row.weekend {
+    background-color: color-mix(in srgb, #f0f0f0 75%, var(--row-area-color, white)) !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+/* Center location area legend */
+.location-areas {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.area-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  justify-content: center;
+}
