@@ -1,3 +1,12 @@
+#!/bin/bash
+# Create a new Git branch for navigation improvements with correct path
+
+cd /mnt/user/appdata/film-scheduler-v4
+git checkout main  # First go back to main branch
+git checkout -b feature/navigation-improvements
+
+# Update the departments management page to add consistent tab navigation
+cat > /mnt/user/appdata/film-scheduler-v4/templates/admin/departments.html << 'EOF'
 {% extends "base.html" %}
 
 {% block title %}Department Management - Schedule, At a Glance!{% endblock %}
@@ -510,3 +519,258 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 {% endblock %}
+EOF
+
+# Update the admin/day.html template to remove the outdated 'manage' tab
+cat > /mnt/user/appdata/film-scheduler-v4/templates/admin/day.html << 'EOF'
+{% extends "base.html" %}
+
+{% block title %}Edit Day - {{ day.date }} - Schedule, At a Glance!{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="/static/css/forms.css">
+<link rel="stylesheet" href="/static/css/calendar.css">
+<style>
+    .location-area-display {
+        font-size: 0.85rem;
+        color: var(--text-light);
+        margin-top: 0.25rem;
+        padding: 0.3rem 0.5rem;
+        background-color: var(--background-color);
+        border-radius: 3px;
+        display: inline-block;
+    }
+    
+    .department-tags-container {
+        margin-top: 0.5rem;
+    }
+    
+    .department-tag-selector {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+        max-height: 150px;
+        overflow-y: auto;
+        padding: 0.5rem;
+        background-color: var(--background-color);
+        border-radius: 3px;
+        border: 1px solid var(--border-color);
+    }
+    
+    .department-tag-option {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 0.3rem 0.5rem;
+        border-radius: 3px;
+        cursor: pointer;
+        transition: transform 0.1s;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+    
+    .department-tag-option:hover {
+        transform: scale(1.05);
+    }
+    
+    .department-tag-option.selected {
+        box-shadow: 0 0 0 1px var(--text-color);
+    }
+    
+    .selected-departments {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+    }
+    
+    .selected-department {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 0.3rem 0.5rem;
+        border-radius: 3px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+    
+    .remove-tag {
+        cursor: pointer;
+        opacity: 0.7;
+        transition: opacity 0.2s;
+    }
+    
+    .remove-tag:hover {
+        opacity: 1;
+    }
+
+    /* Admin navigation tabs */
+    .admin-tabs {
+        display: flex;
+        margin-bottom: 1.5rem;
+        border-bottom: 1px solid var(--border-color);
+        overflow-x: auto;
+    }
+    
+    .admin-tabs a {
+        padding: 0.6rem 1rem;
+        color: var(--text-color);
+        text-decoration: none;
+        border-bottom: 2px solid transparent;
+        font-weight: 500;
+        font-size: 0.9rem;
+        white-space: nowrap;
+    }
+    
+    .admin-tabs a.active,
+    .admin-tabs a:hover {
+        color: var(--accent-color);
+        border-bottom-color: var(--accent-color);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-header">
+    <h2>
+        {% if day.isPrep %}
+            Edit Prep Day
+        {% else %}
+            Edit Shoot Day {{ day.shootDay if day.shootDay }}
+        {% endif %}
+    </h2>
+    <div class="admin-actions">
+        <a href="/admin/calendar/{{ project.id }}" class="button secondary">Back to Calendar</a>
+    </div>
+</div>
+
+<!-- Admin Navigation Tabs -->
+<div class="admin-tabs">
+    <a href="/admin">Projects</a>
+    <a href="/admin/calendar/{{ project.id }}">Calendar</a>
+    <a href="/admin/locations">Locations</a>
+    <a href="/admin/departments">Departments</a>
+    <a href="/admin/dates">Special Dates</a>
+</div>
+
+<div class="form-container">
+    <div class="day-header">
+        <h3>{{ day.dayOfWeek }}, {{ day.date }}</h3>
+    </div>
+    
+    <form method="POST" class="day-form">
+        <div class="form-section">
+            <h3>Main Unit Details</h3>
+            
+            <div class="form-row">
+                <div class="form-group full-width">
+                    <label for="mainUnit">Main Unit Description</label>
+                    <input type="text" id="mainUnit" name="mainUnit" value="{{ day.mainUnit or '' }}" placeholder="E.g., JOHN'S HOUSE - KITCHEN">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="location">Location</label>
+                    <select id="location" name="location" class="location-select">
+                        <option value="">-- Select Location --</option>
+                        <!-- Options will be populated by JavaScript -->
+                    </select>
+                    <div class="location-area-display" id="location-area-display">
+                        {% if day.locationArea %}{{ day.locationArea }}{% endif %}
+                    </div>
+                    <input type="hidden" id="locationArea" name="locationArea" value="{{ day.locationArea or '' }}">
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <h3>Extras</h3>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="extras">Background Extras</label>
+                    <input type="number" id="extras" name="extras" value="{{ day.extras or 0 }}" min="0">
+                </div>
+                
+                <div class="form-group">
+                    <label for="featuredExtras">Featured Extras</label>
+                    <input type="number" id="featuredExtras" name="featuredExtras" value="{{ day.featuredExtras or 0 }}" min="0">
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <h3>Script Information</h3>
+            
+            <div class="form-row">
+                <div class="form-group full-width">
+                    <label for="sequence">Sequence</label>
+                    <input type="text" id="sequence" name="sequence" value="{{ day.sequence or '' }}" placeholder="Scene/Sequence numbers">
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <h3>Department Requirements</h3>
+            
+            <div class="form-row">
+                <div class="form-group full-width">
+                    <label for="departments">Departments</label>
+                    <input type="hidden" id="departments" name="departments" value="{{ day.departments|join(',') if day.departments else '' }}">
+                    
+                    <div class="department-tags-container">
+                        <div class="selected-departments" id="selected-departments">
+                            <!-- Selected departments will be displayed here -->
+                        </div>
+                        
+                        <div class="department-tag-selector" id="department-tag-selector">
+                            <!-- Department tags will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <h3>Notes</h3>
+            
+            <div class="form-row">
+                <div class="form-group full-width">
+                    <label for="notes">Day Notes</label>
+                    <textarea id="notes" name="notes" rows="3">{{ day.notes or '' }}</textarea>
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <h3>Second Unit (if applicable)</h3>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="secondUnit">Second Unit Description</label>
+                    <input type="text" id="secondUnit" name="secondUnit" value="{{ day.secondUnit or '' }}" placeholder="Second unit activity">
+                </div>
+                
+                <div class="form-group">
+                    <label for="secondUnitLocation">Second Unit Location</label>
+                    <input type="text" id="secondUnitLocation" name="secondUnitLocation" value="{{ day.secondUnitLocation or '' }}" placeholder="Second unit location">
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-actions">
+            <a href="/admin/calendar/{{ project.id }}" class="button secondary">Cancel</a>
+            <button type="submit" class="button">Save Changes</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/day-editor.js"></script>
+{% endblock %}
+EOF
+
+echo "Updated templates with correct path and added consistent navigation"

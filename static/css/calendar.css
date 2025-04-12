@@ -75,7 +75,7 @@
   font-size: 0.85rem;
 }
 
-/* Color block for script color */
+/* Improved script color block */
 .script-color-block {
   display: inline-block;
   width: 1rem;
@@ -84,6 +84,18 @@
   margin-right: 0.3rem;
   vertical-align: middle;
   border: 1px solid rgba(0,0,0,0.1);
+}
+
+/* Script color badge (improved design) */
+.script-color-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.4rem;
+  border-radius: 3px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  border: 1px solid rgba(0,0,0,0.1);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
 }
 
 /* Version badge */
@@ -110,7 +122,7 @@
   gap: 0.5rem;
 }
 
-/* Department Counters - reduced size by ~75% */
+/* Department Counters - reduced size by ~25% */
 .department-counters {
   margin-bottom: 1rem;
   background-color: #f8f9fa;
@@ -152,6 +164,10 @@
   background-color: #f8f9fa;
   padding: 0.6rem;
   border-radius: 3px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 
 .areas-title {
@@ -164,6 +180,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0.4rem;
+  justify-content: center;
 }
 
 .area-tag {
@@ -188,7 +205,7 @@
 .calendar-table th,
 .calendar-table td {
   border: 1px solid #dee2e6;
-  padding: 0.5rem;
+  padding: 0.4rem; /* Reduced from 0.5rem */
   vertical-align: top;
   text-align: left;
 }
@@ -206,11 +223,11 @@
 
 /* Column widths - adjusted for compact layout */
 .date-col {
-  width: 90px;
+  width: 85px; /* Reduced from 90px */
 }
 
 .day-col {
-  width: 40px;
+  width: 35px; /* Reduced from 40px */
   text-align: center;
 }
 
@@ -218,9 +235,10 @@
   width: 180px;
 }
 
+/* Reduced E and FE column widths */
 .extras-col,
 .featured-extras-col {
-  width: 40px;
+  width: 30px; /* Reduced from 40px */
   text-align: center;
 }
 
@@ -240,8 +258,9 @@
   width: 180px;
 }
 
-/* Row styling with location area colors */
+/* Row styling with location area colors - reduced height */
 .calendar-row {
+  max-height: 4.5rem; /* Limit maximum height to ~75% of original */
   transition: background-color 0.2s;
   --row-area-color: transparent;
 }
@@ -255,15 +274,15 @@
 }
 
 .calendar-row.weekend {
-  background-color: color-mix(in srgb, #f8f9fa 75%, var(--row-area-color, white));
+  background-color: color-mix(in srgb, #f0f0f0 75%, var(--row-area-color, white));
 }
 
 .calendar-row.prep {
-  background-color: color-mix(in srgb, #e3f2fd 75%, var(--row-area-color, white));
+  background-color: color-mix(in srgb, #e0ffe0 75%, var(--row-area-color, white)); /* Green for prep days */
 }
 
 .calendar-row.shoot {
-  background-color: color-mix(in srgb, #e8f5e9 75%, var(--row-area-color, white));
+  background-color: color-mix(in srgb, #e0f0ff 75%, var(--row-area-color, white)); /* Light/teal blue for shoot days */
 }
 
 .calendar-row.hiatus {
@@ -297,6 +316,8 @@
 .main-unit-cell {
   font-weight: 500;
   font-size: 0.85rem;
+  white-space: pre-line; /* Allow line breaks */
+  line-height: 1.2;
 }
 
 .extras-cell,
@@ -305,26 +326,56 @@
   text-align: center;
 }
 
-/* Department tags - more compact */
+/* Two-tiered location/area display */
+.location-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  vertical-align: middle;
+}
+
+.location-name {
+  font-weight: 500;
+  font-size: 0.8rem;
+}
+
+.location-area {
+  font-size: 0.7rem;
+  color: var(--text-light);
+  font-style: italic;
+  opacity: 0.9;
+}
+
+/* Department tags - Fixed double line issue and reduced size */
 .departments-cell {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.2rem;
+  gap: 0.15rem; /* Use gap instead of margins */
+  padding: 0.15rem;
+  align-items: flex-start;
+  max-height: 3.2rem;
+  overflow-y: auto;
 }
 
 .department-tag {
-  display: inline-block;
-  background-color: #e9ecef;
-  color: var(--text-color);
-  padding: 0.15rem 0.3rem;
-  border-radius: 2px;
-  font-size: 0.75rem;
-  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 3px;
+  padding: 0.1rem 0.3rem;
+  font-size: 0.7rem; /* Reduced from 0.75rem */
+  font-weight: 600;
+  text-transform: uppercase;
+  box-shadow: 0 1px 1px rgba(0,0,0,0.05);
+  margin: 0; /* Remove margins to prevent the double line effect */
+  border: 1px solid rgba(0,0,0,0.05);
+  line-height: 1;
 }
 
-/* Notes cell */
+/* Notes cell - reduced font size */
 .notes-cell {
-  font-size: 0.8rem;
+  font-size: 0.75rem; /* Reduced from 0.8rem */
+  line-height: 1.2;
   white-space: pre-line;
 }
 
@@ -373,83 +424,12 @@
   to { transform: rotate(360deg); }
 }
 
-/* Drag and Drop related styles to add to your calendar.css file */
-
-/* Make shoot days appear draggable */
-.admin-calendar .calendar-row.shoot {
-  cursor: grab;
-  transition: box-shadow 0.2s ease, transform 0.2s ease;
-}
-
-.admin-calendar .calendar-row.shoot:hover {
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
-  transform: translateY(-1px);
-}
-
-/* Styling for the row being dragged */
-.calendar-row.dragging {
-  opacity: 0.5;
-  cursor: grabbing;
-  background-color: rgba(93, 137, 186, 0.1) !important;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-/* Styling for drop targets */
-.calendar-row.drag-over {
-  border: 2px dashed var(--accent-color, #5d89ba) !important;
-  background-color: rgba(93, 137, 186, 0.05) !important;
-}
-
-/* Loading overlay */
-.loading-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(255, 255, 255, 0.8);
+/* Project header top with version badge */
+.project-header-top {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
-  z-index: 9999;
-}
-
-.loading-spinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid #f3f3f3;
-  border-top: 3px solid var(--accent-color, #5d89ba);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin-bottom: 10px;
-}
-
-.loading-text {
-  color: var(--text-color, #2d3142);
-  font-size: 14px;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-/* Additional accessibility styles */
-.admin-calendar .calendar-row.shoot[draggable="true"]:focus {
-  outline: 2px solid var(--accent-color, #5d89ba);
-  outline-offset: -2px;
-}
-
-/* Make sure drop targets have enough contrast */
-.calendar-row.drag-over:before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background-color: var(--accent-color, #5d89ba);
+  margin-bottom: 0.8rem;
 }
 
 /* Viewer mode specific */
@@ -538,13 +518,13 @@
   }
   
   .calendar-row.prep {
-    background-color: color-mix(in srgb, #e0e0ff 75%, var(--row-area-color, white)) !important;
+    background-color: color-mix(in srgb, #e0ffe0 75%, var(--row-area-color, white)) !important;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
   
   .calendar-row.shoot {
-    background-color: color-mix(in srgb, #e0ffe0 75%, var(--row-area-color, white)) !important;
+    background-color: color-mix(in srgb, #e0f0ff 75%, var(--row-area-color, white)) !important;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
@@ -565,186 +545,4 @@
   .counter-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-}/* UI Refinements - Added $(date +%Y-%m-%d) */
-
-/* Make the calendar more compact overall */
-.calendar-table th,
-.calendar-table td {
-    padding: 0.4rem;  /* Reduced from 0.5rem */
-    font-size: 0.8rem;  /* Slightly smaller font */
-}
-
-/* Column width adjustments */
-.date-col {
-    width: 85px;  /* Reduced from 90px */
-}
-
-.day-col {
-    width: 35px;  /* Reduced from 40px */
-    text-align: center;
-}
-
-.extras-col,
-.featured-extras-col {
-    width: 30px;  /* Reduced from 40px */
-    text-align: center;
-}
-
-/* Allow main unit to have line breaks */
-.main-unit-cell {
-    white-space: pre-line;
-    line-height: 1.2;
-}
-
-/* Reduced notes font size */
-.notes-cell {
-    font-size: 0.75rem;  /* Reduced from 0.8rem */
-    line-height: 1.2;
-    white-space: pre-line;
-}
-
-/* Reduce row height overall */
-.calendar-row {
-    max-height: 4.5rem;  /* Limit maximum height */
-}
-
-/* Reduced height for department tags */
-.department-tag {
-    padding: 0.1rem 0.25rem;  /* Reduced from 0.15rem 0.3rem */
-    font-size: 0.7rem;  /* Reduced from 0.75rem */
-    line-height: 1;
-    margin: 0.1rem 0.1rem;
-    display: inline-block;
-}
-
-/* Script color badge styling */
-.script-color-badge {
-    display: inline-block;
-    padding: 0.25rem 0.6rem;
-    border-radius: 3px;
-    font-size: 0.85rem;
-    font-weight: 500;
-    border: 1px solid rgba(0,0,0,0.1);
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-}
-
-/* Project header top with version badge */
-.project-header-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.8rem;
-}
-
-.version-badge {
-    background-color: var(--accent-color);
-    color: white;
-    padding: 0.25rem 0.6rem;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    font-weight: 500;
-    letter-spacing: 0.02em;
-}
-
-/* Fix the double line in department tags box */
-.departments-cell {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.15rem;  /* Smaller gap instead of margin on individual tags */
-    padding: 0.1rem;
-    max-height: 3.5rem;  /* Limit max height */
-    overflow-y: auto;
-}
-
-/* Two-tiered location/area display */
-.location-cell {
-    display: flex;
-    flex-direction: column;
-    gap: 0.1rem;
-    vertical-align: middle;
-}
-
-.location-name {
-    font-weight: 500;
-    font-size: 0.8rem;
-}
-
-.location-area {
-    font-size: 0.7rem;
-    color: var(--text-light);
-    font-style: italic;
-    opacity: 0.9;
-}
-
-/* Improved department tags display */
-.departments-cell {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.15rem;
-    padding: 0.15rem;
-    align-items: flex-start;
-    max-height: 3.2rem;
-    overflow-y: auto;
-}
-
-.department-tag {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 3px;
-    padding: 0.1rem 0.3rem;
-    font-size: 0.7rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    box-shadow: 0 1px 1px rgba(0,0,0,0.05);
-    margin: 0;
-    border: 1px solid rgba(0,0,0,0.05);
-    line-height: 1;
-}
-/* Updated color scheme as requested - April 2025 */
-.calendar-row.prep {
-  background-color: color-mix(in srgb, #e0ffe0 75%, var(--row-area-color, white)) !important; /* Green for prep days */
-}
-
-.calendar-row.shoot {
-  background-color: color-mix(in srgb, #e0f0ff 75%, var(--row-area-color, white)) !important; /* Light/teal blue for shoot days */
-}
-
-.calendar-row.weekend {
-  background-color: color-mix(in srgb, #f0f0f0 75%, var(--row-area-color, white)) !important; /* Subtle light gray for weekends */
-}
-
-/* Ensure print styles match */
-@media print {
-  .calendar-row.prep {
-    background-color: color-mix(in srgb, #e0ffe0 75%, var(--row-area-color, white)) !important;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-  }
-  
-  .calendar-row.shoot {
-    background-color: color-mix(in srgb, #e0f0ff 75%, var(--row-area-color, white)) !important;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-  }
-  
-  .calendar-row.weekend {
-    background-color: color-mix(in srgb, #f0f0f0 75%, var(--row-area-color, white)) !important;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-  }
-}
-/* Center location area legend */
-.location-areas {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
-
-.area-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-  justify-content: center;
 }

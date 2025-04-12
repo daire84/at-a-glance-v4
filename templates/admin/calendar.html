@@ -37,21 +37,40 @@
 
     <div class="project-info-header">
         <div class="project-header-top">
-        <h3 class="project-title">{{ project.title or 'Untitled Project' }}</h3>
-        <div class="version-badge">{{ project.version or 'V1.0' }}</div>
-    </div>
+            <h3 class="project-title">{{ project.title or 'Untitled Project' }}</h3>
+            <div class="version-badge">{{ project.version or 'V1.0' }}</div>
+        </div>
         <div class="project-meta">
             <div class="meta-group">
                 <div class="meta-label">Director</div>
                 <div class="meta-value">{{ project.director or 'N/A' }}</div>
             </div>
             <div class="meta-group">
+                <div class="meta-label">Producer</div>
+                <div class="meta-value">{{ project.producer or 'N/A' }}</div>
+            </div>
+            <div class="meta-group">
                 <div class="meta-label">First AD</div>
                 <div class="meta-value">{{ project.firstAD or 'N/A' }}</div>
             </div>
             <div class="meta-group">
+                <div class="meta-label">Second AD</div>
+                <div class="meta-value">{{ project.secondAD or 'N/A' }}</div>
+            </div>
+        </div>
+        
+        <div class="project-meta">
+            <div class="meta-group">
                 <div class="meta-label">Shoot Start</div>
                 <div class="meta-value">{{ project.shootStartDate or 'N/A' }}</div>
+            </div>
+            <div class="meta-group">
+                <div class="meta-label">Wrap Date</div>
+                <div class="meta-value">{{ project.wrapDate or 'N/A' }}</div>
+            </div>
+            <div class="meta-group">
+                <div class="meta-label">Last Updated</div>
+                <div class="meta-value">{{ project.updated.split('T')[0] if project.updated else 'N/A' }}</div>
             </div>
         </div>
         
@@ -77,15 +96,19 @@
             <div class="script-item">
                 <div class="script-label">Color:</div>
                 <div class="script-value">
-                    <span class="script-color-block" style="background-color: 
+                    <span class="script-color-badge" style="background-color: 
                         {% if project.scriptColor == 'White' %}#ffffff
                         {% elif project.scriptColor == 'Blue' %}#add8e6
                         {% elif project.scriptColor == 'Pink' %}#ffb6c1
                         {% elif project.scriptColor == 'Yellow' %}#ffff99
                         {% elif project.scriptColor == 'Green' %}#90ee90
                         {% elif project.scriptColor == 'Goldenrod' %}#daa520
-                        {% else %}#ffffff{% endif %}"></span>
-                    {{ project.scriptColor }}
+                        {% else %}#ffffff{% endif %}; 
+                        color: {% if project.scriptColor == 'White' %}#000000
+                        {% elif project.scriptColor == 'Yellow' %}#000000
+                        {% else %}#ffffff{% endif %};">
+                        {{ project.scriptColor }}
+                    </span>
                 </div>
             </div>
             {% endif %}
@@ -100,7 +123,6 @@
         </div>
     </div>
     
-    <!-- Replace the department counters section in both calendar.html and viewer.html -->
     <div class="department-counters">
         <h4 class="counter-title">Department Counts</h4>
         <div class="counter-grid">
