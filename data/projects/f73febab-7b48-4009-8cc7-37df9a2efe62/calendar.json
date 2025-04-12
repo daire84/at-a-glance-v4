@@ -1870,14 +1870,8 @@
       "location": "",
       "locationArea": "",
       "sequence": "",
-      "departments": [
-        "ST",
-        "STN",
-        "INCY"
-      ],
-      "notes": "",
-      "secondUnit": "",
-      "secondUnitLocation": ""
+      "departments": [],
+      "notes": ""
     },
     {
       "date": "2025-03-25",
@@ -1948,8 +1942,14 @@
       "location": "",
       "locationArea": "",
       "sequence": "",
-      "departments": [],
-      "notes": ""
+      "departments": [
+        "ST",
+        "STN",
+        "INCY"
+      ],
+      "notes": "",
+      "secondUnit": "",
+      "secondUnitLocation": ""
     },
     {
       "date": "2025-03-28",

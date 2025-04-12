@@ -205,7 +205,7 @@
 .calendar-table th,
 .calendar-table td {
   border: 1px solid #dee2e6;
-  padding: 0.4rem; /* Reduced from 0.5rem */
+  padding: 0.3rem; /* Reduced from 0.5rem */
   vertical-align: top;
   text-align: left;
 }
@@ -217,7 +217,7 @@
   position: sticky;
   top: 0;
   z-index: 10;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   padding: 0.4rem 0.5rem;
 }
 
@@ -227,7 +227,7 @@
 }
 
 .day-col {
-  width: 35px; /* Reduced from 40px */
+  width: 15px; /* Reduced from 40px */
   text-align: center;
 }
 
@@ -236,9 +236,13 @@
 }
 
 /* Reduced E and FE column widths */
-.extras-col,
+.extras-col {
+  width: 25px; /* Reduced from 40px */
+  text-align: center;
+}
+
 .featured-extras-col {
-  width: 30px; /* Reduced from 40px */
+  width: 25px; /* Reduced from 40px */
   text-align: center;
 }
 
@@ -260,7 +264,7 @@
 
 /* Row styling with location area colors - reduced height */
 .calendar-row {
-  max-height: 4.5rem; /* Limit maximum height to ~75% of original */
+  max-height: 3.5rem; /* Limit maximum height to ~75% of original */
   transition: background-color 0.2s;
   --row-area-color: transparent;
 }
@@ -472,7 +476,8 @@
   
   .calendar-table th,
   .calendar-table td {
-    padding: 3pt;
+    padding: 2pt;  /* Reduced for print */
+    font-size: 7pt;  /* Reduced for print */
   }
   
   .departments-cell {
@@ -544,5 +549,187 @@
   
   .counter-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+}
+/* Updated color scheme as requested - April 2025 */
+.calendar-row.prep {
+  background-color: color-mix(in srgb, #e0ffe0 75%, var(--row-area-color, white)) !important; /* Green for prep days */
+}
+
+.calendar-row.shoot {
+  background-color: color-mix(in srgb, #e0f0ff 75%, var(--row-area-color, white)) !important; /* Light/teal blue for shoot days */
+}
+
+.calendar-row.weekend {
+  background-color: color-mix(in srgb, #f0f0f0 75%, var(--row-area-color, white)) !important; /* Subtle light gray for weekends */
+}
+
+/* Ensure print styles match */
+@media print {
+  .calendar-row.prep {
+    background-color: color-mix(in srgb, #e0ffe0 75%, var(--row-area-color, white)) !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  
+  .calendar-row.shoot {
+    background-color: color-mix(in srgb, #e0f0ff 75%, var(--row-area-color, white)) !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  
+  .calendar-row.weekend {
+    background-color: color-mix(in srgb, #f0f0f0 75%, var(--row-area-color, white)) !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+/* Center location area legend */
+.location-areas {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.area-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  justify-content: center;
+}
+/* Department Counters Improvements */
+.department-counters {
+  margin-bottom: 1.2rem;
+  background-color: #f8f9fa;
+  padding: 0.8rem;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.counter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 0.5rem;
+  row-gap: 0.7rem;
+}
+
+.counter-item {
+  border-radius: 4px;
+  padding: 0.4rem 0.3rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 3rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease;
+}
+
+.counter-item:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.counter-label {
+  font-size: 0.7rem;
+  margin-bottom: 0.2rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.counter-value {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+@media print {
+  .counter-grid {
+    grid-template-columns: repeat(8, 1fr);
+  }
+  
+  .counter-item {
+    min-height: auto;
+    padding: 0.2rem;
+  }
+}
+/* Further Column Width and Height Adjustments - 25% Reduction */
+.calendar-table th,
+.calendar-table td {
+  padding: 0.3rem;  /* Further reduced from 0.4rem */
+  font-size: 0.75rem;  /* Further reduced from 0.8rem */
+}
+
+.calendar-row {
+  max-height: 3.5rem;  /* Reduced from 4.5rem - approx 25% reduction */
+}
+
+/* Refined column widths */
+.date-col {
+  width: 80px;  /* Reduced from 85px */
+}
+
+.day-col {
+  width: 30px;  /* Reduced from 35px */
+}
+
+.main-unit-col {
+  width: 170px;  /* Refined from default */
+}
+
+.extras-col,
+.featured-extras-col {
+  width: 25px;  /* Reduced from 30px */
+}
+
+.location-col {
+  width: 110px;  /* Reduced from default */
+}
+
+.sequence-col {
+  width: 70px;  /* Reduced from 80px */
+}
+
+.departments-col {
+  width: 110px;  /* Reduced from 120px */
+}
+
+.notes-col {
+  width: 160px;  /* Reduced from 180px */
+}
+
+/* Vertical spacing adjustments */
+.date-cell .date-display {
+  font-size: 0.75rem;  /* Reduced from 0.8rem */
+}
+
+.date-cell .date-day {
+  font-size: 0.7rem;  /* Reduced from 0.75rem */
+}
+
+.day-cell {
+  font-size: 0.9rem;  /* Reduced from 1rem */
+}
+
+.departments-cell {
+  max-height: 2.8rem;  /* Reduced from 3.2rem - approx 25% reduction */
+}
+
+/* Even more compact department tags */
+.department-tag {
+  padding: 0.07rem 0.25rem;  /* Reduced from 0.1rem 0.3rem */
+  font-size: 0.65rem;  /* Reduced from 0.7rem */
+}
+
+@media print {
+  .calendar-table th,
+  .calendar-table td {
+    padding: 2pt;  /* Reduced for print */
+    font-size: 7pt;  /* Reduced for print */
+  }
+  
+  .calendar-row {
+    max-height: none;  /* Allow natural height in print */
   }
 }
