@@ -1864,14 +1864,22 @@
       "isWorkingWeekend": false,
       "dayType": "shoot",
       "shootDay": 1,
-      "mainUnit": "",
+      "mainUnit": "CANNON HOUSE - KITCHEN",
       "extras": 0,
       "featuredExtras": 0,
       "location": "",
-      "locationArea": "",
+      "locationArea": "Ardmore Studios",
       "sequence": "",
-      "departments": [],
-      "notes": ""
+      "departments": [
+        "INT",
+        "FOD",
+        "STN",
+        "SFX",
+        "VFX"
+      ],
+      "notes": "",
+      "secondUnit": "",
+      "secondUnitLocation": ""
     },
     {
       "date": "2025-03-25",
@@ -1942,14 +1950,8 @@
       "location": "",
       "locationArea": "",
       "sequence": "",
-      "departments": [
-        "ST",
-        "STN",
-        "INCY"
-      ],
-      "notes": "",
-      "secondUnit": "",
-      "secondUnitLocation": ""
+      "departments": [],
+      "notes": ""
     },
     {
       "date": "2025-03-28",
@@ -3829,13 +3831,15 @@
     "secondUnit": 0,
     "splitDay": 0,
     "sixthDay": 1,
-    "steadicam": 1,
-    "sfx": 0,
+    "steadicam": 0,
+    "sfx": 1,
     "stunts": 1,
     "crane": 0,
     "prosthetics": 0,
     "lowLoader": 0,
-    "intimacy": 1
+    "int": 1,
+    "fod": 1,
+    "vfx": 1
   },
   "locationAreas": [
     {
@@ -3874,5 +3878,5 @@
       "id": "4459abff-cd87-4fdc-a238-1ff355b2e970"
     }
   ],
-  "lastUpdated": "2025-04-12T13:25:46.370290Z"
+  "lastUpdated": "2025-04-13T00:48:12.098313Z"
 }

@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}{{ project.title or 'Untitled Project' }} - Schedule, At a Glance!{% endblock %}
+{% block title %}Calendar Editor - Schedule, At a Glance!{% endblock %}
 
 {% block styles %}
 <link rel="stylesheet" href="/static/css/calendar.css">
@@ -8,23 +8,21 @@
 
 {% block content %}
 <div class="admin-header">
-    <h2>{{ project.title or 'Untitled Project' }}</h2>
+    <h2>Calendar Editor - {{ project.title or 'Untitled Project' }}</h2>
     <div class="admin-actions">
-        <button onclick="window.print();" class="print-button">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="6 9 6 2 18 2 18 9"></polyline>
-                <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
-                <rect x="6" y="14" width="12" height="8"></rect>
-            </svg>
-            Print
-        </button>
-        <a href="/admin/calendar/{{ project.id }}" class="button">Edit Calendar</a>
-        <a href="/" class="button secondary">Back to Dashboard</a>
+        <a href="/admin/project/{{ project.id }}" class="button">Edit Project Details</a>
+        <a href="/admin/dates/{{ project.id }}" class="button">Special Dates</a>
+        <a href="/admin/dates/{{ project.id }}" class="button">Special Dates</a>
+        <a href="/admin/locations" class="button">Locations</a>
+        <a href="/admin/departments" class="button">Departments</a>
+        <a href="/viewer/{{ project.id }}" class="button secondary">View Calendar</a>
+        <a href="/admin" class="button secondary">Back to Dashboard</a>
     </div>
 </div>
 
 {% if calendar and calendar.days %}
-<div class="calendar-container viewer-mode">
+<div class="calendar-container admin-calendar">
+    <input type="hidden" id="project-id" value="{{ project.id }}">
     <!-- Hidden element for department data -->
     <script id="department-data" type="application/json">
         {% if calendar.departments %}
@@ -41,7 +39,6 @@
     <div class="project-info-header">
         <div class="project-header-top">
             <h3 class="project-title">{{ project.title or 'Untitled Project' }}</h3>
-            <div class="Production Company">{{ project.productionCompany or 'Production Commpany' }}</div>
             <div class="version-badge">{{ project.version or 'V1.0' }}</div>
         </div>
         <div class="project-meta">
@@ -54,16 +51,12 @@
                 <div class="meta-value">{{ project.producer or 'N/A' }}</div>
             </div>
             <div class="meta-group">
-                <div class="meta-label">Line Producer</div>
-                <div class="meta-value">{{ project.lineProducer or 'N/A' }}</div>
+                <div class="meta-label">First AD</div>
+                <div class="meta-value">{{ project.firstAD or 'N/A' }}</div>
             </div>
             <div class="meta-group">
                 <div class="meta-label">Second AD</div>
                 <div class="meta-value">{{ project.secondAD or 'N/A' }}</div>
-            </div>
-            <div class="meta-group">
-                <div class="meta-label">First AD</div>
-                <div class="meta-value">{{ project.firstAD or 'N/A' }}</div>
             </div>
         </div>
         
@@ -94,6 +87,12 @@
                 <div class="script-value">{{ project.scriptEpisode }}</div>
             </div>
             {% endif %}
+            {% if project.scriptDated %}
+            <div class="script-item">
+                <div class="script-label">Dated:</div>
+                <div class="script-value">{{ project.scriptDated }}</div>
+            </div>
+            {% endif %}
             {% if project.scriptColor %}
             <div class="script-item">
                 <div class="script-label">Color:</div>
@@ -114,14 +113,15 @@
                 </div>
             </div>
             {% endif %}
-            {% if project.scriptDated %}
-            <div class="script-item">
-                <div class="script-label">Dated:</div>
-                <div class="script-value">{{ project.scriptDated }}</div>
-            </div>
-            {% endif %}
         </div>
         {% endif %}
+    </div>
+    
+    <div class="calendar-actions">
+        <h3>Shoot Days</h3>
+        <div class="action-buttons">
+            <button class="button" id="regenerate-calendar">Regenerate Calendar</button>
+        </div>
     </div>
     
     <div class="department-counters">
@@ -162,12 +162,10 @@
             
             <!-- Loop through standard departments -->
             {% for key, info in standard_depts.items() %}
-                {% if calendar.departmentCounts[key] and calendar.departmentCounts[key] > 0 %}
                 <div class="counter-item" style="background-color: {{ info.color }};">
                     <div class="counter-label">{{ info.label }}</div>
                     <div class="counter-value">{{ calendar.departmentCounts[key] or 0 }}</div>
                 </div>
-                {% endif %}
             {% endfor %}
             
             <!-- Custom departments from the departments list -->
@@ -250,11 +248,54 @@
 {% else %}
 <div class="empty-state">
     <p>Calendar data is not available for this project.</p>
-    <p>Please contact the administrator to generate the calendar.</p>
+    <p>Click "Regenerate Calendar" to create the calendar based on project dates.</p>
+    <button class="button" id="regenerate-calendar">Regenerate Calendar</button>
 </div>
 {% endif %}
 {% endblock %}
 
 {% block scripts %}
+<script src="/static/js/calendar-move.js"></script>
 <script src="/static/js/calendar.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Add click handler for regenerate calendar button
+        const regenerateBtn = document.getElementById("regenerate-calendar");
+        if (regenerateBtn) {
+            regenerateBtn.addEventListener("click", function(e) {
+                e.preventDefault();
+                
+                // Show confirmation dialog
+                if (confirm("WARNING: Regenerating the calendar will reset all day information to defaults based on project dates. This cannot be undone. Are you sure you want to proceed?")) {
+                    // Show loading state
+                    this.textContent = "Generating...";
+                    this.disabled = true;
+                    
+                    // Call the API to regenerate calendar
+                    fetch("/api/projects/{{ project.id }}/calendar/generate", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        }
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error("Failed to regenerate calendar");
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Reload page to show updated calendar
+                        window.location.reload();
+                    })
+                    .catch(error => {
+                        alert("Error: " + error.message);
+                        this.textContent = "Regenerate Calendar";
+                        this.disabled = false;
+                    });
+                }
+            });
+        }
+    });
+</script>
 {% endblock %}

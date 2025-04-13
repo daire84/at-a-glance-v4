@@ -328,3 +328,26 @@
 <!-- ... Modal code and JavaScript remain the same ... -->
 {% endblock %}
 
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // DOM elements for project selection
+    const projectSelect = document.getElementById('project-select');
+    
+    // Handle project selection change
+    projectSelect.addEventListener('change', function() {
+        if (this.value) {
+            window.location.href = `/admin/dates/${this.value}`;
+        } else {
+            window.location.href = '/admin/dates';
+        }
+    });
+    
+    // Load data if project is selected
+    if (projectSelect.value) {
+        // Your existing JavaScript for loading dates would be here
+        // This part remains unchanged
+    }
+});
+</script>
+{% endblock %}

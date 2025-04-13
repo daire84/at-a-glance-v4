@@ -38,6 +38,7 @@
     <div class="project-info-header">
         <div class="project-header-top">
             <h3 class="project-title">{{ project.title or 'Untitled Project' }}</h3>
+            <div class="Production Company">{{ project.productionCompany or 'Production Commpany' }}</div>
             <div class="version-badge">{{ project.version or 'V1.0' }}</div>
         </div>
         <div class="project-meta">
@@ -50,15 +51,19 @@
                 <div class="meta-value">{{ project.producer or 'N/A' }}</div>
             </div>
             <div class="meta-group">
-                <div class="meta-label">First AD</div>
-                <div class="meta-value">{{ project.firstAD or 'N/A' }}</div>
+                <div class="meta-label">Line Producer</div>
+                <div class="meta-value">{{ project.lineProducer or 'N/A' }}</div>
             </div>
             <div class="meta-group">
                 <div class="meta-label">Second AD</div>
                 <div class="meta-value">{{ project.secondAD or 'N/A' }}</div>
             </div>
+            <div class="meta-group">
+                <div class="meta-label">First AD</div>
+                <div class="meta-value">{{ project.firstAD or 'N/A' }}</div>
+            </div>
         </div>
-        
+
         <div class="project-meta">
             <div class="meta-group">
                 <div class="meta-label">Shoot Start</div>
@@ -86,12 +91,6 @@
                 <div class="script-value">{{ project.scriptEpisode }}</div>
             </div>
             {% endif %}
-            {% if project.scriptDated %}
-            <div class="script-item">
-                <div class="script-label">Dated:</div>
-                <div class="script-value">{{ project.scriptDated }}</div>
-            </div>
-            {% endif %}
             {% if project.scriptColor %}
             <div class="script-item">
                 <div class="script-label">Color:</div>
@@ -112,10 +111,16 @@
                 </div>
             </div>
             {% endif %}
+            {% if project.scriptDated %}
+            <div class="script-item">
+                <div class="script-label">Dated:</div>
+                <div class="script-value">{{ project.scriptDated }}</div>
+            </div>
+            {% endif %}
         </div>
         {% endif %}
     </div>
-    
+
     <div class="calendar-actions">
         <h3>Shoot Days</h3>
         <div class="action-buttons">
@@ -172,7 +177,7 @@
                 {% for dept in calendar.departments %}
                     {% set dept_key = dept.id.lower() if dept.id else dept.name|lower|replace(' ', '_') %}
                     {% set dept_code = dept.code|lower %}
-                    {% if dept_key not in standard_depts and dept_code not in ['sfx', 'stn', 'cr', 'st', 'pr', 'll', 'vfx', 'ani', 'uw', 'incy', 'test'] and dept_key in calendar.departmentCounts %}
+                    {% if dept_key not in standard_depts and dept_code not in ['sfx', 'stn', 'cr', 'st', 'pr', 'll', 'vfx', 'ani', 'uw', 'int', 'fod'] and dept_key in calendar.departmentCounts %}
                     <div class="counter-item" style="background-color: {{ dept.color }};">
                         <div class="counter-label">{{ dept.name }}</div>
                         <div class="counter-value">{{ calendar.departmentCounts[dept_key] or 0 }}</div>

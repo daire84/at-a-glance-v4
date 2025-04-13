@@ -129,7 +129,117 @@ def generate_calendar(project):
         logger.error(f"Error generating calendar: {str(e)}")
         return {"days": []}
 
-# Routes
+def update_day_from_form(day, form_data):
+    """
+    Update a day object with data from the submitted form
+    
+    Args:
+        day (dict): The day object to update
+        form_data (dict): Form data from request
+        
+    Returns:
+        dict: The updated day object
+    """
+    try:
+        # Update basic fields
+        for field in ['mainUnit', 'sequence', 'location', 'locationArea', 'notes', 'secondUnit', 'secondUnitLocation']:
+            if field in form_data:
+                day[field] = form_data[field]
+        
+        # Handle numeric fields
+        for field in ['extras', 'featuredExtras']:
+            if field in form_data:
+                day[field] = int(form_data[field]) if form_data[field] else 0
+        
+        # Handle departments (now comes as comma-separated string)
+        if 'departments' in form_data:
+            if form_data['departments']:
+                # Split by comma and remove any empty entries
+                departments = [d.strip() for d in form_data['departments'].split(',') if d.strip()]
+                day['departments'] = departments
+            else:
+                day['departments'] = []
+        
+        return day
+    
+    except Exception as e:
+        logger.error(f"Error updating day from form: {str(e)}")
+        return day
+
+def save_day_changes(project_id, date, form_data):
+    """
+    Save changes to a calendar day
+    
+    Args:
+        project_id (str): Project ID
+        date (str): Date in YYYY-MM-DD format
+        form_data (dict): Form data from request
+        
+    Returns:
+        bool: True if successful, False otherwise
+    """
+    try:
+        data_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        project_dir = os.path.join(data_dir, 'data', 'projects', project_id)
+        calendar_file = os.path.join(project_dir, 'calendar.json')
+        
+        # Load calendar data
+        if os.path.exists(calendar_file):
+            with open(calendar_file, 'r') as f:
+                calendar_data = json.load(f)
+        else:
+            logger.error(f"Calendar file not found for project {project_id}")
+            return False
+        
+        # Find the day
+        day_index = next((i for i, d in enumerate(calendar_data.get('days', [])) if d.get('date') == date), None)
+        
+        if day_index is None:
+            logger.error(f"Day not found: {date}")
+            return False
+        
+        # Update day with form data
+        calendar_data['days'][day_index] = update_day_from_form(calendar_data['days'][day_index], form_data)
+        
+        # Save calendar data
+        with open(calendar_file, 'w') as f:
+            json.dump(calendar_data, f, indent=2)
+        
+        return True
+    
+    except Exception as e:
+        logger.error(f"Error saving day changes: {str(e)}")
+        return False
+
+def recalculate_shoot_days(days):
+    """
+    Recalculate shoot day numbers based on the chronological order
+    
+    Args:
+        days (list): List of calendar day objects
+    """
+    try:
+        # Sort days by date
+        days.sort(key=lambda d: d.get('date', ''))
+        
+        # Reset shoot day numbers
+        shoot_day = 0
+        for day in days:
+            if day.get('isShootDay', False):
+                shoot_day += 1
+                day['shootDay'] = shoot_day
+            else:
+                day['shootDay'] = None
+                
+        return days
+    except Exception as e:
+        logger.error(f"Error recalculating shoot days: {str(e)}")
+        return days
+
+# -------------------------------------------------------------------------
+# PAGE ROUTES
+# -------------------------------------------------------------------------
+
 @app.route('/')
 def index():
     """Home page - Project selection"""
@@ -142,7 +252,6 @@ def admin_dashboard():
     projects = get_projects()
     return render_template('admin/dashboard.html', projects=projects)
 
-@app.route('/admin/project/<project_id>', methods=['GET', 'POST'])
 @app.route('/admin/project/<project_id>', methods=['GET', 'POST'])
 def admin_project(project_id):
     """Project details editor"""
@@ -205,6 +314,7 @@ def admin_project(project_id):
     # GET request or form validation failed
     project = get_project(project_id) if project_id != 'new' else {}
     return render_template('admin/project.html', project=project)
+
 @app.route('/admin/calendar/<project_id>')
 def admin_calendar(project_id):
     """Calendar editor"""
@@ -233,7 +343,6 @@ def admin_calendar(project_id):
     
     return render_template('admin/calendar.html', project=project, calendar=calendar_data)
 
-# Replace the existing admin_day route in app.py with this enhanced version
 @app.route('/admin/day/<project_id>/<date>', methods=['GET', 'POST'])
 def admin_day(project_id, date):
     """Day editor"""
@@ -293,12 +402,12 @@ def admin_day(project_id, date):
             if day.get('isPrep', False) and not day.get('isShootDay', False):
                 is_shoot_period = datetime.strptime(day['date'], "%Y-%m-%d").date() >= datetime.strptime(project['shootStartDate'], "%Y-%m-%d").date()
                 
-                if is_shoot_period and day.get('mainUnit') or day.get('sequence'):
+                if is_shoot_period and (day.get('mainUnit') or day.get('sequence')):
                     day['isPrep'] = False
                     day['isShootDay'] = True
                     
                     # Recalculate shoot days
-                    recalculate_shoot_days(calendar_data['days'])
+                    calendar_data['days'] = recalculate_shoot_days(calendar_data['days'])
             
             # Save calendar data
             save_project_calendar(project_id, calendar_data)
@@ -316,43 +425,6 @@ def admin_day(project_id, date):
             flash(f'Error updating day: {str(e)}', 'error')
     
     return render_template('admin/day.html', project=project, day=day)
-
-def update_day_from_form(day, form_data):
-    """
-    Update a day object with data from the submitted form
-    
-    Args:
-        day (dict): The day object to update
-        form_data (dict): Form data from request
-        
-    Returns:
-        dict: The updated day object
-    """
-    try:
-        # Update basic fields
-        for field in ['mainUnit', 'sequence', 'location', 'locationArea', 'notes', 'secondUnit', 'secondUnitLocation']:
-            if field in form_data:
-                day[field] = form_data[field]
-        
-        # Handle numeric fields
-        for field in ['extras', 'featuredExtras']:
-            if field in form_data:
-                day[field] = int(form_data[field]) if form_data[field] else 0
-        
-        # Handle departments (now comes as comma-separated string)
-        if 'departments' in form_data:
-            if form_data['departments']:
-                # Split by comma and remove any empty entries
-                departments = [d.strip() for d in form_data['departments'].split(',') if d.strip()]
-                day['departments'] = departments
-            else:
-                day['departments'] = []
-        
-        return day
-    
-    except Exception as e:
-        logger.error(f"Error updating day from form: {str(e)}")
-        return day
 
 @app.route('/viewer/<project_id>')
 def viewer(project_id):
@@ -382,7 +454,33 @@ def viewer(project_id):
     
     return render_template('viewer.html', project=project, calendar=calendar_data)
 
-# API Routes
+@app.route('/admin/locations')
+def admin_locations():
+    """Location management page"""
+    return render_template('admin/locations.html')
+
+@app.route('/admin/departments')
+def admin_departments():
+    """Department management page"""
+    return render_template('admin/departments.html')
+
+@app.route('/admin/dates')
+@app.route('/admin/dates/<project_id>')
+def admin_dates(project_id=None):
+    """Special dates management page"""
+    projects = get_projects()
+    return render_template('admin/dates.html', projects=projects, project_id=project_id)
+
+@app.route('/health')
+def health():
+    """Health check endpoint"""
+    return jsonify({"status": "ok", "version": "1.0.0"}), 200
+
+# -------------------------------------------------------------------------
+# API ROUTES
+# -------------------------------------------------------------------------
+
+# Project API Routes
 @app.route('/api/projects', methods=['GET', 'POST'])
 def api_projects():
     """List or create projects"""
@@ -417,6 +515,7 @@ def api_project(project_id):
             return jsonify({'success': True})
         return jsonify({'error': 'Project not found'}), 404
 
+# Calendar API Routes
 @app.route('/api/projects/<project_id>/calendar', methods=['GET', 'POST'])
 def api_project_calendar(project_id):
     """Get or update project calendar"""
@@ -465,8 +564,6 @@ def api_calendar_day(project_id, date):
         save_project_calendar(project_id, calendar_data)
         
         return jsonify(calendar_data['days'][day_index])
-
-# Add this new endpoint to app.py after the other calendar-related API routes
 
 @app.route('/api/projects/<project_id>/calendar/move-day', methods=['POST'])
 def api_move_calendar_day(project_id):
@@ -574,20 +671,9 @@ def api_move_calendar_day(project_id):
             return jsonify({'error': 'Unsupported move mode'}), 400
         
         # Now recalculate shoot day numbers
-        # Sort days by date
-        days.sort(key=lambda d: d.get('date', ''))
-        
-        # Reset shoot day numbers
-        shoot_day = 0
-        for day in days:
-            if day.get('isShootDay', False):
-                shoot_day += 1
-                day['shootDay'] = shoot_day
-            else:
-                day['shootDay'] = None
+        calendar_data['days'] = recalculate_shoot_days(days)
         
         # Save the updated calendar
-        calendar_data['days'] = days
         save_project_calendar(project_id, calendar_data)
         
         return jsonify({
@@ -600,81 +686,9 @@ def api_move_calendar_day(project_id):
     
     except Exception as e:
         logger.error(f"Error moving calendar day: {str(e)}")
-        return jsonify({'error': f'Error moving calendar day: {str(e)}'}), 500@app.route('/health')
-def health():
-    return jsonify({"status": "ok", "version": "1.0.0"}), 200
+        return jsonify({'error': f'Error moving calendar day: {str(e)}'}), 500
 
-# Static files
-@app.route('/static/<path:path>')
-def serve_static(path):
-    return send_from_directory('static', path)
-
-# Error handlers
-@app.errorhandler(404)
-def page_not_found(e):
-    return render_template('404.html'), 404
-
-@app.errorhandler(500)
-def server_error(e):
-    return render_template('500.html'), 500
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
-
-def save_day_changes(project_id, date, form_data):
-    """
-    Save changes to a calendar day
-    
-    Args:
-        project_id (str): Project ID
-        date (str): Date in YYYY-MM-DD format
-        form_data (dict): Form data from request
-        
-    Returns:
-        bool: True if successful, False otherwise
-    """
-    try:
-        data_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        project_dir = os.path.join(data_dir, 'data', 'projects', project_id)
-        calendar_file = os.path.join(project_dir, 'calendar.json')
-        
-        # Load calendar data
-        if os.path.exists(calendar_file):
-            with open(calendar_file, 'r') as f:
-                calendar_data = json.load(f)
-        else:
-            logger.error(f"Calendar file not found for project {project_id}")
-            return False
-        
-        # Find the day
-        day_index = next((i for i, d in enumerate(calendar_data.get('days', [])) if d.get('date') == date), None)
-        
-        if day_index is None:
-            logger.error(f"Day not found: {date}")
-            return False
-        
-        # Update day with form data
-        calendar_data['days'][day_index] = update_day_from_form(calendar_data['days'][day_index], form_data)
-        
-        # Save calendar data
-        with open(calendar_file, 'w') as f:
-            json.dump(calendar_data, f, indent=2)
-        
-        return True
-    
-    except Exception as e:
-        logger.error(f"Error saving day changes: {str(e)}")
-        return False
-
-# Add these routes to app.py after the existing routes
-
-# Location and Area Management
-@app.route('/admin/locations')
-def admin_locations():
-    """Location management page"""
-    return render_template('admin/locations.html')
-
-# API Routes for Locations
+# Location API Routes
 @app.route('/api/locations', methods=['GET', 'POST'])
 def api_locations():
     """List or create locations"""
@@ -757,7 +771,7 @@ def api_location(location_id):
         
         return jsonify({'success': True})
 
-# API Routes for Location Areas
+# Area API Routes
 @app.route('/api/areas', methods=['GET', 'POST'])
 def api_areas():
     """List or create location areas"""
@@ -840,15 +854,7 @@ def api_area(area_id):
         
         return jsonify({'success': True})
 
-# Add these routes to app.py after the location routes
-
-# Department Management
-@app.route('/admin/departments')
-def admin_departments():
-    """Department management page"""
-    return render_template('admin/departments.html')
-
-# API Routes for Departments
+# Department API Routes
 @app.route('/api/departments', methods=['GET', 'POST'])
 def api_departments():
     """List or create departments"""
@@ -931,17 +937,7 @@ def api_department(department_id):
         
         return jsonify({'success': True})
 
-# Add these routes to app.py after the department routes
-
-# Special Dates Management
-@app.route('/admin/dates')
-@app.route('/admin/dates/<project_id>')
-def admin_dates(project_id=None):
-    """Special dates management page"""
-    projects = get_projects()
-    return render_template('admin/dates.html', projects=projects, project_id=project_id)
-
-# API Routes for Working Weekends
+# Special Dates (Weekends) API Routes
 @app.route('/api/projects/<project_id>/weekends', methods=['GET', 'POST'])
 def api_weekends(project_id):
     """List or create working weekends for a project"""
@@ -1031,7 +1027,7 @@ def api_weekend(project_id, weekend_id):
         
         return jsonify({'success': True})
 
-# API Routes for Bank Holidays
+# Special Dates (Holidays) API Routes
 @app.route('/api/projects/<project_id>/holidays', methods=['GET', 'POST'])
 def api_holidays(project_id):
     """List or create bank holidays for a project"""
@@ -1121,7 +1117,7 @@ def api_holiday(project_id, holiday_id):
         
         return jsonify({'success': True})
 
-# API Routes for Hiatus Periods
+# Special Dates (Hiatus) API Routes
 @app.route('/api/projects/<project_id>/hiatus', methods=['GET', 'POST'])
 def api_hiatus_periods(project_id):
     """List or create hiatus periods for a project"""
@@ -1211,7 +1207,7 @@ def api_hiatus_period(project_id, hiatus_id):
         
         return jsonify({'success': True})
 
-# API Routes for Special Dates
+# Special Dates (Other) API Routes
 @app.route('/api/projects/<project_id>/special-dates', methods=['GET', 'POST'])
 def api_special_dates(project_id):
     """List or create special dates for a project"""
@@ -1300,3 +1296,20 @@ def api_special_date(project_id, special_date_id):
             json.dump(special_dates, f, indent=2)
         
         return jsonify({'success': True})
+
+# Static files
+@app.route('/static/<path:path>')
+def serve_static(path):
+    return send_from_directory('static', path)
+
+# Error handlers
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
+
+@app.errorhandler(500)
+def server_error(e):
+    return render_template('500.html'), 500
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000, debug=True)

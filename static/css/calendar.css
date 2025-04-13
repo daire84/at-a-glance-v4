@@ -584,6 +584,20 @@
     print-color-adjust: exact;
   }
 }
+
+/* Special dates styling */
+.calendar-row.holiday {
+  background-color: color-mix(in srgb, #fff0e0 75%, var(--row-area-color, white)) !important; /* Light orange for holidays */
+}
+
+.calendar-row.hiatus {
+  background-color: color-mix(in srgb, #ffe0e0 75%, var(--row-area-color, white)) !important; /* Light pink for hiatus periods */
+}
+
+.calendar-row.working-weekend {
+  background-color: color-mix(in srgb, #e0f0e0 75%, var(--row-area-color, white)) !important; /* Light teal-green for working weekends */
+}
+
 /* Center location area legend */
 .location-areas {
   display: flex;
@@ -722,14 +736,39 @@
   font-size: 0.65rem;  /* Reduced from 0.7rem */
 }
 
-@media print {
-  .calendar-table th,
-  .calendar-table td {
-    padding: 2pt;  /* Reduced for print */
-    font-size: 7pt;  /* Reduced for print */
-  }
-  
-  .calendar-row {
-    max-height: none;  /* Allow natural height in print */
-  }
+.calendar-row.prep {
+  background-color: color-mix(in srgb, #e0ffe0 75%, var(--row-area-color, white)) !important;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
 }
+
+.calendar-row.shoot {
+  background-color: color-mix(in srgb, #e0f0ff 75%, var(--row-area-color, white)) !important;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.calendar-row.weekend {
+  background-color: color-mix(in srgb, #f0f0f0 75%, var(--row-area-color, white)) !important;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.calendar-row.holiday {
+  background-color: color-mix(in srgb, #fff0e0 75%, var(--row-area-color, white)) !important;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.calendar-row.hiatus {
+  background-color: color-mix(in srgb, #ffe0e0 75%, var(--row-area-color, white)) !important;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.calendar-row.working-weekend {
+  background-color: color-mix(in srgb, #e0f0e0 75%, var(--row-area-color, white)) !important;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
