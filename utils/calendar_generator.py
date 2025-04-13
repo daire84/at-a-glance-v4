@@ -166,8 +166,22 @@ def initialize_department_counts():
         "lowLoader": 0
     }
 
+# Update the get_day_type function to better handle working weekends
 def get_day_type(is_prep, is_shoot_day, is_weekend, is_holiday, is_hiatus, is_working_weekend):
-    """Determine the type of day for styling purposes"""
+    """
+    Determine the type of day for styling purposes
+    
+    Args:
+        is_prep (bool): Whether the day is a prep day
+        is_shoot_day (bool): Whether the day is a shoot day
+        is_weekend (bool): Whether the day is a weekend
+        is_holiday (bool): Whether the day is a holiday
+        is_hiatus (bool): Whether the day is a hiatus day
+        is_working_weekend (bool): Whether the day is a working weekend
+        
+    Returns:
+        str: Day type identifier for styling
+    """
     if is_hiatus:
         return "hiatus"
     elif is_holiday:
@@ -177,7 +191,10 @@ def get_day_type(is_prep, is_shoot_day, is_weekend, is_holiday, is_hiatus, is_wo
     elif is_shoot_day:
         return "shoot"
     elif is_weekend:
-        return "weekend"
+        if is_working_weekend:
+            return "working-weekend"
+        else:
+            return "weekend"
     else:
         return "normal"
 
@@ -200,21 +217,33 @@ def load_bank_holidays(project_id):
         return []
 
 def load_working_weekends(project_id):
-    """Load working weekends for a project"""
+    """
+    Load working weekends for a project
+    
+    Args:
+        project_id (str): Project ID
+        
+    Returns:
+        list: List of working weekend objects
+    """
     if not project_id:
+        logger.warning("No project_id provided to load_working_weekends")
         return []
     
     data_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     weekends_file = os.path.join(data_dir, 'data', 'projects', project_id, 'weekends.json')
     
     if not os.path.exists(weekends_file):
+        logger.info(f"No weekends file exists for project {project_id}")
         return []
     
     try:
         with open(weekends_file, 'r') as f:
-            return json.load(f)
+            weekends = json.load(f)
+        logger.info(f"Loaded {len(weekends)} working weekends for project {project_id}")
+        return weekends
     except Exception as e:
-        logger.error(f"Error loading working weekends: {str(e)}")
+        logger.error(f"Error loading working weekends for project {project_id}: {str(e)}")
         return []
 
 def load_hiatus_periods(project_id):
@@ -262,14 +291,45 @@ def get_holiday_data(date_str, holidays):
     return None
 
 def is_working_weekend_date(date_str, working_weekends):
-    """Check if a date is a working weekend"""
-    return any(w.get('date') == date_str for w in working_weekends)
+    """
+    Check if a date is designated as a working weekend
+    
+    Args:
+        date_str (str): Date string in format YYYY-MM-DD
+        working_weekends (list): List of working weekend objects
+        
+    Returns:
+        bool: True if the date is a working weekend, False otherwise
+    """
+    if not date_str or not working_weekends:
+        return False
+    
+    # Check if the date is in the list of working weekends
+    for weekend in working_weekends:
+        if weekend.get('date') == date_str:
+            return True
+    
+    return False
 
 def get_working_weekend_data(date_str, working_weekends):
-    """Get working weekend data for a specific date"""
+    """
+    Get working weekend data for a specific date
+    
+    Args:
+        date_str (str): Date string in format YYYY-MM-DD
+        working_weekends (list): List of working weekend objects
+        
+    Returns:
+        dict or None: Working weekend data if found, None otherwise
+    """
+    if not date_str or not working_weekends:
+        return None
+
+    # Find the working weekend data for the date
     for weekend in working_weekends:
         if weekend.get('date') == date_str:
             return weekend
+    
     return None
 
 def is_in_hiatus(date_str, hiatus_periods):

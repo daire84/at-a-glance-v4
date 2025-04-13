@@ -938,6 +938,8 @@ def api_department(department_id):
         return jsonify({'success': True})
 
 # Special Dates (Weekends) API Routes
+# Enhanced Working Weekends API Routes
+
 @app.route('/api/projects/<project_id>/weekends', methods=['GET', 'POST'])
 def api_weekends(project_id):
     """List or create working weekends for a project"""
@@ -945,40 +947,98 @@ def api_weekends(project_id):
     weekends_file = os.path.join(project_dir, 'weekends.json')
     
     if not os.path.exists(project_dir):
+        logger.error(f"Project directory not found for project_id: {project_id}")
         return jsonify({'error': 'Project not found'}), 404
     
     if request.method == 'GET':
         # Get all working weekends for the project
         if os.path.exists(weekends_file):
-            with open(weekends_file, 'r') as f:
-                weekends = json.load(f)
+            try:
+                with open(weekends_file, 'r') as f:
+                    weekends = json.load(f)
+                logger.info(f"Retrieved {len(weekends)} working weekends for project {project_id}")
+                return jsonify(weekends)
+            except Exception as e:
+                logger.error(f"Error reading weekends file for project {project_id}: {str(e)}")
+                return jsonify({'error': f'Error reading weekends data: {str(e)}'}), 500
         else:
-            weekends = []
-        return jsonify(weekends)
+            logger.info(f"No weekends file found for project {project_id}, returning empty list")
+            return jsonify([])
     
     elif request.method == 'POST':
         # Create new working weekend
-        weekend_data = request.get_json()
-        
-        # Add ID if not present
-        if 'id' not in weekend_data:
-            weekend_data['id'] = str(uuid.uuid4())
-        
-        # Read existing weekends
-        if os.path.exists(weekends_file):
-            with open(weekends_file, 'r') as f:
-                weekends = json.load(f)
-        else:
+        try:
+            weekend_data = request.get_json()
+            if not weekend_data:
+                logger.error("No data provided in POST request to weekends endpoint")
+                return jsonify({'error': 'No data provided'}), 400
+            
+            # Validate required fields
+            if 'date' not in weekend_data:
+                logger.error("Required field 'date' missing in weekend data")
+                return jsonify({'error': "Required field 'date' missing"}), 400
+            
+            # Validate date is a weekend (Saturday or Sunday)
+            try:
+                date = datetime.strptime(weekend_data['date'], "%Y-%m-%d").date()
+                if date.weekday() not in [5, 6]:  # 5=Saturday, 6=Sunday
+                    logger.warning(f"Date {weekend_data['date']} is not a weekend")
+                    return jsonify({'error': 'Selected date is not a weekend (Saturday or Sunday)'}), 400
+            except ValueError:
+                logger.error(f"Invalid date format: {weekend_data['date']}")
+                return jsonify({'error': 'Invalid date format. Use YYYY-MM-DD'}), 400
+            
+            # Add ID if not present
+            if 'id' not in weekend_data:
+                weekend_data['id'] = str(uuid.uuid4())
+            
+            # Default isShootDay to True if not provided
+            if 'isShootDay' not in weekend_data:
+                weekend_data['isShootDay'] = True
+            
+            # Read existing weekends
             weekends = []
-        
-        # Add new weekend
-        weekends.append(weekend_data)
-        
-        # Save weekends
-        with open(weekends_file, 'w') as f:
-            json.dump(weekends, f, indent=2)
-        
-        return jsonify(weekend_data), 201
+            if os.path.exists(weekends_file):
+                with open(weekends_file, 'r') as f:
+                    weekends = json.load(f)
+            
+            # Check if weekend already exists for the date
+            existing_index = next((i for i, w in enumerate(weekends) if w.get('date') == weekend_data['date']), None)
+            if existing_index is not None:
+                logger.info(f"Working weekend for date {weekend_data['date']} already exists, updating")
+                weekends[existing_index] = weekend_data
+            else:
+                # Add new weekend
+                weekends.append(weekend_data)
+            
+            # Ensure the directory exists
+            os.makedirs(os.path.dirname(weekends_file), exist_ok=True)
+            
+            # Save weekends
+            with open(weekends_file, 'w') as f:
+                json.dump(weekends, f, indent=2)
+            
+            logger.info(f"Successfully saved working weekend for {weekend_data['date']} in project {project_id}")
+            
+            # After adding a working weekend, we may need to regenerate the calendar
+            # to update shoot day numbers
+            project = get_project(project_id)
+            if project:
+                try:
+                    calendar_data = get_project_calendar(project_id)
+                    if calendar_data and 'days' in calendar_data:
+                        # Update the calendar days with the new working weekend
+                        calendar_data['days'] = recalculate_shoot_days(calendar_data['days'])
+                        save_project_calendar(project_id, calendar_data)
+                        logger.info(f"Calendar updated with new working weekend for project {project_id}")
+                except Exception as e:
+                    logger.error(f"Error updating calendar after adding working weekend: {str(e)}")
+            
+            return jsonify(weekend_data), 201
+            
+        except Exception as e:
+            logger.error(f"Error creating working weekend: {str(e)}")
+            return jsonify({'error': f'Error creating working weekend: {str(e)}'}), 500
 
 @app.route('/api/projects/<project_id>/weekends/<weekend_id>', methods=['GET', 'PUT', 'DELETE'])
 def api_weekend(project_id, weekend_id):
@@ -987,45 +1047,114 @@ def api_weekend(project_id, weekend_id):
     weekends_file = os.path.join(project_dir, 'weekends.json')
     
     if not os.path.exists(project_dir):
+        logger.error(f"Project directory not found for project_id: {project_id}")
         return jsonify({'error': 'Project not found'}), 404
     
     if not os.path.exists(weekends_file):
+        logger.error(f"No working weekends file found for project {project_id}")
         return jsonify({'error': 'No working weekends found for this project'}), 404
     
-    # Read weekends
-    with open(weekends_file, 'r') as f:
-        weekends = json.load(f)
-    
-    # Find weekend
-    weekend_index = next((i for i, wknd in enumerate(weekends) if wknd.get('id') == weekend_id), None)
-    
-    if weekend_index is None:
-        return jsonify({'error': 'Working weekend not found'}), 404
-    
-    if request.method == 'GET':
-        return jsonify(weekends[weekend_index])
-    
-    elif request.method == 'PUT':
-        # Update weekend
-        weekend_data = request.get_json()
-        weekend_data['id'] = weekend_id  # Ensure ID matches
-        weekends[weekend_index] = weekend_data
+    try:
+        # Read weekends
+        with open(weekends_file, 'r') as f:
+            weekends = json.load(f)
         
-        # Save weekends
-        with open(weekends_file, 'w') as f:
-            json.dump(weekends, f, indent=2)
+        # Find weekend
+        weekend_index = next((i for i, wknd in enumerate(weekends) if wknd.get('id') == weekend_id), None)
         
-        return jsonify(weekend_data)
-    
-    elif request.method == 'DELETE':
-        # Delete weekend
-        del weekends[weekend_index]
+        if weekend_index is None:
+            logger.error(f"Working weekend with id {weekend_id} not found for project {project_id}")
+            return jsonify({'error': 'Working weekend not found'}), 404
         
-        # Save weekends
-        with open(weekends_file, 'w') as f:
-            json.dump(weekends, f, indent=2)
+        if request.method == 'GET':
+            logger.info(f"Retrieved working weekend {weekend_id} for project {project_id}")
+            return jsonify(weekends[weekend_index])
         
-        return jsonify({'success': True})
+        elif request.method == 'PUT':
+            try:
+                # Update weekend
+                weekend_data = request.get_json()
+                if not weekend_data:
+                    return jsonify({'error': 'No data provided'}), 400
+                
+                # Validate date is a weekend if provided
+                if 'date' in weekend_data:
+                    try:
+                        date = datetime.strptime(weekend_data['date'], "%Y-%m-%d").date()
+                        if date.weekday() not in [5, 6]:  # 5=Saturday, 6=Sunday
+                            logger.warning(f"Date {weekend_data['date']} is not a weekend")
+                            return jsonify({'error': 'Selected date is not a weekend (Saturday or Sunday)'}), 400
+                    except ValueError:
+                        logger.error(f"Invalid date format: {weekend_data['date']}")
+                        return jsonify({'error': 'Invalid date format. Use YYYY-MM-DD'}), 400
+                
+                # Ensure ID matches
+                weekend_data['id'] = weekend_id
+                
+                # Update weekend
+                weekends[weekend_index] = {**weekends[weekend_index], **weekend_data}
+                
+                # Save weekends
+                with open(weekends_file, 'w') as f:
+                    json.dump(weekends, f, indent=2)
+                
+                logger.info(f"Updated working weekend {weekend_id} for project {project_id}")
+                
+                # After updating a working weekend, we may need to regenerate the calendar
+                project = get_project(project_id)
+                if project:
+                    try:
+                        calendar_data = get_project_calendar(project_id)
+                        if calendar_data and 'days' in calendar_data:
+                            # Update the calendar days with the updated working weekend
+                            calendar_data['days'] = recalculate_shoot_days(calendar_data['days'])
+                            save_project_calendar(project_id, calendar_data)
+                            logger.info(f"Calendar updated after modifying working weekend for project {project_id}")
+                    except Exception as e:
+                        logger.error(f"Error updating calendar after modifying working weekend: {str(e)}")
+                
+                return jsonify(weekends[weekend_index])
+                
+            except Exception as e:
+                logger.error(f"Error updating working weekend: {str(e)}")
+                return jsonify({'error': f'Error updating working weekend: {str(e)}'}), 500
+        
+        elif request.method == 'DELETE':
+            try:
+                # Store the deleted date for calendar update
+                deleted_date = weekends[weekend_index].get('date')
+                
+                # Delete weekend
+                del weekends[weekend_index]
+                
+                # Save weekends
+                with open(weekends_file, 'w') as f:
+                    json.dump(weekends, f, indent=2)
+                
+                logger.info(f"Deleted working weekend {weekend_id} from project {project_id}")
+                
+                # After deleting a working weekend, we may need to regenerate the calendar
+                project = get_project(project_id)
+                if project and deleted_date:
+                    try:
+                        calendar_data = get_project_calendar(project_id)
+                        if calendar_data and 'days' in calendar_data:
+                            # Update the calendar days without the deleted working weekend
+                            calendar_data['days'] = recalculate_shoot_days(calendar_data['days'])
+                            save_project_calendar(project_id, calendar_data)
+                            logger.info(f"Calendar updated after deleting working weekend for project {project_id}")
+                    except Exception as e:
+                        logger.error(f"Error updating calendar after deleting working weekend: {str(e)}")
+                
+                return jsonify({'success': True})
+                
+            except Exception as e:
+                logger.error(f"Error deleting working weekend: {str(e)}")
+                return jsonify({'error': f'Error deleting working weekend: {str(e)}'}), 500
+                
+    except Exception as e:
+        logger.error(f"Error processing working weekend request: {str(e)}")
+        return jsonify({'error': f'Error processing request: {str(e)}'}), 500
 
 # Special Dates (Holidays) API Routes
 @app.route('/api/projects/<project_id>/holidays', methods=['GET', 'POST'])
