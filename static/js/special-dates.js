@@ -50,6 +50,9 @@ document.addEventListener('DOMContentLoaded', function() {
         // Initialize working weekends functionality
         const weekendsModule = initializeWorkingWeekends();
         
+          // Initialize bank holidays functionality
+        const holidaysModule = initializeBankHolidays();
+        
         // Load data if project is selected
         const projectId = projectSelect ? projectSelect.value : null;
         console.log("Project ID:", projectId);
@@ -58,6 +61,9 @@ document.addEventListener('DOMContentLoaded', function() {
             // Load data for each section
             console.log("Loading working weekends for project:", projectId);
             weekendsModule.loadWorkingWeekends(projectId);
+            
+            console.log("Loading bank holidays for project:", projectId);
+            holidaysModule.loadBankHolidays(projectId);
             
             // Add regenerate button handler
             if (regenerateBtn) {
@@ -602,6 +608,407 @@ function initializeWorkingWeekends() {
     return {
         loadWorkingWeekends,
         openWeekendModal
+    };
+}
+
+// This would go in static/js/special-dates.js after the working weekends module
+function initializeBankHolidays() {
+    console.log("Initializing bank holidays...");
+    
+    // DOM elements
+    const holidayList = document.getElementById('holiday-list');
+    const noHolidays = document.getElementById('no-holidays');
+    const addHolidayBtn = document.getElementById('add-holiday-btn');
+    const saveHolidayBtn = document.getElementById('save-holiday-btn');
+    const holidayForm = document.getElementById('holiday-form');
+    const holidayModal = document.getElementById('holiday-modal');
+    
+    console.log("Bank holiday elements:", {
+        holidayList: !!holidayList,
+        noHolidays: !!noHolidays,
+        addHolidayBtn: !!addHolidayBtn,
+        saveHolidayBtn: !!saveHolidayBtn,
+        holidayForm: !!holidayForm,
+        holidayModal: !!holidayModal
+    });
+    
+    // Add button handlers if elements exist
+    if (addHolidayBtn) {
+        console.log("Adding click handler to Add Holiday button");
+        addHolidayBtn.addEventListener('click', function() {
+            console.log("Add Holiday button clicked");
+            openHolidayModal();
+        });
+    }
+    
+    if (saveHolidayBtn) {
+        console.log("Adding click handler to Save Holiday button");
+        saveHolidayBtn.addEventListener('click', function() {
+            console.log("Save Holiday button clicked");
+            saveBankHoliday();
+        });
+    }
+    
+    /**
+     * Open bank holiday modal
+     */
+    function openHolidayModal(holiday = null) {
+        console.log("Opening holiday modal", holiday);
+        
+        if (holidayForm) {
+            holidayForm.reset();
+            
+            const holidayId = document.getElementById('holiday-id');
+            const holidayDate = document.getElementById('holiday-date');
+            const holidayName = document.getElementById('holiday-name');
+            const holidayIsWorking = document.getElementById('holiday-is-working');
+            const holidayIsShootDay = document.getElementById('holiday-is-shoot-day');
+            const holidayModalTitle = document.getElementById('holiday-modal-title');
+            
+            console.log("Holiday form elements:", {
+                holidayId: !!holidayId,
+                holidayDate: !!holidayDate,
+                holidayName: !!holidayName,
+                holidayIsWorking: !!holidayIsWorking,
+                holidayIsShootDay: !!holidayIsShootDay,
+                holidayModalTitle: !!holidayModalTitle
+            });
+            
+            if (holidayId) holidayId.value = holiday ? holiday.id : '';
+            if (holidayModalTitle) holidayModalTitle.textContent = holiday ? 'Edit Bank Holiday' : 'Add Bank Holiday';
+            
+            if (holiday) {
+                if (holidayDate) holidayDate.value = holiday.date;
+                if (holidayName) holidayName.value = holiday.name || '';
+                if (holidayIsWorking) holidayIsWorking.checked = holiday.isWorking === true;
+                if (holidayIsShootDay) {
+                    holidayIsShootDay.checked = holiday.isShootDay === true;
+                    holidayIsShootDay.disabled = !holiday.isWorking;
+                }
+            } else {
+                // Set default values for new holiday
+                if (holidayIsWorking) holidayIsWorking.checked = false;
+                if (holidayIsShootDay) {
+                    holidayIsShootDay.checked = false;
+                    holidayIsShootDay.disabled = true;
+                }
+                
+                if (holidayDate) {
+                    // Set date to today by default
+                    const today = new Date();
+                    holidayDate.value = formatDateForInput(today);
+                }
+            }
+            
+            // Use the global openModal function
+            openModal('holiday-modal');
+        } else {
+            console.error("Holiday form not found");
+        }
+    }
+    
+    /**
+     * Save bank holiday
+     */
+    function saveBankHoliday() {
+        console.log("Saving bank holiday...");
+        
+        // Use global projectSelect
+        if (!projectSelect) {
+            console.error("projectSelect is not defined");
+            projectSelect = document.getElementById('project-select');
+            if (!projectSelect) {
+                alert('Cannot find project selector');
+                return;
+            }
+        }
+        
+        const projectId = projectSelect.value;
+        if (!projectId) {
+            alert('Please select a project first');
+            return;
+        }
+        
+        console.log("Project ID for saving holiday:", projectId);
+        
+        const holidayId = document.getElementById('holiday-id').value;
+        const holidayData = {
+            date: document.getElementById('holiday-date').value,
+            name: document.getElementById('holiday-name').value,
+            isWorking: document.getElementById('holiday-is-working').checked,
+            isShootDay: document.getElementById('holiday-is-shoot-day').checked
+        };
+        
+        console.log("Holiday data to save:", holidayData);
+        
+        // Validate required fields
+        if (!holidayData.date) {
+            alert('Please select a date for the holiday');
+            return;
+        }
+        
+        if (!holidayData.name) {
+            alert('Please enter a name for the holiday');
+            return;
+        }
+        
+        // Show loading state
+        document.body.classList.add('loading');
+        
+        if (holidayId) {
+            // Update existing
+            holidayData.id = holidayId;
+            console.log("Updating existing holiday:", holidayId);
+            
+            fetch(`/api/projects/${projectId}/holidays/${holidayId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(holidayData)
+            })
+            .then(response => {
+                console.log("Update response status:", response.status);
+                if (!response.ok) {
+                    throw new Error('Failed to update bank holiday');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log("Holiday updated successfully:", data);
+                
+                // Close modal
+                closeModal('holiday-modal');
+                
+                loadBankHolidays(projectId);
+                
+                // Show success message
+                showNotification('Bank holiday updated successfully', 'success');
+                
+                // Hide loading state
+                document.body.classList.remove('loading');
+            })
+            .catch(error => {
+                console.error('Error updating bank holiday:', error);
+                alert('Error updating bank holiday: ' + error.message);
+                
+                // Hide loading state
+                document.body.classList.remove('loading');
+            });
+        } else {
+            // Create new
+            console.log("Creating new holiday");
+            
+            fetch(`/api/projects/${projectId}/holidays`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(holidayData)
+            })
+            .then(response => {
+                console.log("Create response status:", response.status);
+                if (!response.ok) {
+                    throw new Error('Failed to create bank holiday');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log("Holiday created successfully:", data);
+                
+                // Close modal
+                closeModal('holiday-modal');
+                
+                loadBankHolidays(projectId);
+                
+                // Show success message
+                showNotification('Bank holiday added successfully', 'success');
+                
+                // Hide loading state
+                document.body.classList.remove('loading');
+            })
+            .catch(error => {
+                console.error('Error creating bank holiday:', error);
+                alert('Error creating bank holiday: ' + error.message);
+                
+                // Hide loading state
+                document.body.classList.remove('loading');
+            });
+        }
+    }
+    
+    /**
+     * Delete bank holiday
+     */
+    function deleteBankHoliday(holidayId) {
+        // Use global projectSelect
+        if (!projectSelect) {
+            console.error("projectSelect is not defined");
+            projectSelect = document.getElementById('project-select');
+            if (!projectSelect) {
+                alert('Cannot find project selector');
+                return;
+            }
+        }
+        
+        const projectId = projectSelect.value;
+        if (!projectId) return;
+        
+        console.log("Deleting holiday:", holidayId, "for project:", projectId);
+        
+        if (confirm('Are you sure you want to delete this bank holiday?')) {
+            // Show loading state
+            document.body.classList.add('loading');
+            
+            fetch(`/api/projects/${projectId}/holidays/${holidayId}`, {
+                method: 'DELETE'
+            })
+            .then(response => {
+                console.log("Delete response status:", response.status);
+                if (!response.ok) {
+                    throw new Error('Failed to delete bank holiday');
+                }
+                
+                loadBankHolidays(projectId);
+                
+                // Show success message
+                showNotification('Bank holiday deleted successfully', 'success');
+                
+                // Hide loading state
+                document.body.classList.remove('loading');
+            })
+            .catch(error => {
+                console.error('Error deleting bank holiday:', error);
+                alert('Error deleting bank holiday: ' + error.message);
+                
+                // Hide loading state
+                document.body.classList.remove('loading');
+            });
+        }
+    }
+    
+    /**
+     * Load bank holidays for a project
+     */
+    function loadBankHolidays(projectId) {
+        console.log("Loading bank holidays for project:", projectId);
+        
+        if (!holidayList || !noHolidays) {
+            console.error("Holiday list or no holidays element not found");
+            return;
+        }
+        
+        // Show loading state
+        holidayList.innerHTML = '<div class="loading-indicator">Loading...</div>';
+        
+        fetch(`/api/projects/${projectId}/holidays`)
+            .then(response => {
+                console.log("Load holidays response status:", response.status);
+                if (!response.ok) {
+                    // This may be a 404 if no holidays exist yet, which is fine
+                    if (response.status === 404) {
+                        console.log("No holidays found (404)");
+                        return [];
+                    }
+                    throw new Error('Error loading bank holidays');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log("Holidays loaded:", data);
+                renderBankHolidays(data);
+            })
+            .catch(error => {
+                console.error('Error loading bank holidays:', error);
+                renderBankHolidays([]);
+                
+                // Show error message
+                showNotification('Error loading bank holidays: ' + error.message, 'error');
+            });
+    }
+    
+    /**
+     * Render bank holidays list
+     */
+    function renderBankHolidays(holidays) {
+        console.log("Rendering holidays:", holidays);
+        
+        if (!holidayList || !noHolidays) {
+            console.error("Holiday list or no holidays element not found");
+            return;
+        }
+        
+        if (!holidays || holidays.length === 0) {
+            console.log("No holidays to render");
+            holidayList.style.display = 'none';
+            noHolidays.style.display = 'block';
+            return;
+        }
+        
+        console.log("Rendering", holidays.length, "holidays");
+        holidayList.style.display = 'block';
+        noHolidays.style.display = 'none';
+        
+        holidayList.innerHTML = '';
+        
+        // Sort holidays by date (newest first)
+        holidays.sort((a, b) => new Date(a.date) - new Date(b.date));
+        
+        holidays.forEach(holiday => {
+            const dateItem = document.createElement('div');
+            dateItem.className = 'date-item';
+            
+            const dateInfo = document.createElement('div');
+            dateInfo.className = 'date-info';
+            
+            const dateDisplay = document.createElement('div');
+            dateDisplay.className = 'date-display';
+            
+            // Format date display with day of week
+            const holidayDate = new Date(holiday.date);
+            const dayOfWeek = holidayDate.toLocaleDateString(undefined, { weekday: 'long' });
+            dateDisplay.textContent = `${formatDate(holiday.date)} (${dayOfWeek}) - ${holiday.name}`;
+            
+            const dateDescription = document.createElement('div');
+            dateDescription.className = 'date-description';
+            dateDescription.textContent = holiday.isWorking ? 
+                (holiday.isShootDay ? 'Working holiday (counts as shoot day)' : 'Working holiday (not counted as shoot day)') : 
+                'Non-working holiday';
+            
+            dateInfo.appendChild(dateDisplay);
+            dateInfo.appendChild(dateDescription);
+            
+            const dateAction = document.createElement('div');
+            dateAction.className = 'date-action';
+            
+            const editButton = document.createElement('button');
+            editButton.className = 'button small';
+            editButton.textContent = 'Edit';
+            editButton.addEventListener('click', function() {
+                openHolidayModal(holiday);
+            });
+            
+            const deleteButton = document.createElement('button');
+            deleteButton.className = 'button small danger';
+            deleteButton.textContent = 'Delete';
+            deleteButton.addEventListener('click', function() {
+                deleteBankHoliday(holiday.id);
+            });
+            
+            dateAction.appendChild(editButton);
+            dateAction.appendChild(deleteButton);
+            
+            dateItem.appendChild(dateInfo);
+            dateItem.appendChild(dateAction);
+            
+            holidayList.appendChild(dateItem);
+        });
+    }
+    
+    // Return public methods
+    return {
+        loadBankHolidays,
+        openHolidayModal
     };
 }
 

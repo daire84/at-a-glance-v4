@@ -1,0 +1,16 @@
+[
+  {
+    "date": "2025-05-05",
+    "name": "May Bank Holiday",
+    "isWorking": true,
+    "isShootDay": true,
+    "id": "af7fd726-a11c-4e0c-9630-a993b6ca568e"
+  },
+  {
+    "date": "2025-04-21",
+    "name": "Easter Bank Holiday",
+    "isWorking": false,
+    "isShootDay": false,
+    "id": "0cf11da2-d6be-49f2-afa0-eeac4c79bde6"
+  }
+]
