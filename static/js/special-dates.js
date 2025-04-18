@@ -50,8 +50,11 @@ document.addEventListener('DOMContentLoaded', function() {
         // Initialize working weekends functionality
         const weekendsModule = initializeWorkingWeekends();
         
-          // Initialize bank holidays functionality
+        // Initialize bank holidays functionality
         const holidaysModule = initializeBankHolidays();
+        
+        // Initialize hiatus periods functionality
+        const hiatusModule = initializeHiatusPeriods();
         
         // Load data if project is selected
         const projectId = projectSelect ? projectSelect.value : null;
@@ -64,6 +67,9 @@ document.addEventListener('DOMContentLoaded', function() {
             
             console.log("Loading bank holidays for project:", projectId);
             holidaysModule.loadBankHolidays(projectId);
+            
+            console.log("Loading hiatus periods for project:", projectId);
+            hiatusModule.loadHiatusPeriods(projectId);
             
             // Add regenerate button handler
             if (regenerateBtn) {
@@ -1009,6 +1015,443 @@ function initializeBankHolidays() {
     return {
         loadBankHolidays,
         openHolidayModal
+    };
+}
+
+/**
+ * Initialize the hiatus periods functionality
+ */
+function initializeHiatusPeriods() {
+    console.log("Initializing hiatus periods...");
+    
+    // DOM elements
+    const hiatusList = document.getElementById('hiatus-list');
+    const noHiatus = document.getElementById('no-hiatus');
+    const addHiatusBtn = document.getElementById('add-hiatus-btn');
+    const saveHiatusBtn = document.getElementById('save-hiatus-btn');
+    const hiatusForm = document.getElementById('hiatus-form');
+    const hiatusModal = document.getElementById('hiatus-modal');
+    
+    console.log("Hiatus elements:", {
+        hiatusList: !!hiatusList,
+        noHiatus: !!noHiatus,
+        addHiatusBtn: !!addHiatusBtn,
+        saveHiatusBtn: !!saveHiatusBtn,
+        hiatusForm: !!hiatusForm,
+        hiatusModal: !!hiatusModal
+    });
+    
+    // Add button handlers if elements exist
+    if (addHiatusBtn) {
+        console.log("Adding click handler to Add Hiatus button");
+        addHiatusBtn.addEventListener('click', function() {
+            console.log("Add Hiatus button clicked");
+            openHiatusModal();
+        });
+    }
+    
+    if (saveHiatusBtn) {
+        console.log("Adding click handler to Save Hiatus button");
+        saveHiatusBtn.addEventListener('click', function() {
+            console.log("Save Hiatus button clicked");
+            saveHiatusPeriod();
+        });
+    }
+    
+    /**
+     * Open hiatus period modal
+     */
+    function openHiatusModal(hiatus = null) {
+        console.log("Opening hiatus modal", hiatus);
+        
+        if (hiatusForm) {
+            hiatusForm.reset();
+            
+            const hiatusId = document.getElementById('hiatus-id');
+            const hiatusName = document.getElementById('hiatus-name');
+            const hiatusStartDate = document.getElementById('hiatus-start-date');
+            const hiatusEndDate = document.getElementById('hiatus-end-date');
+            const hiatusDescription = document.getElementById('hiatus-description');
+            const hiatusIsVisible = document.getElementById('hiatus-is-visible');
+            const hiatusModalTitle = document.getElementById('hiatus-modal-title');
+            
+            console.log("Hiatus form elements:", {
+                hiatusId: !!hiatusId,
+                hiatusName: !!hiatusName,
+                hiatusStartDate: !!hiatusStartDate,
+                hiatusEndDate: !!hiatusEndDate,
+                hiatusDescription: !!hiatusDescription,
+                hiatusIsVisible: !!hiatusIsVisible,
+                hiatusModalTitle: !!hiatusModalTitle
+            });
+            
+            if (hiatusId) hiatusId.value = hiatus ? hiatus.id : '';
+            if (hiatusModalTitle) hiatusModalTitle.textContent = hiatus ? 'Edit Hiatus Period' : 'Add Hiatus Period';
+            
+            if (hiatus) {
+                if (hiatusName) hiatusName.value = hiatus.name || '';
+                if (hiatusStartDate) hiatusStartDate.value = hiatus.startDate || '';
+                if (hiatusEndDate) hiatusEndDate.value = hiatus.endDate || '';
+                if (hiatusDescription) hiatusDescription.value = hiatus.description || '';
+                if (hiatusIsVisible) hiatusIsVisible.checked = hiatus.isVisible !== false; // Default to true if not specified
+            } else {
+                // Set default values for new hiatus
+                if (hiatusIsVisible) hiatusIsVisible.checked = true;
+                
+                // Set default dates - 1 week hiatus starting next Monday
+                if (hiatusStartDate && hiatusEndDate) {
+                    const today = new Date();
+                    
+                    // Calculate next Monday
+                    const nextMonday = new Date(today);
+                    const daysUntilMonday = (1 + 7 - today.getDay()) % 7;
+                    nextMonday.setDate(today.getDate() + daysUntilMonday);
+                    
+                    // Calculate end date (1 week later)
+                    const endDate = new Date(nextMonday);
+                    endDate.setDate(nextMonday.getDate() + 6);
+                    
+                    hiatusStartDate.value = formatDateForInput(nextMonday);
+                    hiatusEndDate.value = formatDateForInput(endDate);
+                }
+            }
+            
+            // Use the global openModal function
+            openModal('hiatus-modal');
+        } else {
+            console.error("Hiatus form not found");
+        }
+    }
+    
+    /**
+     * Save hiatus period
+     */
+    function saveHiatusPeriod() {
+        console.log("Saving hiatus period...");
+        
+        // Use global projectSelect
+        if (!projectSelect) {
+            console.error("projectSelect is not defined");
+            projectSelect = document.getElementById('project-select');
+            if (!projectSelect) {
+                alert('Cannot find project selector');
+                return;
+            }
+        }
+        
+        const projectId = projectSelect.value;
+        if (!projectId) {
+            alert('Please select a project first');
+            return;
+        }
+        
+        console.log("Project ID for saving hiatus:", projectId);
+        
+        const hiatusId = document.getElementById('hiatus-id').value;
+        const hiatusData = {
+            name: document.getElementById('hiatus-name').value,
+            startDate: document.getElementById('hiatus-start-date').value,
+            endDate: document.getElementById('hiatus-end-date').value,
+            description: document.getElementById('hiatus-description').value,
+            isVisible: document.getElementById('hiatus-is-visible').checked
+        };
+        
+        console.log("Hiatus data to save:", hiatusData);
+        
+        // Validate required fields
+        if (!hiatusData.name) {
+            alert('Please enter a name for the hiatus period');
+            return;
+        }
+        
+        if (!hiatusData.startDate) {
+            alert('Please select a start date for the hiatus period');
+            return;
+        }
+        
+        if (!hiatusData.endDate) {
+            alert('Please select an end date for the hiatus period');
+            return;
+        }
+        
+        // Validate date range
+        const startDate = new Date(hiatusData.startDate);
+        const endDate = new Date(hiatusData.endDate);
+        
+        if (endDate < startDate) {
+            alert('End date cannot be before start date');
+            return;
+        }
+        
+        // Show loading state
+        document.body.classList.add('loading');
+        
+        if (hiatusId) {
+            // Update existing
+            hiatusData.id = hiatusId;
+            console.log("Updating existing hiatus:", hiatusId);
+            
+            fetch(`/api/projects/${projectId}/hiatus/${hiatusId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(hiatusData)
+            })
+            .then(response => {
+                console.log("Update response status:", response.status);
+                if (!response.ok) {
+                    throw new Error('Failed to update hiatus period');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log("Hiatus updated successfully:", data);
+                
+                // Close modal
+                closeModal('hiatus-modal');
+                
+                loadHiatusPeriods(projectId);
+                
+                // Show success message
+                showNotification('Hiatus period updated successfully', 'success');
+                
+                // Hide loading state
+                document.body.classList.remove('loading');
+            })
+            .catch(error => {
+                console.error('Error updating hiatus period:', error);
+                alert('Error updating hiatus period: ' + error.message);
+                
+                // Hide loading state
+                document.body.classList.remove('loading');
+            });
+        } else {
+            // Create new
+            console.log("Creating new hiatus");
+            
+            fetch(`/api/projects/${projectId}/hiatus`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(hiatusData)
+            })
+            .then(response => {
+                console.log("Create response status:", response.status);
+                if (!response.ok) {
+                    throw new Error('Failed to create hiatus period');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log("Hiatus created successfully:", data);
+                
+                // Close modal
+                closeModal('hiatus-modal');
+                
+                loadHiatusPeriods(projectId);
+                
+                // Show success message
+                showNotification('Hiatus period added successfully', 'success');
+                
+                // Hide loading state
+                document.body.classList.remove('loading');
+            })
+            .catch(error => {
+                console.error('Error creating hiatus period:', error);
+                alert('Error creating hiatus period: ' + error.message);
+                
+                // Hide loading state
+                document.body.classList.remove('loading');
+            });
+        }
+    }
+    
+    /**
+     * Delete hiatus period
+     */
+    function deleteHiatusPeriod(hiatusId) {
+        // Use global projectSelect
+        if (!projectSelect) {
+            console.error("projectSelect is not defined");
+            projectSelect = document.getElementById('project-select');
+            if (!projectSelect) {
+                alert('Cannot find project selector');
+                return;
+            }
+        }
+        
+        const projectId = projectSelect.value;
+        if (!projectId) return;
+        
+        console.log("Deleting hiatus:", hiatusId, "for project:", projectId);
+        
+        if (confirm('Are you sure you want to delete this hiatus period?')) {
+            // Show loading state
+            document.body.classList.add('loading');
+            
+            fetch(`/api/projects/${projectId}/hiatus/${hiatusId}`, {
+                method: 'DELETE'
+            })
+            .then(response => {
+                console.log("Delete response status:", response.status);
+                if (!response.ok) {
+                    throw new Error('Failed to delete hiatus period');
+                }
+                
+                loadHiatusPeriods(projectId);
+                
+                // Show success message
+                showNotification('Hiatus period deleted successfully', 'success');
+                
+                // Hide loading state
+                document.body.classList.remove('loading');
+            })
+            .catch(error => {
+                console.error('Error deleting hiatus period:', error);
+                alert('Error deleting hiatus period: ' + error.message);
+                
+                // Hide loading state
+                document.body.classList.remove('loading');
+            });
+        }
+    }
+    
+    /**
+     * Load hiatus periods for a project
+     */
+    function loadHiatusPeriods(projectId) {
+        console.log("Loading hiatus periods for project:", projectId);
+        
+        if (!hiatusList || !noHiatus) {
+            console.error("Hiatus list or no hiatus element not found");
+            return;
+        }
+        
+        // Show loading state
+        hiatusList.innerHTML = '<div class="loading-indicator">Loading...</div>';
+        
+        fetch(`/api/projects/${projectId}/hiatus`)
+            .then(response => {
+                console.log("Load hiatus response status:", response.status);
+                if (!response.ok) {
+                    // This may be a 404 if no hiatus periods exist yet, which is fine
+                    if (response.status === 404) {
+                        console.log("No hiatus periods found (404)");
+                        return [];
+                    }
+                    throw new Error('Error loading hiatus periods');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log("Hiatus periods loaded:", data);
+                renderHiatusPeriods(data);
+            })
+            .catch(error => {
+                console.error('Error loading hiatus periods:', error);
+                renderHiatusPeriods([]);
+                
+                // Show error message
+                showNotification('Error loading hiatus periods: ' + error.message, 'error');
+            });
+    }
+    
+    /**
+     * Render hiatus periods list
+     */
+    function renderHiatusPeriods(hiatusPeriods) {
+        console.log("Rendering hiatus periods:", hiatusPeriods);
+        
+        if (!hiatusList || !noHiatus) {
+            console.error("Hiatus list or no hiatus element not found");
+            return;
+        }
+        
+        if (!hiatusPeriods || hiatusPeriods.length === 0) {
+            console.log("No hiatus periods to render");
+            hiatusList.style.display = 'none';
+            noHiatus.style.display = 'block';
+            return;
+        }
+        
+        console.log("Rendering", hiatusPeriods.length, "hiatus periods");
+        hiatusList.style.display = 'block';
+        noHiatus.style.display = 'none';
+        
+        hiatusList.innerHTML = '';
+        
+        // Sort hiatus periods by start date (upcoming first)
+        hiatusPeriods.sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
+        
+        hiatusPeriods.forEach(hiatus => {
+            const hiatusItem = document.createElement('div');
+            hiatusItem.className = 'hiatus-period';
+            
+            const hiatusDates = document.createElement('div');
+            hiatusDates.className = 'hiatus-dates';
+            
+            const hiatusLabel = document.createElement('div');
+            hiatusLabel.className = 'hiatus-label';
+            hiatusLabel.textContent = hiatus.name;
+            
+            const hiatusRange = document.createElement('div');
+            hiatusRange.className = 'hiatus-range';
+            
+            // Format date range
+            const startDate = formatDate(hiatus.startDate);
+            const endDate = formatDate(hiatus.endDate);
+            const dayCount = Math.round((new Date(hiatus.endDate) - new Date(hiatus.startDate)) / (1000 * 60 * 60 * 24)) + 1;
+            hiatusRange.textContent = `${startDate} to ${endDate} (${dayCount} days)`;
+            
+            hiatusDates.appendChild(hiatusLabel);
+            hiatusDates.appendChild(hiatusRange);
+            
+            if (hiatus.description) {
+                const hiatusDescription = document.createElement('div');
+                hiatusDescription.className = 'date-description';
+                hiatusDescription.textContent = hiatus.description;
+                hiatusDates.appendChild(hiatusDescription);
+            }
+            
+            const hiatusVisibility = document.createElement('div');
+            hiatusVisibility.className = 'hiatus-visibility';
+            hiatusVisibility.textContent = hiatus.isVisible !== false ? 'Visible on calendar' : 'Hidden on calendar';
+            
+            hiatusDates.appendChild(hiatusVisibility);
+            
+            const hiatusAction = document.createElement('div');
+            hiatusAction.className = 'date-action';
+            
+            const editButton = document.createElement('button');
+            editButton.className = 'button small';
+            editButton.textContent = 'Edit';
+            editButton.addEventListener('click', function() {
+                openHiatusModal(hiatus);
+            });
+            
+            const deleteButton = document.createElement('button');
+            deleteButton.className = 'button small danger';
+            deleteButton.textContent = 'Delete';
+            deleteButton.addEventListener('click', function() {
+                deleteHiatusPeriod(hiatus.id);
+            });
+            
+            hiatusAction.appendChild(editButton);
+            hiatusAction.appendChild(deleteButton);
+            
+            hiatusItem.appendChild(hiatusDates);
+            hiatusItem.appendChild(hiatusAction);
+            
+            hiatusList.appendChild(hiatusItem);
+        });
+    }
+    
+    // Return public methods
+    return {
+        loadHiatusPeriods,
+        openHiatusModal
     };
 }
 
