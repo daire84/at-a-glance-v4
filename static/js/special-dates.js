@@ -56,6 +56,9 @@ document.addEventListener('DOMContentLoaded', function() {
         // Initialize hiatus periods functionality
         const hiatusModule = initializeHiatusPeriods();
         
+        // Initialize special dates functionality
+        const specialDatesModule = initializeSpecialDates();
+        
         // Load data if project is selected
         const projectId = projectSelect ? projectSelect.value : null;
         console.log("Project ID:", projectId);
@@ -71,6 +74,9 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log("Loading hiatus periods for project:", projectId);
             hiatusModule.loadHiatusPeriods(projectId);
             
+            console.log("Loading special dates for project:", projectId);
+            specialDatesModule.loadSpecialDates(projectId);
+
             // Add regenerate button handler
             if (regenerateBtn) {
                 console.log("Adding regenerate button handler");
@@ -1452,6 +1458,422 @@ function initializeHiatusPeriods() {
     return {
         loadHiatusPeriods,
         openHiatusModal
+    };
+}
+
+/**
+ * Initialize the special dates functionality
+ */
+function initializeSpecialDates() {
+    console.log("Initializing special dates...");
+    
+    // DOM elements
+    const specialList = document.getElementById('special-list');
+    const noSpecial = document.getElementById('no-special');
+    const addSpecialBtn = document.getElementById('add-special-btn');
+    const saveSpecialBtn = document.getElementById('save-special-btn');
+    const specialForm = document.getElementById('special-form');
+    const specialModal = document.getElementById('special-modal');
+    
+    console.log("Special dates elements:", {
+        specialList: !!specialList,
+        noSpecial: !!noSpecial,
+        addSpecialBtn: !!addSpecialBtn,
+        saveSpecialBtn: !!saveSpecialBtn,
+        specialForm: !!specialForm,
+        specialModal: !!specialModal
+    });
+    
+    // Add button handlers if elements exist
+    if (addSpecialBtn) {
+        console.log("Adding click handler to Add Special Date button");
+        addSpecialBtn.addEventListener('click', function() {
+            console.log("Add Special Date button clicked");
+            openSpecialModal();
+        });
+    }
+    
+    if (saveSpecialBtn) {
+        console.log("Adding click handler to Save Special Date button");
+        saveSpecialBtn.addEventListener('click', function() {
+            console.log("Save Special Date button clicked");
+            saveSpecialDate();
+        });
+    }
+    
+    /**
+     * Open special date modal
+     */
+function openSpecialModal(specialDate = null) {
+    console.log("Opening special date modal", specialDate);
+    
+    if (specialForm) {
+        specialForm.reset();
+        
+        const specialId = document.getElementById('special-id');
+        // This line below is likely the issue - the variable name conflict
+        const specialDateInput = document.getElementById('special-date'); // Renamed variable
+        const specialName = document.getElementById('special-name');
+        const specialType = document.getElementById('special-type');
+        const specialDescription = document.getElementById('special-description');
+        const specialIsWorking = document.getElementById('special-is-working');
+        const specialModalTitle = document.getElementById('special-modal-title');
+        
+        if (specialId) specialId.value = specialDate ? specialDate.id : '';
+        if (specialModalTitle) specialModalTitle.textContent = specialDate ? 'Edit Special Date' : 'Add Special Date';
+        
+        if (specialDate) {
+            // Parameter name conflict - we're using specialDate as both the parameter and form element
+            if (specialDateInput) specialDateInput.value = specialDate.date; // Use renamed variable
+            if (specialName) specialName.value = specialDate.name || '';
+            if (specialType) specialType.value = specialDate.type || 'travel';
+            if (specialDescription) specialDescription.value = specialDate.description || '';
+            if (specialIsWorking) specialIsWorking.checked = specialDate.isWorking !== false;
+        } else {
+            // Set default values for new special date
+            if (specialIsWorking) specialIsWorking.checked = true;
+            if (specialType) specialType.value = 'travel';
+            
+            // Set date to tomorrow by default
+            if (specialDateInput) { // Use renamed variable
+                const tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                specialDateInput.value = formatDateForInput(tomorrow);
+            }
+        }
+        
+        openModal('special-modal');
+    } else {
+        console.error("Special date form not found");
+    }
+}
+    
+    /**
+     * Save special date
+     */
+    function saveSpecialDate() {
+        console.log("Saving special date...");
+        
+        // Use global projectSelect
+        if (!projectSelect) {
+            console.error("projectSelect is not defined");
+            projectSelect = document.getElementById('project-select');
+            if (!projectSelect) {
+                alert('Cannot find project selector');
+                return;
+            }
+        }
+        
+        const projectId = projectSelect.value;
+        if (!projectId) {
+            alert('Please select a project first');
+            return;
+        }
+        
+        console.log("Project ID for saving special date:", projectId);
+        
+        const specialId = document.getElementById('special-id').value;
+        const specialData = {
+            date: document.getElementById('special-date').value,
+            name: document.getElementById('special-name').value,
+            type: document.getElementById('special-type').value,
+            description: document.getElementById('special-description').value,
+            isWorking: document.getElementById('special-is-working').checked
+        };
+        
+        console.log("Special date data to save:", specialData);
+        
+        // Validate required fields
+        if (!specialData.date) {
+            alert('Please select a date for the special date');
+            return;
+        }
+        
+        if (!specialData.name) {
+            alert('Please enter a name for the special date');
+            return;
+        }
+        
+        // Show loading state
+        document.body.classList.add('loading');
+        
+        if (specialId) {
+            // Update existing
+            specialData.id = specialId;
+            console.log("Updating existing special date:", specialId);
+            
+            fetch(`/api/projects/${projectId}/special-dates/${specialId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(specialData)
+            })
+            .then(response => {
+                console.log("Update response status:", response.status);
+                if (!response.ok) {
+                    throw new Error('Failed to update special date');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log("Special date updated successfully:", data);
+                
+                // Close modal
+                closeModal('special-modal');
+                
+                loadSpecialDates(projectId);
+                
+                // Show success message
+                showNotification('Special date updated successfully', 'success');
+                
+                // Hide loading state
+                document.body.classList.remove('loading');
+            })
+            .catch(error => {
+                console.error('Error updating special date:', error);
+                alert('Error updating special date: ' + error.message);
+                
+                // Hide loading state
+                document.body.classList.remove('loading');
+            });
+        } else {
+            // Create new
+            console.log("Creating new special date");
+            
+            fetch(`/api/projects/${projectId}/special-dates`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(specialData)
+            })
+            .then(response => {
+                console.log("Create response status:", response.status);
+                if (!response.ok) {
+                    throw new Error('Failed to create special date');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log("Special date created successfully:", data);
+                
+                // Close modal
+                closeModal('special-modal');
+                
+                loadSpecialDates(projectId);
+                
+                // Show success message
+                showNotification('Special date added successfully', 'success');
+                
+                // Hide loading state
+                document.body.classList.remove('loading');
+            })
+            .catch(error => {
+                console.error('Error creating special date:', error);
+                alert('Error creating special date: ' + error.message);
+                
+                // Hide loading state
+                document.body.classList.remove('loading');
+            });
+        }
+    }
+    
+    /**
+     * Delete special date
+     */
+    function deleteSpecialDate(specialId) {
+        // Use global projectSelect
+        if (!projectSelect) {
+            console.error("projectSelect is not defined");
+            projectSelect = document.getElementById('project-select');
+            if (!projectSelect) {
+                alert('Cannot find project selector');
+                return;
+            }
+        }
+        
+        const projectId = projectSelect.value;
+        if (!projectId) return;
+        
+        console.log("Deleting special date:", specialId, "for project:", projectId);
+        
+        if (confirm('Are you sure you want to delete this special date?')) {
+            // Show loading state
+            document.body.classList.add('loading');
+            
+            fetch(`/api/projects/${projectId}/special-dates/${specialId}`, {
+                method: 'DELETE'
+            })
+            .then(response => {
+                console.log("Delete response status:", response.status);
+                if (!response.ok) {
+                    throw new Error('Failed to delete special date');
+                }
+                
+                loadSpecialDates(projectId);
+                
+                // Show success message
+                showNotification('Special date deleted successfully', 'success');
+                
+                // Hide loading state
+                document.body.classList.remove('loading');
+            })
+            .catch(error => {
+                console.error('Error deleting special date:', error);
+                alert('Error deleting special date: ' + error.message);
+                
+                // Hide loading state
+                document.body.classList.remove('loading');
+            });
+        }
+    }
+    
+    /**
+     * Load special dates for a project
+     */
+    function loadSpecialDates(projectId) {
+        console.log("Loading special dates for project:", projectId);
+        
+        if (!specialList || !noSpecial) {
+            console.error("Special list or no special element not found");
+            return;
+        }
+        
+        // Show loading state
+        specialList.innerHTML = '<div class="loading-indicator">Loading...</div>';
+        
+        fetch(`/api/projects/${projectId}/special-dates`)
+            .then(response => {
+                console.log("Load special dates response status:", response.status);
+                if (!response.ok) {
+                    // This may be a 404 if no special dates exist yet, which is fine
+                    if (response.status === 404) {
+                        console.log("No special dates found (404)");
+                        return [];
+                    }
+                    throw new Error('Error loading special dates');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log("Special dates loaded:", data);
+                renderSpecialDates(data);
+            })
+            .catch(error => {
+                console.error('Error loading special dates:', error);
+                renderSpecialDates([]);
+                
+                // Show error message
+                showNotification('Error loading special dates: ' + error.message, 'error');
+            });
+    }
+    
+    /**
+     * Render special dates list
+     */
+    function renderSpecialDates(specialDates) {
+        console.log("Rendering special dates:", specialDates);
+        
+        if (!specialList || !noSpecial) {
+            console.error("Special list or no special element not found");
+            return;
+        }
+        
+        if (!specialDates || specialDates.length === 0) {
+            console.log("No special dates to render");
+            specialList.style.display = 'none';
+            noSpecial.style.display = 'block';
+            return;
+        }
+        
+        console.log("Rendering", specialDates.length, "special dates");
+        specialList.style.display = 'block';
+        noSpecial.style.display = 'none';
+        
+        specialList.innerHTML = '';
+        
+        // Sort special dates by date
+        specialDates.sort((a, b) => new Date(a.date) - new Date(b.date));
+        
+        specialDates.forEach(specialDate => {
+            const dateItem = document.createElement('div');
+            dateItem.className = 'date-item';
+            
+            const dateInfo = document.createElement('div');
+            dateInfo.className = 'date-info';
+            
+            const dateDisplay = document.createElement('div');
+            dateDisplay.className = 'date-display';
+            
+            // Format date display with day of week
+            const dateObj = new Date(specialDate.date);
+            const dayOfWeek = dateObj.toLocaleDateString(undefined, { weekday: 'long' });
+            
+            // Get type display text
+            let typeText = '';
+            switch(specialDate.type) {
+                case 'travel':
+                    typeText = 'Travel Day';
+                    break;
+                case 'meeting':
+                    typeText = 'Meeting';
+                    break;
+                case 'rehearsal':
+                    typeText = 'Rehearsal';
+                    break;
+                case 'other':
+                    typeText = 'Other';
+                    break;
+                default:
+                    typeText = specialDate.type || 'Special Date';
+            }
+            
+            dateDisplay.textContent = `${formatDate(specialDate.date)} (${dayOfWeek}) - ${specialDate.name} (${typeText})`;
+            
+            const dateDescription = document.createElement('div');
+            dateDescription.className = 'date-description';
+            
+            if (specialDate.description) {
+                dateDescription.textContent = specialDate.description;
+            } else {
+                dateDescription.textContent = specialDate.isWorking ? 'Working day' : 'Non-working day';
+            }
+            
+            dateInfo.appendChild(dateDisplay);
+            dateInfo.appendChild(dateDescription);
+            
+            const dateAction = document.createElement('div');
+            dateAction.className = 'date-action';
+            
+            const editButton = document.createElement('button');
+            editButton.className = 'button small';
+            editButton.textContent = 'Edit';
+            editButton.addEventListener('click', function() {
+                openSpecialModal(specialDate);
+            });
+            
+            const deleteButton = document.createElement('button');
+            deleteButton.className = 'button small danger';
+            deleteButton.textContent = 'Delete';
+            deleteButton.addEventListener('click', function() {
+                deleteSpecialDate(specialDate.id);
+            });
+            
+            dateAction.appendChild(editButton);
+            dateAction.appendChild(deleteButton);
+            
+            dateItem.appendChild(dateInfo);
+            dateItem.appendChild(dateAction);
+            
+            specialList.appendChild(dateItem);
+        });
+    }
+    
+    // Return public methods
+    return {
+        loadSpecialDates,
+        openSpecialModal
     };
 }
 

@@ -442,6 +442,55 @@
       </div>
   </div>
 </div>
+
+<!-- Special Date Modal -->
+<div id="special-modal" class="modal">
+  <div class="modal-content">
+      <div class="modal-header">
+          <h3 id="special-modal-title">Add Special Date</h3>
+          <button class="close-button" data-close-modal="special-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+          <form id="special-form">
+              <input type="hidden" id="special-id" name="id" value="">
+              
+              <div class="form-group">
+                  <label for="special-date">Date</label>
+                  <input type="date" id="special-date" name="date" required>
+              </div>
+              
+              <div class="form-group">
+                  <label for="special-name">Name</label>
+                  <input type="text" id="special-name" name="name" required placeholder="e.g., Travel to London">
+              </div>
+              
+              <div class="form-group">
+                  <label for="special-type">Type</label>
+                  <select id="special-type" name="type">
+                      <option value="travel">Travel Day</option>
+                      <option value="meeting">Production Meeting</option>
+                      <option value="rehearsal">Rehearsal</option>
+                      <option value="other">Other</option>
+                  </select>
+              </div>
+              
+              <div class="form-group">
+                  <label for="special-description">Description (Optional)</label>
+                  <textarea id="special-description" name="description" rows="2"></textarea>
+              </div>
+              
+              <div class="form-check">
+                  <input type="checkbox" id="special-is-working" name="isWorking" checked>
+                  <label for="special-is-working">Count as working day</label>
+              </div>
+          </form>
+      </div>
+      <div class="modal-footer">
+          <button class="button secondary" data-close-modal="special-modal">Cancel</button>
+          <button class="button" id="save-special-btn">Save Special Date</button>
+      </div>
+  </div>
+</div>
 {% endblock %}
 
 {% block scripts %}

@@ -38,7 +38,8 @@ def generate_calendar_days(project):
         holidays = load_bank_holidays(project.get('id'))
         working_weekends = load_working_weekends(project.get('id'))
         hiatus_periods = load_hiatus_periods(project.get('id'))
-        
+        special_dates = load_special_dates(project.get('id'))
+
         # Generate all dates in range
         current_date = prep_start
         calendar_days = []
@@ -74,7 +75,9 @@ def generate_calendar_days(project):
                 is_shoot_period and 
                 (not is_weekend or is_working_weekend) and
                 (not is_holiday or (is_holiday and holiday_data and holiday_data.get('isWorking', False) and holiday_data.get('isShootDay', False))) and
-                not is_hiatus
+                not is_hiatus and
+                # Add check for special dates - if it exists and is marked as non-working, it's not a shoot day
+                not (special_date_data and not special_date_data.get('isWorking', True))
             )
             
             # Increment shoot day count for actual shoot days
@@ -129,6 +132,20 @@ def generate_calendar_days(project):
                     day["notes"] = f"WORKING WEEKEND: {working_weekend_data.get('description', '')}"
                 else:
                     day["notes"] = "WORKING WEEKEND"
+            
+            # Add this section to handle special dates
+            special_date_data = get_special_date(date_str, special_dates)
+            if special_date_data:
+                type_display = {
+                    'travel': 'Travel Day',
+                    'meeting': 'Meeting',
+                    'rehearsal': 'Rehearsal',
+                    'other': 'Special Date'
+                }.get(special_date_data.get('type', 'other'), 'Special Date')
+                
+                day["notes"] = f"{type_display}: {special_date_data.get('name', '')}"
+                if special_date_data.get('description'):
+                    day["notes"] += f" - {special_date_data.get('description')}"
             
             calendar_days.append(day)
             current_date += timedelta(days=1)
@@ -263,6 +280,31 @@ def load_hiatus_periods(project_id):
     except Exception as e:
         logger.error(f"Error loading hiatus periods: {str(e)}")
         return []
+
+def load_special_dates(project_id):
+    """Load special dates for a project"""
+    if not project_id:
+        return []
+    
+    data_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    special_dates_file = os.path.join(data_dir, 'data', 'projects', project_id, 'special_dates.json')
+    
+    if not os.path.exists(special_dates_file):
+        return []
+    
+    try:
+        with open(special_dates_file, 'r') as f:
+            return json.load(f)
+    except Exception as e:
+        logger.error(f"Error loading special dates: {str(e)}")
+        return []
+
+def get_special_date(date_str, special_dates):
+    """Get special date data for a specific date"""
+    for special_date in special_dates:
+        if special_date.get('date') == date_str:
+            return special_date
+    return None
 
 def load_location_areas():
     """Load location areas with colors"""
