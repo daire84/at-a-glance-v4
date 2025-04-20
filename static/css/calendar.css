@@ -1,5 +1,6 @@
 /* Calendar Styles - Enhanced Compact Version */
 
+/* === CONTAINER STYLES === */
 .calendar-container {
   background-color: white;
   border-radius: 6px;
@@ -8,11 +9,18 @@
   margin-bottom: 1.5rem;
 }
 
-/* Project Info Header - more compact and evenly distributed */
+/* === PROJECT INFO HEADER === */
 .project-info-header {
   margin-bottom: 1.5rem;
   padding-bottom: 0.8rem;
   border-bottom: 1px solid var(--border-color);
+}
+
+.project-header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.8rem;
 }
 
 .project-title {
@@ -47,6 +55,17 @@
   font-size: 0.9rem;
 }
 
+.version-badge {
+  display: inline-block;
+  background-color: var(--accent-color);
+  color: white;
+  padding: 0.2rem 0.5rem;
+  border-radius: 3px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* === SCRIPT INFO === */
 .script-info {
   display: flex;
   flex-wrap: wrap;
@@ -75,18 +94,6 @@
   font-size: 0.85rem;
 }
 
-/* Improved script color block */
-.script-color-block {
-  display: inline-block;
-  width: 1rem;
-  height: 1rem;
-  border-radius: 3px;
-  margin-right: 0.3rem;
-  vertical-align: middle;
-  border: 1px solid rgba(0,0,0,0.1);
-}
-
-/* Script color badge (improved design) */
 .script-color-badge {
   display: inline-flex;
   align-items: center;
@@ -98,18 +105,7 @@
   box-shadow: 0 1px 2px rgba(0,0,0,0.05);
 }
 
-/* Version badge */
-.version-badge {
-  display: inline-block;
-  background-color: var(--accent-color);
-  color: white;
-  padding: 0.2rem 0.5rem;
-  border-radius: 3px;
-  font-size: 0.75rem;
-  font-weight: 500;
-}
-
-/* Calendar Actions - more compact */
+/* === CALENDAR ACTIONS === */
 .calendar-actions {
   display: flex;
   justify-content: space-between;
@@ -122,503 +118,19 @@
   gap: 0.5rem;
 }
 
-/* Department Counters - reduced size by ~25% */
-.department-counters {
-  margin-bottom: 1rem;
-  background-color: #f8f9fa;
-  padding: 0.6rem;
-  border-radius: 3px;
-}
-
-.counter-title {
-  font-size: 0.9rem;
-  margin-bottom: 0.5rem;
-  color: var(--primary-dark);
-}
-
-.counter-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-  gap: 0.4rem;
-}
-
-.counter-item {
-  border-radius: 3px;
-  padding: 0.5rem;
-  text-align: center;
-}
-
-.counter-label {
-  font-size: 0.75rem;
-  margin-bottom: 0.15rem;
-}
-
-.counter-value {
-  font-size: 1.1rem;
-  font-weight: 600;
-}
-
-/* Location Areas - more compact */
-.location-areas {
-  margin-bottom: 1rem;
-  background-color: #f8f9fa;
-  padding: 0.6rem;
-  border-radius: 3px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
-
-.areas-title {
-  font-size: 0.9rem;
-  margin-bottom: 0.5rem;
-  color: var(--primary-dark);
-}
-
-.area-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-  justify-content: center;
-}
-
-.area-tag {
-  border-radius: 3px;
-  padding: 0.35rem 0.5rem;
-  font-size: 0.75rem;
-  font-weight: 500;
-}
-
-/* Calendar Table - more compact */
-.calendar-table-wrapper {
-  overflow-x: auto;
-}
-
-.calendar-table {
-  width: 100%;
-  border-collapse: collapse;
-  border: 1px solid #dee2e6;
-  font-size: 0.85rem;
-}
-
-.calendar-table th,
-.calendar-table td {
-  border: 1px solid #dee2e6;
-  padding: 0.3rem; /* Reduced from 0.5rem */
-  vertical-align: top;
-  text-align: left;
-}
-
-.calendar-table th {
-  background-color: var(--primary-color);
-  color: white;
-  font-weight: 500;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  font-size: 0.75rem;
-  padding: 0.4rem 0.5rem;
-}
-
-/* Column widths - adjusted for compact layout */
-.date-col {
-  width: 85px; /* Reduced from 90px */
-}
-
-.day-col {
-  width: 15px; /* Reduced from 40px */
-  text-align: center;
-}
-
-.main-unit-col {
-  width: 180px;
-}
-
-/* Reduced E and FE column widths */
-.extras-col {
-  width: 25px; /* Reduced from 40px */
-  text-align: center;
-}
-
-.featured-extras-col {
-  width: 25px; /* Reduced from 40px */
-  text-align: center;
-}
-
-.location-col {
-  width: 120px;
-}
-
-.sequence-col {
-  width: 80px;
-}
-
-.departments-col {
-  width: 120px;
-}
-
-.notes-col {
-  width: 180px;
-}
-
-/* Row styling with location area colors - reduced height */
-.calendar-row {
-  max-height: 3.5rem; /* Limit maximum height to ~75% of original */
-  transition: background-color 0.2s;
-  --row-area-color: transparent;
-}
-
-.calendar-row.has-area-color {
-  background-color: color-mix(in srgb, var(--row-area-color) 15%, white);
-}
-
-.calendar-row:hover {
-  background-color: color-mix(in srgb, var(--row-area-color) 25%, white);
-}
-
-.calendar-row.weekend {
-  background-color: color-mix(in srgb, #f0f0f0 75%, var(--row-area-color, white));
-}
-
-.calendar-row.prep {
-  background-color: color-mix(in srgb, #e0ffe0 75%, var(--row-area-color, white)); /* Green for prep days */
-}
-
-.calendar-row.shoot {
-  background-color: color-mix(in srgb, #e0f0ff 75%, var(--row-area-color, white)); /* Light/teal blue for shoot days */
-}
-
-.calendar-row.hiatus {
-  background-color: color-mix(in srgb, #fff3e0 75%, var(--row-area-color, white));
-}
-
-.calendar-row.holiday {
-  background-color: color-mix(in srgb, #ffebee 75%, var(--row-area-color, white));
-}
-
-/* Cell styling - more compact */
-.date-cell {
-  font-weight: 500;
-  font-size: 0.8rem;
-}
-
-.date-display {
-  margin-bottom: 0.15rem;
-}
-
-.date-day {
-  font-size: 0.75rem;
-  color: var(--text-light);
-}
-
-.day-cell {
-  font-size: 1rem;
-  font-weight: 600;
-}
-
-.main-unit-cell {
-  font-weight: 500;
-  font-size: 0.85rem;
-  white-space: pre-line; /* Allow line breaks */
-  line-height: 1.2;
-}
-
-.extras-cell,
-.featured-extras-cell {
-  font-weight: 500;
-  text-align: center;
-}
-
-/* Two-tiered location/area display */
-.location-cell {
-  display: flex;
-  flex-direction: column;
-  gap: 0.1rem;
-  vertical-align: middle;
-}
-
-.location-name {
-  font-weight: 500;
-  font-size: 0.8rem;
-}
-
-.location-area {
-  font-size: 0.7rem;
-  color: var(--text-light);
-  font-style: italic;
-  opacity: 0.9;
-}
-
-/* Department tags - Fixed double line issue and reduced size */
-.departments-cell {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.15rem; /* Use gap instead of margins */
-  padding: 0.15rem;
-  align-items: flex-start;
-  max-height: 3.2rem;
-  overflow-y: auto;
-}
-
-.department-tag {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 3px;
-  padding: 0.1rem 0.3rem;
-  font-size: 0.7rem; /* Reduced from 0.75rem */
-  font-weight: 600;
-  text-transform: uppercase;
-  box-shadow: 0 1px 1px rgba(0,0,0,0.05);
-  margin: 0; /* Remove margins to prevent the double line effect */
-  border: 1px solid rgba(0,0,0,0.05);
-  line-height: 1;
-}
-
-/* Notes cell - reduced font size */
-.notes-cell {
-  font-size: 0.75rem; /* Reduced from 0.8rem */
-  line-height: 1.2;
-  white-space: pre-line;
-}
-
-/* Admin mode specific with drag-and-drop styling */
-.admin-calendar .calendar-row {
-  cursor: pointer;
-}
-
-.calendar-row.shoot {
-  cursor: grab;
-}
-
-.calendar-row.dragging {
-  opacity: 0.5;
-  cursor: grabbing;
-}
-
-.calendar-row.drop-target {
-  box-shadow: inset 0 0 0 2px var(--accent-color);
-}
-
-/* Loading overlay for drag operations */
-.loading-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(255, 255, 255, 0.7);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
-}
-
-.spinner {
-  width: 50px;
-  height: 50px;
-  border: 5px solid var(--border-color);
-  border-top-color: var(--accent-color);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-/* Project header top with version badge */
-.project-header-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.8rem;
-}
-
-/* Viewer mode specific */
-.viewer-mode .calendar-table th {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
-
-/* Print Styles - optimized for horizontal layout */
-@media print {
-  .calendar-container {
-    box-shadow: none;
-    padding: 0;
-  }
-  
-  .project-info-header {
-    margin-bottom: 0.5rem;
-  }
-  
-  .project-title {
-    font-size: 1.1rem;
-  }
-  
-  .counter-grid {
-    grid-template-columns: repeat(8, 1fr);
-  }
-  
-  .counter-item {
-    padding: 0.3rem;
-  }
-  
-  .counter-value {
-    font-size: 1rem;
-  }
-  
-  .calendar-table {
-    font-size: 8pt;
-  }
-  
-  .calendar-table th,
-  .calendar-table td {
-    padding: 2pt;  /* Reduced for print */
-    font-size: 7pt;  /* Reduced for print */
-  }
-  
-  .departments-cell {
-    gap: 1pt;
-  }
-  
-  .department-tag {
-    padding: 0.5pt 2pt;
-    font-size: 7pt;
-  }
-  
-  /* Force landscape orientation */
-  @page {
-    size: landscape;
-    margin: 0.5cm;
-  }
-  
-  /* Force page breaks between logical sections */
-  .calendar-table {
-    page-break-inside: auto;
-  }
-  
-  .calendar-row {
-    page-break-inside: avoid;
-  }
-  
-  /* Ensure headers print on each page */
-  .calendar-table thead {
-    display: table-header-group;
-  }
-  
-  /* Background colors for print - respecting location area colors */
-  .calendar-row.has-area-color {
-    background-color: color-mix(in srgb, var(--row-area-color) 15%, white) !important;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-  }
-  
-  .calendar-row.weekend {
-    background-color: color-mix(in srgb, #f0f0f0 75%, var(--row-area-color, white)) !important;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-  }
-  
-  .calendar-row.prep {
-    background-color: color-mix(in srgb, #e0ffe0 75%, var(--row-area-color, white)) !important;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-  }
-  
-  .calendar-row.shoot {
-    background-color: color-mix(in srgb, #e0f0ff 75%, var(--row-area-color, white)) !important;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-  }
-}
-
-/* Responsive Styles */
-@media (max-width: 768px) {
-  .project-meta {
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-  
-  .script-info {
-    flex-direction: column;
-    gap: 0.3rem;
-  }
-  
-  .counter-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-/* Updated color scheme as requested - April 2025 */
-.calendar-row.prep {
-  background-color: color-mix(in srgb, #e0ffe0 75%, var(--row-area-color, white)) !important; /* Green for prep days */
-}
-
-.calendar-row.shoot {
-  background-color: color-mix(in srgb, #e0f0ff 75%, var(--row-area-color, white)) !important; /* Light/teal blue for shoot days */
-}
-
-.calendar-row.weekend {
-  background-color: color-mix(in srgb, #f0f0f0 75%, var(--row-area-color, white)) !important; /* Subtle light gray for weekends */
-}
-
-/* Ensure print styles match */
-@media print {
-  .calendar-row.prep {
-    background-color: color-mix(in srgb, #e0ffe0 75%, var(--row-area-color, white)) !important;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-  }
-  
-  .calendar-row.shoot {
-    background-color: color-mix(in srgb, #e0f0ff 75%, var(--row-area-color, white)) !important;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-  }
-  
-  .calendar-row.weekend {
-    background-color: color-mix(in srgb, #f0f0f0 75%, var(--row-area-color, white)) !important;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-  }
-}
-
-/* Special dates styling */
-.calendar-row.holiday {
-  background-color: color-mix(in srgb, #fff0e0 75%, var(--row-area-color, white)) !important; /* Light orange for holidays */
-}
-
-.calendar-row.hiatus {
-  background-color: color-mix(in srgb, #ffe0e0 75%, var(--row-area-color, white)) !important; /* Light pink for hiatus periods */
-}
-
-.calendar-row.working-weekend {
-  background-color: color-mix(in srgb, #e0f0e0 75%, var(--row-area-color, white)) !important; /* Light teal-green for working weekends */
-}
-
-/* Center location area legend */
-.location-areas {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
-
-.area-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-  justify-content: center;
-}
-/* Department Counters Improvements */
+/* === DEPARTMENT COUNTERS - IMPROVED === */
 .department-counters {
   margin-bottom: 1.2rem;
   background-color: #f8f9fa;
   padding: 0.8rem;
   border-radius: 4px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.counter-title {
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  color: var(--primary-dark);
 }
 
 .counter-grid {
@@ -658,34 +170,78 @@
   font-weight: 600;
 }
 
-@media print {
-  .counter-grid {
-    grid-template-columns: repeat(8, 1fr);
-  }
-  
-  .counter-item {
-    min-height: auto;
-    padding: 0.2rem;
-  }
+/* === LOCATION AREAS === */
+.location-areas {
+  margin-bottom: 1rem;
+  background-color: #f8f9fa;
+  padding: 0.6rem;
+  border-radius: 3px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
-/* Further Column Width and Height Adjustments - 25% Reduction */
+
+.areas-title {
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  color: var(--primary-dark);
+}
+
+.area-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  justify-content: center;
+}
+
+.area-tag {
+  border-radius: 3px;
+  padding: 0.35rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* === CALENDAR TABLE - COMPACT === */
+.calendar-table-wrapper {
+  overflow-x: auto;
+}
+
+.calendar-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #dee2e6;
+  font-size: 0.85rem;
+}
+
 .calendar-table th,
 .calendar-table td {
-  padding: 0.3rem;  /* Further reduced from 0.4rem */
-  font-size: 0.75rem;  /* Further reduced from 0.8rem */
+  border: 1px solid #dee2e6;
+  padding: 0.3rem;  /* Reduced from 0.4rem */
+  vertical-align: top;
+  text-align: left;
+  font-size: 0.75rem;  /* Reduced font size */
 }
 
-.calendar-row {
-  max-height: 3.5rem;  /* Reduced from 4.5rem - approx 25% reduction */
+.calendar-table th {
+  background-color: var(--primary-color);
+  color: white;
+  font-weight: 500;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  font-size: 0.75rem;
+  padding: 0.4rem 0.5rem;
 }
 
-/* Refined column widths */
+/* === COLUMN WIDTHS - REFINED === */
 .date-col {
   width: 80px;  /* Reduced from 85px */
 }
 
 .day-col {
   width: 30px;  /* Reduced from 35px */
+  text-align: center;
 }
 
 .main-unit-col {
@@ -695,6 +251,7 @@
 .extras-col,
 .featured-extras-col {
   width: 25px;  /* Reduced from 30px */
+  text-align: center;
 }
 
 .location-col {
@@ -713,70 +270,43 @@
   width: 160px;  /* Reduced from 180px */
 }
 
-/* Vertical spacing adjustments */
-.date-cell .date-display {
-  font-size: 0.75rem;  /* Reduced from 0.8rem */
+/* === ROW STYLING - COLOR CODED === */
+.calendar-row {
+  max-height: 3.5rem;  /* Reduced from 4.5rem - approx 25% reduction */
+  transition: background-color 0.2s;
+  --row-area-color: transparent;
 }
 
-.date-cell .date-day {
-  font-size: 0.7rem;  /* Reduced from 0.75rem */
+.calendar-row.has-area-color {
+  background-color: color-mix(in srgb, var(--row-area-color) 15%, white);
 }
 
-.day-cell {
-  font-size: 0.9rem;  /* Reduced from 1rem */
-}
-
-.departments-cell {
-  max-height: 2.8rem;  /* Reduced from 3.2rem - approx 25% reduction */
-}
-
-/* Even more compact department tags */
-.department-tag {
-  padding: 0.07rem 0.25rem;  /* Reduced from 0.1rem 0.3rem */
-  font-size: 0.65rem;  /* Reduced from 0.7rem */
-}
-
-.calendar-row.prep {
-  background-color: color-mix(in srgb, #e0ffe0 75%, var(--row-area-color, white)) !important;
-  -webkit-print-color-adjust: exact;
-  print-color-adjust: exact;
-}
-
-.calendar-row.shoot {
-  background-color: color-mix(in srgb, #e0f0ff 75%, var(--row-area-color, white)) !important;
-  -webkit-print-color-adjust: exact;
-  print-color-adjust: exact;
+.calendar-row:hover {
+  background-color: color-mix(in srgb, var(--row-area-color) 25%, white);
 }
 
 .calendar-row.weekend {
-  background-color: color-mix(in srgb, #f0f0f0 75%, var(--row-area-color, white)) !important;
-  -webkit-print-color-adjust: exact;
-  print-color-adjust: exact;
+  background-color: color-mix(in srgb, #f0f0f0 75%, var(--row-area-color, white)) !important; /* Subtle light gray for weekends */
 }
 
-.calendar-row.holiday {
-  background-color: color-mix(in srgb, #fff0e0 75%, var(--row-area-color, white)) !important;
-  -webkit-print-color-adjust: exact;
-  print-color-adjust: exact;
+.calendar-row.prep {
+  background-color: color-mix(in srgb, #e0ffe0 75%, var(--row-area-color, white)) !important; /* Green for prep days */
+}
+
+.calendar-row.shoot {
+  background-color: color-mix(in srgb, #e0f0ff 75%, var(--row-area-color, white)) !important; /* Light/teal blue for shoot days */
 }
 
 .calendar-row.hiatus {
-  background-color: color-mix(in srgb, #ffe0e0 75%, var(--row-area-color, white)) !important;
-  -webkit-print-color-adjust: exact;
-  print-color-adjust: exact;
+  background-color: color-mix(in srgb, #ffe0e0 75%, var(--row-area-color, white)) !important; /* Light pink for hiatus periods */
 }
 
-.calendar-row.working-weekend {
-  background-color: color-mix(in srgb, #e0f0e0 75%, var(--row-area-color, white)) !important;
-  -webkit-print-color-adjust: exact;
-  print-color-adjust: exact;
+.calendar-row.holiday {
+  background-color: color-mix(in srgb, #fff0e0 75%, var(--row-area-color, white)) !important; /* Light orange for holidays */
 }
 
-/* Working Weekend row styling */
 .calendar-row.working-weekend {
   background-color: color-mix(in srgb, #e0f0e0 75%, var(--row-area-color, white)) !important; /* Light teal-green for working weekends */
-  -webkit-print-color-adjust: exact;
-  print-color-adjust: exact;
 }
 
 /* Add working weekend badge to day cell */
@@ -793,9 +323,143 @@
   max-width: 50px;
 }
 
-/* Special dates page styling */
+/* === CELL STYLING - COMPACT === */
+.date-cell {
+  font-weight: 500;
+}
 
-/* Date list items */
+.date-display {
+  margin-bottom: 0.15rem;
+  font-size: 0.75rem;  /* Reduced from 0.8rem */
+}
+
+.date-day {
+  font-size: 0.7rem;  /* Reduced from 0.75rem */
+  color: var(--text-light);
+}
+
+.day-cell {
+  font-size: 0.9rem;  /* Reduced from 1rem */
+  font-weight: 600;
+}
+
+.main-unit-cell {
+  font-weight: 500;
+  font-size: 0.85rem;
+  white-space: pre-line; /* Allow line breaks */
+  line-height: 1.2;
+}
+
+.extras-cell,
+.featured-extras-cell {
+  font-weight: 500;
+  text-align: center;
+}
+
+.location-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  vertical-align: middle;
+}
+
+.location-name {
+  font-weight: 500;
+  font-size: 0.8rem;
+}
+
+.location-area {
+  font-size: 0.7rem;
+  color: var(--text-light);
+  font-style: italic;
+  opacity: 0.9;
+}
+
+/* === DEPARTMENT TAGS - COMPACT === */
+.departments-cell {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.15rem; /* Use gap instead of margins */
+  padding: 0.15rem;
+  align-items: flex-start;
+  max-height: 2.8rem;  /* Reduced from 3.2rem - approx 25% reduction */
+  overflow-y: auto;
+}
+
+.department-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 3px;
+  padding: 0.07rem 0.25rem;  /* Reduced from 0.1rem 0.3rem */
+  font-size: 0.65rem;  /* Reduced from 0.7rem */
+  font-weight: 600;
+  text-transform: uppercase;
+  box-shadow: 0 1px 1px rgba(0,0,0,0.05);
+  margin: 0; /* Remove margins to prevent the double line effect */
+  border: 1px solid rgba(0,0,0,0.05);
+  line-height: 1;
+}
+
+.notes-cell {
+  font-size: 0.75rem; /* Reduced from 0.8rem */
+  line-height: 1.2;
+  white-space: pre-line;
+}
+
+/* === ADMIN MODE SPECIFICS === */
+.admin-calendar .calendar-row {
+  cursor: pointer;
+}
+
+.calendar-row.shoot {
+  cursor: grab;
+}
+
+.calendar-row.dragging {
+  opacity: 0.5;
+  cursor: grabbing;
+}
+
+.calendar-row.drop-target {
+  box-shadow: inset 0 0 0 2px var(--accent-color);
+}
+
+/* === LOADING OVERLAY === */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid var(--border-color);
+  border-top-color: var(--accent-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* === VIEWER MODE SPECIFICS === */
+.viewer-mode .calendar-table th {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+/* === SPECIAL DATES STYLING === */
 .date-item {
   display: flex;
   justify-content: space-between;
@@ -818,23 +482,12 @@
   flex-direction: column;
 }
 
-.date-display {
-  font-weight: 500;
-  font-size: 0.9rem;
-}
-
-.date-description {
-  font-size: 0.8rem;
-  color: var(--text-light);
-  margin-top: 0.1rem;
-}
-
 .date-action {
   display: flex;
   gap: 0.4rem;
 }
 
-/* Modal styles for special dates */
+/* === MODAL STYLES === */
 .modal {
   position: fixed;
   top: 0;
@@ -906,7 +559,7 @@
   color: var(--text-color);
 }
 
-/* Fix for form check alignment */
+/* === FORM UTILITY === */
 .form-check {
   display: flex;
   align-items: center;
@@ -915,4 +568,134 @@
 
 .form-check input[type="checkbox"] {
   margin-right: 0.5rem;
+}
+
+/* === PRINT STYLES === */
+@media print {
+  .calendar-container {
+    box-shadow: none;
+    padding: 0;
+  }
+  
+  .project-info-header {
+    margin-bottom: 0.5rem;
+  }
+  
+  .project-title {
+    font-size: 1.1rem;
+  }
+  
+  /* Optimized department counters for print */
+  .counter-grid {
+    grid-template-columns: repeat(8, 1fr);
+  }
+  
+  .counter-item {
+    min-height: auto;
+    padding: 0.2rem;
+  }
+  
+  .counter-value {
+    font-size: 1rem;
+  }
+  
+  /* Reduced table size for print */
+  .calendar-table {
+    font-size: 8pt;
+  }
+  
+  .calendar-table th,
+  .calendar-table td {
+    padding: 2pt;  /* Reduced for print */
+    font-size: 7pt;  /* Reduced for print */
+  }
+  
+  .departments-cell {
+    gap: 1pt;
+  }
+  
+  .department-tag {
+    padding: 0.5pt 2pt;
+    font-size: 7pt;
+  }
+  
+  /* Force landscape orientation */
+  @page {
+    size: landscape;
+    margin: 0.5cm;
+  }
+  
+  /* Force page breaks between logical sections */
+  .calendar-table {
+    page-break-inside: auto;
+  }
+  
+  .calendar-row {
+    page-break-inside: avoid;
+  }
+  
+  /* Ensure headers print on each page */
+  .calendar-table thead {
+    display: table-header-group;
+  }
+  
+  /* Background colors for print - respecting location area colors */
+  .calendar-row.has-area-color {
+    background-color: color-mix(in srgb, var(--row-area-color) 15%, white) !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  
+  .calendar-row.weekend {
+    background-color: color-mix(in srgb, #f0f0f0 75%, var(--row-area-color, white)) !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  
+  .calendar-row.prep {
+    background-color: color-mix(in srgb, #e0ffe0 75%, var(--row-area-color, white)) !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  
+  .calendar-row.shoot {
+    background-color: color-mix(in srgb, #e0f0ff 75%, var(--row-area-color, white)) !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  
+  .calendar-row.hiatus {
+    background-color: color-mix(in srgb, #ffe0e0 75%, var(--row-area-color, white)) !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  
+  .calendar-row.holiday {
+    background-color: color-mix(in srgb, #fff0e0 75%, var(--row-area-color, white)) !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  
+  .calendar-row.working-weekend {
+    background-color: color-mix(in srgb, #e0f0e0 75%, var(--row-area-color, white)) !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+
+/* === RESPONSIVE STYLES === */
+@media (max-width: 768px) {
+  .project-meta {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .script-info {
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+  
+  .counter-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
