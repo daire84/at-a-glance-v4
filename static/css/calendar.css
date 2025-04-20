@@ -572,69 +572,249 @@
 
 /* === PRINT STYLES === */
 @media print {
+  /* General print styles */
   .calendar-container {
     box-shadow: none;
-    padding: 0;
+    padding: 0.5cm;
+    width: 100%;
+    margin: 0;
   }
   
+  /* Ensure all print elements maintain their exact layout as on screen */
   .project-info-header {
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.3cm;
+    padding-bottom: 0.2cm;
+    border-bottom: 1pt solid #ccc;
+    page-break-inside: avoid;
+    display: block;
+    width: 100%;
+  }
+  
+  /* Project header title - centered */
+  .project-header-top {
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.2cm;
   }
   
   .project-title {
-    font-size: 1.1rem;
+    font-size: 12pt;
+    font-weight: bold;
+    color: var(--primary-color) !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
   
-  /* Optimized department counters for print */
+  /* Critical: Force flex layout for project metadata in print */
+  .project-meta {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    gap: 0.3cm !important;
+    margin-bottom: 0.2cm !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+  }
+  
+  .meta-group {
+    display: flex !important;
+    flex-direction: column !important;
+    min-width: 2cm !important;
+    flex: 0 0 auto !important;
+  }
+  
+  .meta-label {
+    font-size: 6pt;
+    font-weight: normal;
+    margin-bottom: 1pt;
+    color: #666 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  
+  .meta-value {
+    font-size: 8pt;
+    font-weight: 500;
+  }
+  
+  /* Script info forced to maintain horizontal layout */
+  .script-info {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    gap: 0.3cm !important;
+    background-color: #f8f9fa !important;
+    padding: 0.15cm 0.2cm !important;
+    border-radius: 2pt !important;
+    margin-top: 0.15cm !important;
+    justify-content: space-between !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  
+  .script-item {
+    display: flex !important;
+    align-items: center !important;
+    margin-right: 0.2cm !important;
+    flex: 0 0 auto !important;
+  }
+  
+  .script-label {
+    font-weight: 500 !important;
+    color: var(--primary-color) !important;
+    font-size: 6pt !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  
+  .script-value {
+    font-size: 7pt !important;
+  }
+  
+  .script-color-badge {
+    padding: 1pt 3pt !important;
+    border-radius: 2pt !important;
+    font-size: 6pt !important;
+    border: 0.5pt solid rgba(0, 0, 0, 0.1) !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  
+  /* Critical: Force department counters to use multiple columns */
+  .department-counters {
+    margin-bottom: 0.2cm !important;
+    background-color: #f8f9fa !important;
+    padding: 0.15cm !important;
+    border-radius: 2pt !important;
+    page-break-inside: avoid !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    width: 100% !important;
+  }
+  
+  .counter-title {
+    font-size: 8pt !important;
+    margin-bottom: 0.1cm !important;
+    color: var(--primary-dark) !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  
+  /* Force grid to maintain multiple columns */
   .counter-grid {
-    grid-template-columns: repeat(8, 1fr);
+    display: grid !important;
+    grid-template-columns: repeat(8, 1fr) !important;
+    grid-template-rows: auto !important;
+    gap: 0.1cm !important;
+    width: 100% !important;
   }
   
   .counter-item {
-    min-height: auto;
-    padding: 0.2rem;
+    min-height: auto !important;
+    padding: 0.05cm 0.1cm !important;
+    border-radius: 2pt !important;
+    display: flex !important;
+    flex-direction: column !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    margin: 0 !important;
+  }
+  
+  .counter-label {
+    font-size: 5pt !important;
+    margin-bottom: 1pt !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
   }
   
   .counter-value {
-    font-size: 1rem;
+    font-size: 8pt !important;
+    font-weight: 600 !important;
   }
   
-  /* Reduced table size for print */
+  /* Location areas print styles - maintain horizontal layout */
+  .location-areas {
+    margin-bottom: 0.2cm !important;
+    background-color: #f8f9fa !important;
+    padding: 0.1cm 0.15cm !important;
+    border-radius: 2pt !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    page-break-inside: avoid !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  
+  .areas-title {
+    font-size: 8pt !important;
+    margin-bottom: 0.05cm !important;
+  }
+  
+  .area-tags {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 0.05cm !important;
+    justify-content: center !important;
+  }
+  
+  .area-tag {
+    padding: 1pt 3pt !important;
+    border-radius: 2pt !important;
+    font-size: 6pt !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  
+  /* Calendar table print styles */
   .calendar-table {
     font-size: 8pt;
+    width: 100% !important;
+    page-break-inside: auto;
   }
   
   .calendar-table th,
   .calendar-table td {
-    padding: 2pt;  /* Reduced for print */
-    font-size: 7pt;  /* Reduced for print */
+    padding: 2pt;
+    font-size: 7pt;
+    border: 0.5pt solid #dee2e6;
+  }
+  
+  .calendar-table th {
+    background-color: var(--primary-color) !important;
+    color: white !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
   
   .departments-cell {
     gap: 1pt;
+    max-height: none; /* Remove height limit for print */
   }
   
   .department-tag {
     padding: 0.5pt 2pt;
-    font-size: 7pt;
+    font-size: 6pt;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
   
-  /* Force landscape orientation */
+  /* Page settings */
   @page {
     size: landscape;
-    margin: 0.5cm;
+    margin: 0.3cm;
   }
   
-  /* Force page breaks between logical sections */
-  .calendar-table {
-    page-break-inside: auto;
-  }
-  
+  /* Page breaks and element preservation */
   .calendar-row {
     page-break-inside: avoid;
   }
   
-  /* Ensure headers print on each page */
   .calendar-table thead {
     display: table-header-group;
   }
@@ -680,6 +860,17 @@
     background-color: color-mix(in srgb, #e0f0e0 75%, var(--row-area-color, white)) !important;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
+  }
+  
+  /* Hide elements not needed in print */
+  .admin-header, 
+  .action-buttons, 
+  .calendar-actions, 
+  .main-header, 
+  .admin-actions, 
+  footer, 
+  .mobile-menu-toggle {
+    display: none !important;
   }
 }
 
