@@ -1,3 +1,8 @@
+#!/bin/bash
+# Updated script to fix the SVG conversion issue
+
+# 1. Update the Dockerfile to include the required librsvg2-bin package
+cat > /mnt/user/appdata/film-scheduler-v4/Dockerfile << 'EOF'
 FROM python:3.11-slim
 
 # Set environment variables
