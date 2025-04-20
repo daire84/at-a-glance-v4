@@ -1864,14 +1864,21 @@
       "isWorkingWeekend": false,
       "dayType": "shoot",
       "shootDay": 1,
-      "mainUnit": "",
+      "mainUnit": "CANNON HOUSE - KITCHEN",
       "extras": 0,
       "featuredExtras": 0,
-      "location": "",
-      "locationArea": "",
-      "sequence": "",
-      "departments": [],
-      "notes": ""
+      "location": "A Stage",
+      "locationArea": "Ardmore Studios",
+      "sequence": "Dinner time",
+      "departments": [
+        "FOD",
+        "STN",
+        "VFX",
+        "SFX"
+      ],
+      "notes": "",
+      "secondUnit": "",
+      "secondUnitLocation": ""
     },
     {
       "date": "2025-03-25",
@@ -3167,7 +3174,9 @@
       "locationArea": "",
       "sequence": "",
       "departments": [],
-      "notes": ""
+      "notes": "",
+      "secondUnit": "",
+      "secondUnitLocation": ""
     },
     {
       "date": "2025-05-18",
@@ -3695,7 +3704,7 @@
       "locationArea": "",
       "sequence": "",
       "departments": [],
-      "notes": "WORKING WEEKEND: Working due to School Avail"
+      "notes": "WORKING WEEKEND: Working due to Art College avail"
     },
     {
       "date": "2025-06-09",
@@ -3819,16 +3828,18 @@
     }
   ],
   "departmentCounts": {
-    "main": 0,
+    "main": 58,
     "secondUnit": 0,
     "splitDay": 0,
     "sixthDay": 0,
     "steadicam": 0,
-    "sfx": 0,
-    "stunts": 0,
+    "sfx": 1,
+    "stunts": 1,
     "crane": 0,
     "prosthetics": 0,
-    "lowLoader": 0
+    "lowLoader": 0,
+    "fod": 1,
+    "vfx": 1
   },
   "locationAreas": [
     {
@@ -3867,5 +3878,5 @@
       "id": "4459abff-cd87-4fdc-a238-1ff355b2e970"
     }
   ],
-  "lastUpdated": "2025-04-18T23:57:36.556719Z"
+  "lastUpdated": "2025-04-20T16:18:38.325344Z"
 }

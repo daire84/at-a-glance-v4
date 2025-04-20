@@ -121,9 +121,14 @@ def save_project_calendar(project_id, calendar_data):
         raise
 
 def generate_calendar(project):
-    """Generate calendar days based on project dates"""
+    """Generate calendar days based on project dates, preserving existing data"""
     try:
-        calendar_data = generate_calendar_days(project)
+        # Get existing calendar data first
+        existing_calendar = get_project_calendar(project['id'])
+        
+        # Generate new calendar while preserving existing data
+        calendar_data = generate_calendar_days(project, existing_calendar)
+        
         return save_project_calendar(project['id'], calendar_data)
     except Exception as e:
         logger.error(f"Error generating calendar: {str(e)}")

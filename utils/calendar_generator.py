@@ -7,12 +7,13 @@ from dateutil.relativedelta import relativedelta
 
 logger = logging.getLogger(__name__)
 
-def generate_calendar_days(project):
+def generate_calendar_days(project, existing_calendar=None):
     """
     Generate calendar days for a project based on dates
     
     Args:
         project (dict): Project data including prepStartDate and shootStartDate
+        existing_calendar (dict, optional): Existing calendar data to preserve
         
     Returns:
         dict: Calendar data with days array
@@ -39,7 +40,14 @@ def generate_calendar_days(project):
         working_weekends = load_working_weekends(project.get('id'))
         hiatus_periods = load_hiatus_periods(project.get('id'))
         special_dates = load_special_dates(project.get('id'))
-
+        
+        # Create a map of existing days by date for quick lookup
+        existing_days_map = {}
+        if existing_calendar and 'days' in existing_calendar:
+            for day in existing_calendar['days']:
+                if 'date' in day:
+                    existing_days_map[day['date']] = day
+        
         # Generate all dates in range
         current_date = prep_start
         calendar_days = []
@@ -94,58 +102,83 @@ def generate_calendar_days(project):
                 is_working_weekend=is_working_weekend
             )
             
-            # Create day entry
-            day = {
-                "date": date_str,
-                "dayOfWeek": current_date.strftime("%A"),
-                "monthName": current_date.strftime("%B"),
-                "day": current_date.day,
-                "month": current_date.month,
-                "year": current_date.year,
-                "isPrep": current_date < shoot_start,
-                "isShootDay": is_shoot_day,
-                "isWeekend": is_weekend,
-                "isHoliday": is_holiday,
-                "isHiatus": is_hiatus,
-                "isWorkingWeekend": is_working_weekend,
-                "dayType": day_type,
-                "shootDay": shoot_day if is_shoot_day else None,
-                "mainUnit": "",
-                "extras": 0,
-                "featuredExtras": 0,
-                "location": "",
-                "locationArea": "",
-                "sequence": "",
-                "departments": [],
-                "notes": ""
-            }
-            
-            # Add holiday or hiatus info to notes if applicable
-            if is_holiday and holiday_data:
-                day["notes"] = f"BANK HOLIDAY: {holiday_data.get('name', '')}"
+            # Check if we have existing data for this date
+            if date_str in existing_days_map:
+                # Start with the existing day data
+                day = existing_days_map[date_str].copy()
                 
-            if is_hiatus and hiatus_data:
-                day["notes"] = f"HIATUS: {hiatus_data.get('name', '')}"
-                
-            if is_working_weekend and working_weekend_data:
-                if working_weekend_data.get('description'):
-                    day["notes"] = f"WORKING WEEKEND: {working_weekend_data.get('description', '')}"
-                else:
-                    day["notes"] = "WORKING WEEKEND"
+                # Update only the date-related properties and shoot day number
+                day.update({
+                    "isPrep": current_date < shoot_start,
+                    "isShootDay": is_shoot_day,
+                    "isWeekend": is_weekend,
+                    "isHoliday": is_holiday,
+                    "isHiatus": is_hiatus,
+                    "isWorkingWeekend": is_working_weekend,
+                    "dayType": day_type,
+                    "shootDay": shoot_day if is_shoot_day else None
+                })
+            else:
+                # Create a new day entry
+                day = {
+                    "date": date_str,
+                    "dayOfWeek": current_date.strftime("%A"),
+                    "monthName": current_date.strftime("%B"),
+                    "day": current_date.day,
+                    "month": current_date.month,
+                    "year": current_date.year,
+                    "isPrep": current_date < shoot_start,
+                    "isShootDay": is_shoot_day,
+                    "isWeekend": is_weekend,
+                    "isHoliday": is_holiday,
+                    "isHiatus": is_hiatus,
+                    "isWorkingWeekend": is_working_weekend,
+                    "dayType": day_type,
+                    "shootDay": shoot_day if is_shoot_day else None,
+                    "mainUnit": "",
+                    "extras": 0,
+                    "featuredExtras": 0,
+                    "location": "",
+                    "locationArea": "",
+                    "sequence": "",
+                    "departments": [],
+                    "notes": ""
+                }
             
-            # Add this section to handle special dates
+            # Add special date info to notes ONLY if notes are empty or already contain special date info
             special_date_data = get_special_date(date_str, special_dates)
-            if special_date_data:
-                type_display = {
-                    'travel': 'Travel Day',
-                    'meeting': 'Meeting',
-                    'rehearsal': 'Rehearsal',
-                    'other': 'Special Date'
-                }.get(special_date_data.get('type', 'other'), 'Special Date')
+            notes_contains_special_info = False
+            
+            if day.get("notes"):
+                # Check if notes already contain any of these keywords
+                special_keywords = ["BANK HOLIDAY:", "HIATUS:", "WORKING WEEKEND:", "Travel Day:", "Meeting:", "Rehearsal:", "Special Date:"]
+                notes_contains_special_info = any(keyword in day["notes"] for keyword in special_keywords)
+            
+            # Only update notes if they're empty or already have special date info
+            if not day.get("notes") or notes_contains_special_info:
+                if is_holiday and holiday_data:
+                    day["notes"] = f"BANK HOLIDAY: {holiday_data.get('name', '')}"
+                    
+                if is_hiatus and hiatus_data:
+                    day["notes"] = f"HIATUS: {hiatus_data.get('name', '')}"
+                    
+                if is_working_weekend and working_weekend_data:
+                    if working_weekend_data.get('description'):
+                        day["notes"] = f"WORKING WEEKEND: {working_weekend_data.get('description', '')}"
+                    else:
+                        day["notes"] = "WORKING WEEKEND"
                 
-                day["notes"] = f"{type_display}: {special_date_data.get('name', '')}"
-                if special_date_data.get('description'):
-                    day["notes"] += f" - {special_date_data.get('description')}"
+                if special_date_data:
+                    type_display = {
+                        'travel': 'Travel Day',
+                        'meeting': 'Meeting',
+                        'rehearsal': 'Rehearsal',
+                        'other': 'Special Date'
+                    }.get(special_date_data.get('type', 'other'), 'Special Date')
+                    
+                    day["notes"] = f"{type_display}: {special_date_data.get('name', '')}"
+                    if special_date_data.get('description'):
+                        day["notes"] += f" - {special_date_data.get('description')}"
             
             calendar_days.append(day)
             current_date += timedelta(days=1)
@@ -157,10 +190,16 @@ def generate_calendar_days(project):
         calendar_data = {
             "projectId": project.get('id', ''),
             "days": calendar_days,
-            "departmentCounts": initialize_department_counts(),
+            "departmentCounts": calculate_department_counts({"days": calendar_days}),
             "locationAreas": location_areas,
             "lastUpdated": datetime.utcnow().isoformat() + 'Z'
         }
+        
+        # Keep any additional properties from the existing calendar
+        if existing_calendar:
+            for key, value in existing_calendar.items():
+                if key not in calendar_data and key != "days":
+                    calendar_data[key] = value
         
         return calendar_data
     
