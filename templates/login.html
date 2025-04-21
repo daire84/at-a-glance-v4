@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Your Schedule, At a Glance!{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="/static/css/forms.css">
+<style>
+    .login-container {
+        max-width: 400px;
+        margin: 2rem auto;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="content-container login-container">
+    <h2>Login to View Production Calendar</h2>
+    
+    {% if error %}
+    <div class="flash-message error">
+        {{ error }}
+        <button class="close-button">&times;</button>
+    </div>
+    {% endif %}
+    
+    <form method="POST" class="form-container">
+        <div class="form-section">
+            <div class="form-row">
+                <div class="form-group full-width">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-actions">
+            <button type="submit" class="button">Login</button>
+        </div>
+    </form>
+    
+    <div style="text-align: center; margin-top: 1.5rem;">
+        <a href="{{ url_for('admin_login') }}" class="button secondary">Admin Login</a>
+    </div>
+</div>
+{% endblock %}

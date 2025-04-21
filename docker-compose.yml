@@ -17,6 +17,8 @@ services:
       - FLASK_ENV=development
       - FLASK_APP=app.py
       - SECRET_KEY=dev-secret-key
+      - VIEWER_PASSWORD=${VIEWER_PASSWORD}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
       - FLASK_DEBUG=1
       - PYTHONUNBUFFERED=1
     command: >

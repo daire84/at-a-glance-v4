@@ -5,6 +5,9 @@ import logging
 from datetime import datetime, timedelta
 from flask import Flask, render_template, request, jsonify, redirect, url_for, send_from_directory, flash, session
 from utils.calendar_generator import generate_calendar_days, calculate_department_counts, update_calendar_with_location_areas
+from functools import wraps  # Add this for decorators
+from dotenv import load_dotenv
+load_dotenv()  # This will load variables from .env file into os.environ
 
 # Create logger
 logging.basicConfig(
@@ -17,8 +20,15 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# Debug: Check if environment variables are loaded
+logger.info(f"VIEWER_PASSWORD is {'set' if 'VIEWER_PASSWORD' in os.environ else 'NOT set'}")
+logger.info(f"ADMIN_PASSWORD is {'set' if 'ADMIN_PASSWORD' in os.environ else 'NOT set'}")
+
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
+# Add permanent session configuration
+app.config['SESSION_PERMANENT'] = True
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)  # Adjust as needed
 
 # Configuration
 DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data')
@@ -480,6 +490,54 @@ def admin_dates(project_id=None):
 def health():
     """Health check endpoint"""
     return jsonify({"status": "ok", "version": "1.0.0"}), 200
+
+# -------------------------------------------------------------------------
+# AUTHENTICATION ROUTES
+# -------------------------------------------------------------------------
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    """Viewer login page"""
+    error = None
+    # If already logged in as admin, redirect to admin dashboard
+    if session.get('user_role') == 'admin':
+        return redirect(url_for('admin_dashboard'))
+    # If already logged in as viewer, redirect to home
+    if session.get('user_role') == 'viewer':
+        return redirect(url_for('index'))
+        
+    if request.method == 'POST':
+        if request.form['password'] == os.environ.get('VIEWER_PASSWORD', 'viewer'):
+            session['user_role'] = 'viewer'
+            flash('You were successfully logged in', 'success')
+            return redirect(url_for('index'))
+        else:
+            error = 'Invalid password'
+    return render_template('login.html', error=error)
+
+@app.route('/admin/login', methods=['GET', 'POST'])
+def admin_login():
+    """Admin login page"""
+    error = None
+    # If already logged in as admin, redirect to admin dashboard
+    if session.get('user_role') == 'admin':
+        return redirect(url_for('admin_dashboard'))
+        
+    if request.method == 'POST':
+        if request.form['password'] == os.environ.get('ADMIN_PASSWORD', 'admin'):
+            session['user_role'] = 'admin'
+            flash('You were successfully logged in as admin', 'success')
+            return redirect(url_for('admin_dashboard'))
+        else:
+            error = 'Invalid password'
+    return render_template('admin/login.html', error=error)
+
+@app.route('/logout')
+def logout():
+    """Logout route"""
+    session.pop('user_role', None)
+    flash('You have been logged out', 'success')
+    return redirect(url_for('login'))
 
 # -------------------------------------------------------------------------
 # API ROUTES

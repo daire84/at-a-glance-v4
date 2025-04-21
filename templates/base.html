@@ -177,26 +177,16 @@
             <nav class="main-nav" id="main-nav">
                 <ul>
                     <li><a href="/">Dashboard</a></li>
-                    {% if request.path.startswith('/admin') %}
-                    <!-- <li class="nav-dropdown">
-                        <a href="#" class="nav-dropdown-toggle" id="admin-dropdown-toggle">
-                            Manage
-                            <svg class="dropdown-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="6 9 12 15 18 9"></polyline>
-                            </svg>
-                        </a>
-                        <div class="nav-dropdown-menu" id="admin-dropdown-menu">
-                            <ul>
-                                <li><a href="/admin/locations">Locations</a></li>
-                                <li><a href="/admin/departments">Departments</a></li>
-                                <li><a href="/admin/dates">Special Dates</a></li>
-                                <li class="divider"></li>
-                                <li><a href="/admin/project/new">New Project</a></li>
-                            </ul>
-                        </div>
-                    </li> -->
+                    
+                    {% if session.get('user_role') == 'admin' %}
+                        <li><a href="/admin">Admin</a></li>
                     {% endif %}
-                    <li><a href="/admin">Admin</a></li>
+                    
+                    {% if session.get('user_role') %}
+                        <li><a href="/logout">Logout</a></li>
+                    {% else %}
+                        <li><a href="/login">Login</a></li>
+                    {% endif %}
                 </ul>
             </nav>
         </div>
