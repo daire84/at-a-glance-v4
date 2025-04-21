@@ -251,23 +251,44 @@ def recalculate_shoot_days(days):
         logger.error(f"Error recalculating shoot days: {str(e)}")
         return days
 
+# Authentication decorators
+def viewer_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user_role' not in session:
+            return redirect(url_for('login', next=request.url))
+        return f(*args, **kwargs)
+    return decorated_function
+
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if session.get('user_role') != 'admin':
+            flash('Admin access required', 'error')
+            return redirect(url_for('login', next=request.url))
+        return f(*args, **kwargs)
+    return decorated_function
+
 # -------------------------------------------------------------------------
 # PAGE ROUTES
 # -------------------------------------------------------------------------
 
 @app.route('/')
+@viewer_required
 def index():
     """Home page - Project selection"""
     projects = get_projects()
     return render_template('index.html', projects=projects)
 
 @app.route('/admin')
+@admin_required
 def admin_dashboard():
     """Admin dashboard"""
     projects = get_projects()
     return render_template('admin/dashboard.html', projects=projects)
 
 @app.route('/admin/project/<project_id>', methods=['GET', 'POST'])
+@admin_required
 def admin_project(project_id):
     """Project details editor"""
     if request.method == 'POST':
@@ -331,6 +352,7 @@ def admin_project(project_id):
     return render_template('admin/project.html', project=project)
 
 @app.route('/admin/calendar/<project_id>')
+@admin_required
 def admin_calendar(project_id):
     """Calendar editor"""
     project = get_project(project_id)
@@ -359,6 +381,7 @@ def admin_calendar(project_id):
     return render_template('admin/calendar.html', project=project, calendar=calendar_data)
 
 @app.route('/admin/day/<project_id>/<date>', methods=['GET', 'POST'])
+@admin_required
 def admin_day(project_id, date):
     """Day editor"""
     project = get_project(project_id)
@@ -442,6 +465,7 @@ def admin_day(project_id, date):
     return render_template('admin/day.html', project=project, day=day)
 
 @app.route('/viewer/<project_id>')
+@viewer_required
 def viewer(project_id):
     """Calendar viewer"""
     project = get_project(project_id)
@@ -470,23 +494,27 @@ def viewer(project_id):
     return render_template('viewer.html', project=project, calendar=calendar_data)
 
 @app.route('/admin/locations')
+@admin_required
 def admin_locations():
     """Location management page"""
     return render_template('admin/locations.html')
 
 @app.route('/admin/departments')
+@admin_required
 def admin_departments():
     """Department management page"""
     return render_template('admin/departments.html')
 
 @app.route('/admin/dates')
 @app.route('/admin/dates/<project_id>')
+@admin_required
 def admin_dates(project_id=None):
     """Special dates management page"""
     projects = get_projects()
     return render_template('admin/dates.html', projects=projects, project_id=project_id)
 
 @app.route('/health')
+@viewer_required
 def health():
     """Health check endpoint"""
     return jsonify({"status": "ok", "version": "1.0.0"}), 200
@@ -499,6 +527,9 @@ def health():
 def login():
     """Viewer login page"""
     error = None
+    # Store next page if provided
+    next_page = request.args.get('next')
+    
     # If already logged in as admin, redirect to admin dashboard
     if session.get('user_role') == 'admin':
         return redirect(url_for('admin_dashboard'))
@@ -510,7 +541,7 @@ def login():
         if request.form['password'] == os.environ.get('VIEWER_PASSWORD', 'viewer'):
             session['user_role'] = 'viewer'
             flash('You were successfully logged in', 'success')
-            return redirect(url_for('index'))
+            return redirect(next_page or url_for('index'))
         else:
             error = 'Invalid password'
     return render_template('login.html', error=error)
@@ -519,6 +550,9 @@ def login():
 def admin_login():
     """Admin login page"""
     error = None
+        # Store next page if provided
+    next_page = request.args.get('next')
+
     # If already logged in as admin, redirect to admin dashboard
     if session.get('user_role') == 'admin':
         return redirect(url_for('admin_dashboard'))
@@ -545,6 +579,7 @@ def logout():
 
 # Project API Routes
 @app.route('/api/projects', methods=['GET', 'POST'])
+@admin_required
 def api_projects():
     """List or create projects"""
     if request.method == 'GET':
@@ -556,6 +591,7 @@ def api_projects():
         return jsonify(result), 201
 
 @app.route('/api/projects/<project_id>', methods=['GET', 'PUT', 'DELETE'])
+@admin_required
 def api_project(project_id):
     """Get, update or delete a project"""
     if request.method == 'GET':
@@ -580,6 +616,7 @@ def api_project(project_id):
 
 # Calendar API Routes
 @app.route('/api/projects/<project_id>/calendar', methods=['GET', 'POST'])
+@admin_required
 def api_project_calendar(project_id):
     """Get or update project calendar"""
     if request.method == 'GET':
@@ -592,6 +629,7 @@ def api_project_calendar(project_id):
         return jsonify(result)
 
 @app.route('/api/projects/<project_id>/calendar/generate', methods=['POST'])
+@admin_required
 def api_generate_calendar(project_id):
     """Generate calendar for project"""
     project = get_project(project_id)
@@ -602,6 +640,7 @@ def api_generate_calendar(project_id):
     return jsonify(calendar_data)
 
 @app.route('/api/projects/<project_id>/calendar/day/<date>', methods=['GET', 'PUT'])
+@admin_required
 def api_calendar_day(project_id, date):
     """Get or update a specific calendar day"""
     calendar_data = get_project_calendar(project_id)
@@ -629,6 +668,7 @@ def api_calendar_day(project_id, date):
         return jsonify(calendar_data['days'][day_index])
 
 @app.route('/api/projects/<project_id>/calendar/move-day', methods=['POST'])
+@admin_required
 def api_move_calendar_day(project_id):
     """Move a shoot day from one date to another and recalculate the shoot days"""
     try:
@@ -753,6 +793,7 @@ def api_move_calendar_day(project_id):
 
 # Location API Routes
 @app.route('/api/locations', methods=['GET', 'POST'])
+@admin_required
 def api_locations():
     """List or create locations"""
     locations_file = os.path.join(DATA_DIR, 'locations.json')
@@ -791,6 +832,7 @@ def api_locations():
         return jsonify(location_data), 201
 
 @app.route('/api/locations/<location_id>', methods=['GET', 'PUT', 'DELETE'])
+@admin_required
 def api_location(location_id):
     """Get, update or delete a location"""
     locations_file = os.path.join(DATA_DIR, 'locations.json')
@@ -836,6 +878,7 @@ def api_location(location_id):
 
 # Area API Routes
 @app.route('/api/areas', methods=['GET', 'POST'])
+@admin_required
 def api_areas():
     """List or create location areas"""
     areas_file = os.path.join(DATA_DIR, 'areas.json')
@@ -874,6 +917,7 @@ def api_areas():
         return jsonify(area_data), 201
 
 @app.route('/api/areas/<area_id>', methods=['GET', 'PUT', 'DELETE'])
+@admin_required
 def api_area(area_id):
     """Get, update or delete a location area"""
     areas_file = os.path.join(DATA_DIR, 'areas.json')
@@ -919,6 +963,7 @@ def api_area(area_id):
 
 # Department API Routes
 @app.route('/api/departments', methods=['GET', 'POST'])
+@admin_required
 def api_departments():
     """List or create departments"""
     departments_file = os.path.join(DATA_DIR, 'departments.json')
@@ -957,6 +1002,7 @@ def api_departments():
         return jsonify(department_data), 201
 
 @app.route('/api/departments/<department_id>', methods=['GET', 'PUT', 'DELETE'])
+@admin_required
 def api_department(department_id):
     """Get, update or delete a department"""
     departments_file = os.path.join(DATA_DIR, 'departments.json')
@@ -1004,6 +1050,7 @@ def api_department(department_id):
 # Enhanced Working Weekends API Routes
 
 @app.route('/api/projects/<project_id>/weekends', methods=['GET', 'POST'])
+@admin_required
 def api_weekends(project_id):
     """List or create working weekends for a project"""
     project_dir = os.path.join(PROJECTS_DIR, project_id)
@@ -1104,6 +1151,7 @@ def api_weekends(project_id):
             return jsonify({'error': f'Error creating working weekend: {str(e)}'}), 500
 
 @app.route('/api/projects/<project_id>/weekends/<weekend_id>', methods=['GET', 'PUT', 'DELETE'])
+@admin_required
 def api_weekend(project_id, weekend_id):
     """Get, update or delete a working weekend"""
     project_dir = os.path.join(PROJECTS_DIR, project_id)
@@ -1221,6 +1269,7 @@ def api_weekend(project_id, weekend_id):
 
 # Special Dates (Holidays) API Routes
 @app.route('/api/projects/<project_id>/holidays', methods=['GET', 'POST'])
+@admin_required
 def api_holidays(project_id):
     """List or create bank holidays for a project"""
     project_dir = os.path.join(PROJECTS_DIR, project_id)
@@ -1263,6 +1312,7 @@ def api_holidays(project_id):
         return jsonify(holiday_data), 201
 
 @app.route('/api/projects/<project_id>/holidays/<holiday_id>', methods=['GET', 'PUT', 'DELETE'])
+@admin_required
 def api_holiday(project_id, holiday_id):
     """Get, update or delete a bank holiday"""
     project_dir = os.path.join(PROJECTS_DIR, project_id)
@@ -1311,6 +1361,7 @@ def api_holiday(project_id, holiday_id):
 
 # Special Dates (Hiatus) API Routes
 @app.route('/api/projects/<project_id>/hiatus', methods=['GET', 'POST'])
+@admin_required
 def api_hiatus_periods(project_id):
     """List or create hiatus periods for a project"""
     project_dir = os.path.join(PROJECTS_DIR, project_id)
@@ -1353,6 +1404,7 @@ def api_hiatus_periods(project_id):
         return jsonify(hiatus_data), 201
 
 @app.route('/api/projects/<project_id>/hiatus/<hiatus_id>', methods=['GET', 'PUT', 'DELETE'])
+@admin_required
 def api_hiatus_period(project_id, hiatus_id):
     """Get, update or delete a hiatus period"""
     project_dir = os.path.join(PROJECTS_DIR, project_id)
@@ -1401,6 +1453,7 @@ def api_hiatus_period(project_id, hiatus_id):
 
 # Special Dates (Other) API Routes
 @app.route('/api/projects/<project_id>/special-dates', methods=['GET', 'POST'])
+@admin_required
 def api_special_dates(project_id):
     """List or create special dates for a project"""
     project_dir = os.path.join(PROJECTS_DIR, project_id)
@@ -1443,6 +1496,7 @@ def api_special_dates(project_id):
         return jsonify(special_date_data), 201
 
 @app.route('/api/projects/<project_id>/special-dates/<special_date_id>', methods=['GET', 'PUT', 'DELETE'])
+@admin_required
 def api_special_date(project_id, special_date_id):
     """Get, update or delete a special date"""
     project_dir = os.path.join(PROJECTS_DIR, project_id)
