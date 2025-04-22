@@ -323,6 +323,18 @@
   max-width: 50px;
 }
 
+/* Week number styling */
+.week-number {
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: var(--accent-color);
+  background-color: rgba(93, 137, 186, 0.15);
+  border-radius: 2px;
+  padding: 1px 3px;
+  display: inline-block;
+  margin-top: 3px;
+}
+
 /* === CELL STYLING - COMPACT === */
 .date-cell {
   font-weight: 500;

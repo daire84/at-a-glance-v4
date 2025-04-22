@@ -71,9 +71,23 @@
   },
   {
     "name": "Food Stylist",
-    "code": "FOD",
-    "description": "Food Stylist required",
-    "color": "#067bf9",
-    "id": "e3dd4195-4197-4f42-9d96-325b31711fe4"
+    "code": "FDS",
+    "description": "Food stylist required",
+    "color": "#9964c4",
+    "id": "11c71102-9c7e-4514-a7d4-b4e40b9c174d"
+  },
+  {
+    "name": "Costume",
+    "code": "CST",
+    "description": "Testing a function",
+    "color": "#e2f45d",
+    "id": "b2a632d2-844d-41e7-bdcf-1fc5c1602006"
+  },
+  {
+    "name": "Wankers",
+    "code": "WNK",
+    "description": "You are a wanker",
+    "color": "#ffa70f",
+    "id": "2733526a-3884-45d2-93f6-331e86156bc1"
   }
 ]

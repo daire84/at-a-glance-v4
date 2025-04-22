@@ -524,110 +524,124 @@ def update_calendar_with_departments(calendar_data):
 
 def calculate_department_counts(calendar_data):
     """
-    Calculate department counts based on the calendar days
+    Calculate department counts based on the calendar days, only counting
+    currently defined departments.
     """
     try:
         days = calendar_data.get('days', [])
-        # Initialize with standard counts
-        counts = initialize_department_counts()
-        
-        # Load departments to get code mappings
-        data_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data')
-        departments_file = os.path.join(data_dir, 'departments.json')
-        
+        counts = {} # Start with an empty counts dictionary
+
+        # Load departments to get the current list and code mappings
+        data_dir = os.path.dirname(os.path.abspath(__file__)) # Corrected path join
+        base_data_dir = os.path.join(data_dir, '..', 'data') # Go up one level then into data
+        departments_file = os.path.join(base_data_dir, 'departments.json')
+
         dept_map = {}
         departments = []
         if os.path.exists(departments_file):
             try:
                 with open(departments_file, 'r') as f:
                     departments = json.load(f)
-                
+
                 # Create a mapping from department code to key for counting
+                # AND initialize counts to 0 for all currently defined departments
                 for dept in departments:
                     if 'code' in dept and ('id' in dept or 'name' in dept):
                         code = dept['code']
                         # Use id if available, otherwise use name converted to snake_case
                         id_key = dept.get('id', '').lower()
                         name_key = dept.get('name', '').lower().replace(' ', '_')
-                        key = id_key if id_key else name_key
-                        
+                        key = id_key if id_key else name_key # Prioritize ID as key if available
+
                         if code and key:
                             dept_map[code] = key
-                            # Pre-initialize count for this department
-                            counts[key] = 0
-                            logger.debug(f"Mapped department code {code} to key {key}")
+                            counts[key] = 0 # Initialize count for this known department
+                            logger.debug(f"Mapped department code {code} to key {key} and initialized count.")
+
             except Exception as e:
-                logger.error(f"Error loading departments: {str(e)}")
-        
-        # Default mapping for common department codes to count keys
+                logger.error(f"Error loading or processing departments.json: {str(e)}")
+
+        # Default mapping for common department codes (if not defined in departments.json)
         default_map = {
-            "SFX": "sfx",
-            "STN": "stunts",
-            "CR": "crane",
-            "ST": "steadicam",
-            "PR": "prosthetics",
-            "LL": "lowLoader",
-            "VFX": "vfx",
-            "ANI": "animals",
-            "UW": "underwater",
-            "INCY": "intimacy",
-            "TEST": "test"
+            "SFX": "sfx", "STN": "stunts", "CR": "crane", "ST": "steadicam",
+            "PR": "prosthetics", "LL": "lowLoader", "VFX": "vfx", "ANI": "animals",
+            "UW": "underwater", "INCY": "intimacy"
+            # Removed "TEST" - custom departments should come from departments.json
         }
-        
-        # Combine mappings with dept_map taking precedence
+
+        # Combine mappings - dept_map (from JSON) takes precedence
         combined_map = {**default_map, **dept_map}
-        
-        # Count days for standard metrics
+
+        # Pre-initialize counts for default map items if they weren't in departments.json
+        for code, key in default_map.items():
+            if key not in counts:
+                counts[key] = 0
+                logger.debug(f"Initialized count for default code {code} with key {key}.")
+
+
+        # --- Standard Metric Counting (Main Unit, Second Unit, Sixth Day, Split Day) ---
+        # Count days for standard metrics (these keys should ideally be predefined or handled separately)
+        # Initialize standard counts that are always expected
+        counts["main"] = 0
+        counts["secondUnit"] = 0
+        counts["sixthDay"] = 0
+        counts["splitDay"] = 0
+
         counts["main"] = sum(1 for d in days if d.get("isShootDay"))
-        counts["secondUnit"] = sum(1 for d in days if d.get("secondUnit"))
-        
-        # Count sixth day (working Saturdays)
+        counts["secondUnit"] = sum(1 for d in days if d.get("secondUnit")) # Assuming 'secondUnit' is a boolean or truthy value indicating second unit presence
         counts["sixthDay"] = sum(
-            1 for d in days 
-            if d.get("isShootDay") and 
+            1 for d in days
+            if d.get("isShootDay") and
             datetime.strptime(d["date"], "%Y-%m-%d").weekday() == 5  # Saturday
         )
-        
-        # Count split days (if applicable)
         counts["splitDay"] = sum(
-            1 for d in days 
-            if d.get("isShootDay") and 
-            d.get("isSplitDay", False)
+            1 for d in days
+            if d.get("isShootDay") and
+            d.get("isSplitDay", False) # Check for an explicit 'isSplitDay' flag
         )
-        
-        # Count department days
+        # --- End Standard Metric Counting ---
+
+
+        # --- Department Tag Counting ---
+        # Count specific department days based on tags
         for day in days:
             for dept_code in day.get("departments", []):
-                dept_code = dept_code.strip()  # Clean the code
-                
+                dept_code = dept_code.strip().upper() # Standardize to upper case for matching keys
+
                 if not dept_code:
                     continue
-                    
-                logger.debug(f"Processing department tag: {dept_code}")
-                
-                # Try to find the key in our combined map
+
+                # ONLY count if the department code is in our map of known departments
                 if dept_code in combined_map:
                     key = combined_map[dept_code]
-                    counts[key] = counts.get(key, 0) + 1
-                    logger.debug(f"Counted {dept_code} using key {key}, new count: {counts[key]}")
+                    # Ensure the key actually exists in counts before incrementing (should always if initialized correctly)
+                    if key in counts:
+                         counts[key] = counts.get(key, 0) + 1
+                         logger.debug(f"Counted known department {dept_code} using key {key}, new count: {counts[key]}")
+                    else:
+                         # This case should ideally not happen if initialization is correct
+                         logger.warning(f"Key '{key}' for code '{dept_code}' was not pre-initialized in counts. Initializing now.")
+                         counts[key] = 1
                 else:
-                    # If we don't have a mapping, use the code directly or a cleaned version
-                    key = dept_code.lower().replace(' ', '_')
-                    counts[key] = counts.get(key, 0) + 1
-                    logger.debug(f"Using direct key {key} for {dept_code}, count: {counts[key]}")
-        
-        # Store counts in calendar data
+                    # Log ignored tags for debugging if needed
+                    logger.debug(f"Ignoring unknown/deleted department tag: {dept_code} found on date {day.get('date')}")
+        # --- End Department Tag Counting ---
+
+
+        # Store the final counts dict in calendar data
         calendar_data["departmentCounts"] = counts
         logger.info(f"Department counts updated: {counts}")
-        
-        # Make sure departments are included in calendar data
-        if departments and 'departments' not in calendar_data:
-            calendar_data['departments'] = departments
-            logger.info(f"Added {len(departments)} departments to calendar data")
-        
+
+        # Make sure the current list of departments is included in calendar data for the frontend
+        if 'departments' not in calendar_data or calendar_data['departments'] != departments:
+             calendar_data['departments'] = departments
+             logger.info(f"Updated/Added {len(departments)} departments list to calendar data")
+
         return calendar_data
-    
+
     except Exception as e:
         logger.error(f"Error calculating department counts: {str(e)}")
-        return calendar_data
-        return calendar_data
+        # Ensure departmentCounts exists even on error, maybe with just initialized values?
+        if "departmentCounts" not in calendar_data:
+             calendar_data["departmentCounts"] = counts # Return potentially partial counts
+        return calendar_data # Always return calendar_data

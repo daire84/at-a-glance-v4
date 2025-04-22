@@ -251,6 +251,24 @@ def recalculate_shoot_days(days):
         logger.error(f"Error recalculating shoot days: {str(e)}")
         return days
 
+def update_all_projects_department_counts():
+    """Update department counts in all project calendars"""
+    try:
+        projects = get_projects()
+        for project in projects:
+            project_id = project.get('id')
+            if project_id:
+                # Get calendar data for the project
+                calendar_data = get_project_calendar(project_id)
+                if calendar_data and 'days' in calendar_data:
+                    # Recalculate department counts - Now using the global import
+                    calendar_data = calculate_department_counts(calendar_data)
+                    # Save updated calendar data
+                    save_project_calendar(project_id, calendar_data)
+                    logger.info(f"Updated department counts for project {project_id}")
+    except Exception as e:
+        logger.error(f"Error updating department counts: {str(e)}")
+
 # Authentication decorators
 def viewer_required(f):
     @wraps(f)
@@ -352,7 +370,6 @@ def admin_project(project_id):
     return render_template('admin/project.html', project=project)
 
 @app.route('/admin/calendar/<project_id>')
-@admin_required
 def admin_calendar(project_id):
     """Calendar editor"""
     project = get_project(project_id)
@@ -376,7 +393,8 @@ def admin_calendar(project_id):
     calendar_data['departments'] = departments
     
     # Make sure department counts are up to date
-    calculate_department_counts(calendar_data)
+    calendar_data = calculate_department_counts(calendar_data)
+    save_project_calendar(project_id, calendar_data)
     
     return render_template('admin/calendar.html', project=project, calendar=calendar_data)
 
@@ -465,7 +483,6 @@ def admin_day(project_id, date):
     return render_template('admin/day.html', project=project, day=day)
 
 @app.route('/viewer/<project_id>')
-@viewer_required
 def viewer(project_id):
     """Calendar viewer"""
     project = get_project(project_id)
@@ -489,7 +506,8 @@ def viewer(project_id):
     calendar_data['departments'] = departments
     
     # Make sure department counts are up to date
-    calculate_department_counts(calendar_data)
+    calendar_data = calculate_department_counts(calendar_data)
+    save_project_calendar(project_id, calendar_data)
     
     return render_template('viewer.html', project=project, calendar=calendar_data)
 
@@ -999,6 +1017,9 @@ def api_departments():
         with open(departments_file, 'w') as f:
             json.dump(departments, f, indent=2)
         
+        # NEW CODE: Update department counts in all project calendars
+        update_all_projects_department_counts()
+        
         return jsonify(department_data), 201
 
 @app.route('/api/departments/<department_id>', methods=['GET', 'PUT', 'DELETE'])
@@ -1034,6 +1055,9 @@ def api_department(department_id):
         with open(departments_file, 'w') as f:
             json.dump(departments, f, indent=2)
         
+        # NEW CODE: Update department counts in all project calendars
+        update_all_projects_department_counts()
+        
         return jsonify(department_data)
     
     elif request.method == 'DELETE':
@@ -1043,6 +1067,9 @@ def api_department(department_id):
         # Save departments
         with open(departments_file, 'w') as f:
             json.dump(departments, f, indent=2)
+        
+        # NEW CODE: Update department counts in all project calendars
+        update_all_projects_department_counts()
         
         return jsonify({'success': True})
 

@@ -49,10 +49,17 @@
     "notes": "Large urban park with various locations"
   },
   {
-    "name": "Mexico",
+    "name": "Ana's House",
     "areaId": "4459abff-cd87-4fdc-a238-1ff355b2e970",
     "address": "",
     "notes": "",
     "id": "93c2d018-4023-40e7-a2fd-0096848186b5"
+  },
+  {
+    "name": "Daire's Gaff",
+    "areaId": "6a3b12f7-502a-4ddf-b5a3-7ac419bb904c",
+    "address": "",
+    "notes": "",
+    "id": "1d667f10-5ed3-4317-9c5a-f78edb480f02"
   }
 ]

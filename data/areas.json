@@ -30,8 +30,13 @@
     "color": "#ffd8e6"
   },
   {
-    "name": "South America",
+    "name": "Spain",
     "color": "#e486fe",
     "id": "4459abff-cd87-4fdc-a238-1ff355b2e970"
+  },
+  {
+    "name": "Greystones",
+    "color": "#39d5b6",
+    "id": "6a3b12f7-502a-4ddf-b5a3-7ac419bb904c"
   }
 ]

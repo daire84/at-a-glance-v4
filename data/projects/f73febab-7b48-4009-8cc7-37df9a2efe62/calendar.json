@@ -1928,13 +1928,14 @@
       "mainUnit": "CAIRO POLICE STATION - OFFICE",
       "extras": 35,
       "featuredExtras": 2,
-      "location": "Mexico",
+      "location": "",
       "locationArea": "South America",
       "sequence": "Meet Zaki",
       "departments": [
         "SFX",
         "STN",
-        "ST"
+        "ST",
+        "FDS"
       ],
       "notes": "This isnt real",
       "secondUnit": "",
@@ -1955,14 +1956,18 @@
       "isWorkingWeekend": false,
       "dayType": "shoot",
       "shootDay": 4,
-      "mainUnit": "",
-      "extras": 0,
-      "featuredExtras": 0,
-      "location": "",
-      "locationArea": "",
-      "sequence": "",
-      "departments": [],
-      "notes": ""
+      "mainUnit": "MY GAFF",
+      "extras": 22,
+      "featuredExtras": 3,
+      "location": "Daire's Gaff",
+      "locationArea": "Greystones",
+      "sequence": "Testicles",
+      "departments": [
+        "FDS"
+      ],
+      "notes": "How is your day?",
+      "secondUnit": "",
+      "secondUnitLocation": ""
     },
     {
       "date": "2025-03-28",
@@ -1979,14 +1984,20 @@
       "isWorkingWeekend": false,
       "dayType": "shoot",
       "shootDay": 5,
-      "mainUnit": "",
+      "mainUnit": "NEW MEXICO HOUSE",
       "extras": 0,
       "featuredExtras": 0,
-      "location": "",
-      "locationArea": "",
-      "sequence": "",
-      "departments": [],
-      "notes": ""
+      "location": "Ana's House",
+      "locationArea": "Spain",
+      "sequence": "The House",
+      "departments": [
+        "FDS",
+        "WNK",
+        "SFX"
+      ],
+      "notes": "Yes sir ",
+      "secondUnit": "",
+      "secondUnitLocation": ""
     },
     {
       "date": "2025-03-29",
@@ -2057,8 +2068,12 @@
       "location": "",
       "locationArea": "",
       "sequence": "",
-      "departments": [],
-      "notes": ""
+      "departments": [
+        "CST"
+      ],
+      "notes": "",
+      "secondUnit": "",
+      "secondUnitLocation": ""
     },
     {
       "date": "2025-04-01",
@@ -2081,8 +2096,15 @@
       "location": "",
       "locationArea": "",
       "sequence": "",
-      "departments": [],
-      "notes": ""
+      "departments": [
+        "FDS",
+        "CST",
+        "INT",
+        "STN"
+      ],
+      "notes": "",
+      "secondUnit": "",
+      "secondUnitLocation": ""
     },
     {
       "date": "2025-04-02",
@@ -2105,8 +2127,12 @@
       "location": "",
       "locationArea": "",
       "sequence": "",
-      "departments": [],
-      "notes": ""
+      "departments": [
+        "WNK"
+      ],
+      "notes": "",
+      "secondUnit": "",
+      "secondUnitLocation": ""
     },
     {
       "date": "2025-04-03",
@@ -3840,18 +3866,30 @@
     }
   ],
   "departmentCounts": {
-    "main": 57,
-    "secondUnit": 0,
-    "splitDay": 0,
-    "sixthDay": 0,
-    "steadicam": 1,
-    "sfx": 3,
-    "stunts": 3,
+    "sfx": 4,
+    "stn": 4,
     "crane": 0,
+    "stead": 1,
+    "pros": 0,
+    "ll": 0,
+    "vfx": 2,
+    "ani": 0,
+    "uw": 0,
+    "d5d255c0-b909-452e-9d7e-5681db738e58": 1,
+    "11c71102-9c7e-4514-a7d4-b4e40b9c174d": 4,
+    "b2a632d2-844d-41e7-bdcf-1fc5c1602006": 2,
+    "2733526a-3884-45d2-93f6-331e86156bc1": 2,
+    "stunts": 0,
+    "steadicam": 0,
     "prosthetics": 0,
     "lowLoader": 0,
-    "fod": 1,
-    "vfx": 2
+    "animals": 0,
+    "underwater": 0,
+    "intimacy": 0,
+    "main": 57,
+    "secondUnit": 0,
+    "sixthDay": 0,
+    "splitDay": 0
   },
   "locationAreas": [
     {
@@ -3885,10 +3923,108 @@
       "color": "#ffd8e6"
     },
     {
-      "name": "South America",
+      "name": "Spain",
       "color": "#e486fe",
       "id": "4459abff-cd87-4fdc-a238-1ff355b2e970"
+    },
+    {
+      "name": "Greystones",
+      "color": "#39d5b6",
+      "id": "6a3b12f7-502a-4ddf-b5a3-7ac419bb904c"
     }
   ],
-  "lastUpdated": "2025-04-20T16:39:11.901153Z"
+  "lastUpdated": "2025-04-20T16:39:11.901153Z",
+  "departments": [
+    {
+      "id": "sfx",
+      "name": "Special Effects",
+      "code": "SFX",
+      "description": "Practical special effects department",
+      "color": "#ffd8e6"
+    },
+    {
+      "id": "stn",
+      "name": "Stunts",
+      "code": "STN",
+      "description": "Stunt coordination and performance",
+      "color": "#ffecd8"
+    },
+    {
+      "id": "crane",
+      "name": "Crane",
+      "code": "CR",
+      "description": "Camera crane operation",
+      "color": "#d8fff2"
+    },
+    {
+      "id": "stead",
+      "name": "Steadicam",
+      "code": "ST",
+      "description": "Steadicam operation",
+      "color": "#f2d8ff"
+    },
+    {
+      "id": "pros",
+      "name": "Prosthetics",
+      "code": "PR",
+      "description": "Prosthetic makeup and effects",
+      "color": "#d8fdff"
+    },
+    {
+      "id": "ll",
+      "name": "Low Loader",
+      "code": "LL",
+      "description": "Vehicle mounted camera platform",
+      "color": "#e6ffd8"
+    },
+    {
+      "id": "vfx",
+      "name": "Visual Effects",
+      "code": "VFX",
+      "description": "On-set visual effects supervision",
+      "color": "#d8e5ff"
+    },
+    {
+      "id": "ani",
+      "name": "Animals",
+      "code": "ANI",
+      "description": "Animal handling and wrangling",
+      "color": "#ffedd8"
+    },
+    {
+      "id": "uw",
+      "name": "Underwater",
+      "code": "UW",
+      "description": "Underwater cinematography",
+      "color": "#d8f8ff"
+    },
+    {
+      "name": "Intimacy",
+      "code": "INT",
+      "description": "Intimacy Co-Ordinator Department",
+      "color": "#f542dd",
+      "id": "d5d255c0-b909-452e-9d7e-5681db738e58"
+    },
+    {
+      "name": "Food Stylist",
+      "code": "FDS",
+      "description": "Food stylist required",
+      "color": "#9964c4",
+      "id": "11c71102-9c7e-4514-a7d4-b4e40b9c174d"
+    },
+    {
+      "name": "Costume",
+      "code": "CST",
+      "description": "Testing a function",
+      "color": "#e2f45d",
+      "id": "b2a632d2-844d-41e7-bdcf-1fc5c1602006"
+    },
+    {
+      "name": "Wankers",
+      "code": "WNK",
+      "description": "You are a wanker",
+      "color": "#ffa70f",
+      "id": "2733526a-3884-45d2-93f6-331e86156bc1"
+    }
+  ]
 }
