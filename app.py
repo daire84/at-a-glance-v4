@@ -4,7 +4,7 @@ import uuid
 import logging
 from datetime import datetime, timedelta
 from flask import Flask, render_template, request, jsonify, redirect, url_for, send_from_directory, flash, session
-from utils.calendar_generator import generate_calendar_days, calculate_department_counts, update_calendar_with_location_areas
+from utils.calendar_generator import generate_calendar_days, calculate_department_counts, calculate_location_counts, update_calendar_with_location_areas
 from functools import wraps  # Add this for decorators
 from dotenv import load_dotenv
 load_dotenv()  # This will load variables from .env file into os.environ
@@ -389,11 +389,24 @@ def admin_calendar(project_id):
         except Exception as e:
             logger.error(f"Error loading departments: {str(e)}")
     
+    # Load locations data
+    locations = []
+    locations_file = os.path.join(DATA_DIR, 'locations.json')
+    if os.path.exists(locations_file):
+        try:
+            with open(locations_file, 'r') as f:
+                locations = json.load(f)
+        except Exception as e:
+            logger.error(f"Error loading locations: {str(e)}")
+    
     # Ensure the departments are available in the calendar data
     calendar_data['departments'] = departments
     
     # Make sure department counts are up to date
     calendar_data = calculate_department_counts(calendar_data)
+    # Calculate location counts (add this line)
+    calendar_data = calculate_location_counts(calendar_data)
+    
     save_project_calendar(project_id, calendar_data)
     
     return render_template('admin/calendar.html', project=project, calendar=calendar_data)
@@ -502,13 +515,27 @@ def viewer(project_id):
         except Exception as e:
             logger.error(f"Error loading departments: {str(e)}")
     
+    # Load locations data
+    locations = []
+    locations_file = os.path.join(DATA_DIR, 'locations.json')
+    if os.path.exists(locations_file):
+        try:
+            with open(locations_file, 'r') as f:
+                locations = json.load(f)
+        except Exception as e:
+            logger.error(f"Error loading locations: {str(e)}")
+    
     # Ensure the departments are available in the calendar data
     calendar_data['departments'] = departments
     
     # Make sure department counts are up to date
     calendar_data = calculate_department_counts(calendar_data)
-    save_project_calendar(project_id, calendar_data)
     
+    # Calculate location counts (add this line)
+    calendar_data = calculate_location_counts(calendar_data)
+    
+    save_project_calendar(project_id, calendar_data)
+
     return render_template('viewer.html', project=project, calendar=calendar_data)
 
 @app.route('/admin/locations')

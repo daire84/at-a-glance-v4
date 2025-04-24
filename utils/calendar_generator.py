@@ -195,6 +195,8 @@ def generate_calendar_days(project, existing_calendar=None):
             "lastUpdated": datetime.utcnow().isoformat() + 'Z'
         }
         
+        calendar_data = calculate_location_counts(calendar_data)
+        
         # Keep any additional properties from the existing calendar
         if existing_calendar:
             for key, value in existing_calendar.items():
@@ -645,3 +647,57 @@ def calculate_department_counts(calendar_data):
         if "departmentCounts" not in calendar_data:
              calendar_data["departmentCounts"] = counts # Return potentially partial counts
         return calendar_data # Always return calendar_data
+
+# This function will calculate how many times each location appears in the calendar
+def calculate_location_counts(calendar_data):
+    """
+    Calculate how many times each location and location area appears in the calendar
+    
+    Args:
+        calendar_data (dict): Calendar data with days array
+        
+    Returns:
+        dict: Updated calendar data with locationCounts and areaCount
+    """
+    try:
+        days = calendar_data.get('days', [])
+        location_counts = {}
+        area_counts = {}
+        
+        # Load locations data to get area mappings
+        data_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        locations_file = os.path.join(data_dir, 'data', 'locations.json')
+        
+        # Create mapping of location name to area ID
+        location_to_area = {}
+        if os.path.exists(locations_file):
+            try:
+                with open(locations_file, 'r') as f:
+                    locations = json.load(f)
+                    for loc in locations:
+                        if 'name' in loc and 'areaId' in loc:
+                            location_to_area[loc['name']] = loc['areaId']
+            except Exception as e:
+                logger.error(f"Error loading locations for area mapping: {str(e)}")
+        
+        # Count locations and areas
+        for day in days:
+            location = day.get('location', '')
+            if location and location not in ['', 'N/A', None]:
+                # Count the location
+                location_counts[location] = location_counts.get(location, 0) + 1
+                
+                # Count the area if we have a mapping
+                if location in location_to_area:
+                    area_id = location_to_area[location]
+                    if area_id:
+                        area_counts[area_id] = area_counts.get(area_id, 0) + 1
+        
+        # Add counts to calendar data
+        calendar_data['locationCounts'] = location_counts
+        calendar_data['areaCounts'] = area_counts
+        
+        return calendar_data
+    except Exception as e:
+        logger.error(f"Error calculating location counts: {str(e)}")
+        return calendar_data

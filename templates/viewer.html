@@ -186,16 +186,59 @@
         </div>
     </div>
     
+    <div class="location-counters">
+        <h4 class="counter-title">Location Counts</h4>
+        <div class="counter-grid">
+            {% if calendar.locationCounts %}
+                {% for location, count in calendar.locationCounts.items() %}
+                    {% if count > 0 %}
+                        {% set area_color = "#f8f9fa" %}
+                        {% set location_area = None %}
+                        
+                        {% for loc in locations %}
+                            {% if loc.name == location %}
+                                {% set location_area = loc.areaId %}
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if location_area %}
+                            {% for area in calendar.locationAreas %}
+                                {% if area.id == location_area %}
+                                    {% set area_color = area.color %}
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                        
+                        <div class="counter-item" style="background-color: {{ area_color }};">
+                            <div class="counter-label">{{ location }}</div>
+                            <div class="counter-value">{{ count }}</div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <p>No location counts available</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
     {% if calendar.locationAreas and calendar.locationAreas|length > 0 %}
     <div class="location-areas">
         <h4 class="areas-title">Location Areas</h4>
         <div class="area-tags">
             {% for area in calendar.locationAreas %}
-            <div class="area-tag" style="background-color: {{ area.color }}">{{ area.name }}</div>
+            <div class="area-tag" style="background-color: {{ area.color }}">
+                {{ area.name }}
+                {% if calendar.areaCounts and area.id in calendar.areaCounts %}
+                <div class="area-count">{{ calendar.areaCounts[area.id] }}</div>
+                {% endif %}
+            </div>
             {% endfor %}
         </div>
     </div>
     {% endif %}
+
     
     <div class="calendar-table-wrapper">
         <table class="calendar-table">
@@ -214,9 +257,12 @@
             </thead>
             <tbody>
                 {% for day in calendar.days %}
-                <tr class="calendar-row {% if day.dayType %}{{ day.dayType }}{% elif day.isWeekend %}weekend{% elif day.isHoliday %}holiday{% elif day.isHiatus %}hiatus{% elif day.isPrep %}prep{% elif day.isShootDay %}shoot{% endif %}" 
-                    data-date="{{ day.date }}" 
-                    data-area="{{ day.locationArea }}"
+                <tr class="calendar-row {% if day.dayType %}{{ day.dayType }}{% elif day.isWeekend %}weekend{% elif day.isHoliday %}holiday{% elif day.isHiatus %}hiatus{% elif day.isPrep %}prep{% elif day.isShootDay %}shoot{% endif %} {% if day.locationArea %}has-area-color{% endif %}" 
+                data-date="{{ day.date }}" 
+                data-area="{{ day.locationArea }}"
+                {% if day.locationArea and calendar.locationAreas %}
+                style="--row-area-color: {% for area in calendar.locationAreas %}{% if area.name == day.locationArea %}{{ area.color }}{% endif %}{% endfor %};"
+                {% endif %}
                 >
                     <td class="date-cell">
                         <div class="date-display">{{ day.date }}</div>
