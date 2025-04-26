@@ -1,15 +1,16 @@
 :root {
   /* New lighter, more neutral color palette */
-  --primary-color: #4f5d75;        /* Slate blue-gray */
-  --primary-light: #6d7993;        /* Lighter blue-gray */
-  --primary-dark: #3b4559;         /* Darker blue-gray */
-  --accent-color: #5d89ba;         /* Muted blue */
-  --accent-light: #7da3d1;         /* Lighter muted blue */
-  --accent-dark: #4a6d96;          /* Darker muted blue */
-  --text-color: #2d3142;           /* Dark slate for text */
-  --text-light: #7b8591;           /* Medium gray for secondary text */
-  --background-color: #f6f7f9;     /* Off-white gray background */
+  --primary-color: #5b5b5c;        /* Slate blue-gray */
+  --primary-light: #514f54;        /* Lighter blue-gray */
+  --primary-dark: #656a6c;         /* Darker blue-gray - Counts text */
+  --accent-color: #0b5fb3;         /* Muted blue - Main Tabs */
+  --accent-light: #3e3f3f;         /* Lighter muted blue */
+  --accent-dark: #8a8c8d;          /* Darker muted blue */
+  --text-color: #323233;           /* Dark slate for text */
+  --text-light: #7f8182;           /* Medium gray for secondary text */
+  --background-color: #1e1e20;     /* Off-white gray background */
   --border-color: #e0e2e7;         /* Light gray for borders */
+  --Top-text-color: #e0e2e7;         /* Light gray for borders */
   --success-color: #7eb58d;        /* Muted green success */
   --error-color: #d64c4c;          /* Muted red error */
   --warning-color: #e6a954;        /* Muted orange warning */
@@ -47,7 +48,7 @@ body {
 /* Header - reduced size */
 .main-header {
   background-color: var(--primary-color);
-  color: white;
+  color: var(--Top-text-color);
   padding: 0.75rem 0;  /* Reduced from 1rem */
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
@@ -69,7 +70,7 @@ body {
 }
 
 .main-header nav a {
-  color: white;
+  color: var(--Top-text-color);
   text-decoration: none;
   padding: 0.4rem 0.8rem;  /* Reduced from 0.5rem 1rem */
   transition: background-color 0.3s;
@@ -89,7 +90,7 @@ main {
 
 h2 {
   margin-bottom: 1.2rem;  /* Reduced from 1.5rem */
-  color: var(--primary-color);
+  color: var(--Top-text-color);
   font-size: 1.4rem;  /* Reduced size */
 }
 
@@ -125,7 +126,7 @@ h3 {
 }
 
 .project-card {
-  background-color: white;
+  background-color: rgb(233, 230, 230);
   border-radius: 6px;  /* Reduced from 8px */
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);  /* Reduced shadow */
   overflow: hidden;
