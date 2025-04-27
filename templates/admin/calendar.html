@@ -64,6 +64,7 @@
             </div>
         </div>
 
+    
         <div class="project-meta">
             <div class="meta-group">
                 <div class="meta-label">Shoot Start</div>
@@ -119,6 +120,70 @@
             {% endif %}
         </div>
         {% endif %}
+    </div>
+
+        <!-- Calendar Filter Panel -->
+    <div class="filter-panel">
+        <h4>Calendar Filters</h4>
+        <div class="filter-section">
+            <h5>Day Types</h5>
+            <div class="filter-row">
+                <label class="filter-toggle">
+                    <input type="checkbox" id="filter-weekends" checked>
+                    <span class="toggle-label">Weekends</span>
+                </label>
+                <label class="filter-toggle">
+                    <input type="checkbox" id="filter-prep" checked>
+                    <span class="toggle-label">Prep Days</span>
+                </label>
+            </div>
+            <div class="filter-row">
+                <label class="filter-toggle">
+                    <input type="checkbox" id="filter-holidays" checked>
+                    <span class="toggle-label">Holidays</span>
+                </label>
+                <label class="filter-toggle">
+                    <input type="checkbox" id="filter-hiatus" checked>
+                    <span class="toggle-label">Hiatus</span>
+                </label>
+                <label class="filter-toggle">
+                    <input type="checkbox" id="filter-shoot" checked>
+                    <span class="toggle-label">Shoot Days</span>
+                </label>
+            </div>
+        </div>
+        
+        <div class="filter-section">
+            <h5>Column Visibility</h5>
+            <div class="filter-row">
+                <label class="filter-toggle">
+                    <input type="checkbox" id="filter-col-sequence" checked>
+                    <span class="toggle-label">Sequence</span>
+                </label>
+                <label class="filter-toggle">
+                    <input type="checkbox" id="filter-col-second-unit" checked>
+                    <span class="toggle-label">Second Unit</span>
+                </label>
+            </div>
+        </div>
+
+        <div class="filter-section">
+            <h5>Filter Stats</h5>
+            <div class="stats-row">
+                <div>Days: <span id="filter-stats-visible">--</span> / <span id="filter-stats-total">--</span></div>
+                <div>Shoot Days: <span id="filter-stats-shoot-days">--</span></div>
+            </div>
+        </div>
+        
+        <div class="stats-row">
+            <div>Days: <span id="filter-stats-visible">--</span> / <span id="filter-stats-total">--</span></div>
+            <div>Shoot Days: <span id="filter-stats-shoot-days">--</span></div>
+            <div>Second Unit: <span id="filter-stats-second-unit">--</span></div>
+        </div>
+        
+        <div class="filter-actions">
+            <button id="reset-filters" class="button small">Reset Filters</button>
+        </div>
     </div>
 
     <div class="calendar-actions">
@@ -254,6 +319,7 @@
                     <th class="sequence-col">Sequence</th>
                     <th class="departments-col">Department Tags</th>
                     <th class="notes-col">Notes</th>
+                    <th class="second-unit-col">Second Unit</th>
                 </tr>
             </thead>
             <tbody>
@@ -288,6 +354,16 @@
                         {% endfor %}
                     </td>
                     <td class="notes-cell">{{ day.notes }}</td>
+                    <td class="second-unit-cell">
+                        {% if day.secondUnit %}
+                        <div class="second-unit-content">
+                            <div class="second-unit-description">{{ day.secondUnit }}</div>
+                            {% if day.secondUnitLocation %}
+                            <div class="second-unit-location">{{ day.secondUnitLocation }}</div>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>

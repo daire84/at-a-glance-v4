@@ -118,8 +118,10 @@
   gap: 0.5rem;
 }
 
-/* === DEPARTMENT COUNTERS - IMPROVED === */
-.department-counters {
+/* Base styling for all three counter sections */
+.department-counters,
+.location-counters,
+.location-areas {
   margin-bottom: 1.2rem;
   background-color: #f8f9fa;
   padding: 0.8rem;
@@ -127,22 +129,26 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
-.counter-title {
+/* Consistent title styling for all sections */
+.counter-title,
+.areas-title {
   font-size: 0.9rem;
   margin-bottom: 0.5rem;
   color: var(--primary-dark);
 }
 
-.counter-grid {
+.counter-grid,
+.area-tags {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
   gap: 0.5rem;
   row-gap: 0.7rem;
 }
 
-.counter-item {
-  border-radius: 4px;
-  padding: 0.4rem 0.3rem;
+.counter-item,
+.area-tag {
+  border-radius: 3px;
+  padding: 0.35rem 0.5rem;
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -150,9 +156,12 @@
   min-height: 3rem;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
   transition: transform 0.2s ease;
+  font-size: 0.7rem;
+  font-weight: 500;
 }
 
-.counter-item:hover {
+.counter-item:hover,
+.area-tag:hover {
   transform: translateY(-1px);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
@@ -165,50 +174,9 @@
   text-overflow: ellipsis;
 }
 
-.counter-value {
-  font-size: 1rem;
-  font-weight: 600;
-}
-
-/* === LOCATION AREAS === */
-.location-areas {
-  margin-bottom: 1rem;
-  background-color: #f8f9fa;
-  padding: 0.6rem;
-  border-radius: 3px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
-
-.areas-title {
-  font-size: 0.9rem;
-  margin-bottom: 0.5rem;
-  color: var(--primary-dark);
-}
-
-.area-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-  justify-content: center;
-}
-
-/* Enhanced area tag styling */
-.area-tag {
-  border-radius: 3px;
-  padding: 0.35rem 0.5rem;
-  font-size: 0.75rem;
-  font-weight: 500;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
+.counter-value,
 .area-count {
-  font-size: 0.9rem;
+  font-size: 1rem;
   font-weight: 600;
   margin-top: 0.2rem;
 }
@@ -293,6 +261,32 @@
   width: 160px;  /* Reduced from 180px */
 }
 
+/* Second Unit column styles */
+.second-unit-col {
+  width: 90px;
+}
+
+.second-unit-cell {
+  font-size: 0.75rem;
+  line-height: 1.2;
+}
+
+.second-unit-description {
+  font-weight: 500;
+}
+
+.second-unit-location {
+  font-size: 0.7rem;
+  color: var(--text-light);
+  font-style: italic;
+}
+
+/* Hidden second unit column */
+.hide-col-second-unit .second-unit-col,
+.hide-col-second-unit .second-unit-cell {
+  display: none;
+}
+
 /* === ROW STYLING - COLOR CODED === */
 .calendar-row {
   max-height: 3.5rem;  /* Reduced from 4.5rem - approx 25% reduction */
@@ -358,6 +352,11 @@
   margin-top: 3px;
 }
 
+/* Hidden rows */
+.calendar-row.filtered-hidden {
+  display: none;
+}
+
 /* === CELL STYLING - COMPACT === */
 .date-cell {
   font-weight: 500;
@@ -410,6 +409,12 @@
   opacity: 0.9;
 }
 
+.notes-cell {
+  font-size: 0.75rem; /* Reduced from 0.8rem */
+  line-height: 1.2;
+  white-space: pre-line;
+}
+
 /* === DEPARTMENT TAGS - COMPACT === */
 .departments-cell {
   display: flex;
@@ -434,12 +439,6 @@
   margin: 0; /* Remove margins to prevent the double line effect */
   border: 1px solid rgba(0,0,0,0.05);
   line-height: 1;
-}
-
-.notes-cell {
-  font-size: 0.75rem; /* Reduced from 0.8rem */
-  line-height: 1.2;
-  white-space: pre-line;
 }
 
 /* === ADMIN MODE SPECIFICS === */
@@ -605,6 +604,65 @@
   margin-right: 0.5rem;
 }
 
+/* Filter panel styles */
+.filter-panel {
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  padding: 0.8rem;
+  margin-bottom: 1rem;
+  border: 1px solid var(--border-color);
+}
+
+.filter-panel h4 {
+  margin-top: 0;
+  margin-bottom: 0.8rem;
+  font-size: 1rem;
+  color: var(--primary-color);
+}
+
+.filter-section {
+  margin-bottom: 0.8rem;
+}
+
+.filter-section h5 {
+  margin-top: 0;
+  margin-bottom: 0.4rem;
+  font-size: 0.9rem;
+  color: var(--text-color);
+}
+
+.filter-row {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.filter-toggle {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  min-width: 100px;
+}
+
+.toggle-label {
+  margin-left: 0.4rem;
+  font-size: 0.85rem;
+}
+
+.stats-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: var(--text-light);
+}
+
+.filter-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.8rem;
+}
+
 /* === PRINT STYLES === */
 @media print {
   /* General print styles */
@@ -718,8 +776,10 @@
     print-color-adjust: exact !important;
   }
   
-  /* Critical: Force department counters to use multiple columns */
-  .department-counters {
+  /* Critical: Force consistent styling for all three sections */
+  .department-counters,
+  .location-counters,
+  .location-areas {
     margin-bottom: 0.2cm !important;
     background-color: #f8f9fa !important;
     padding: 0.15cm !important;
@@ -730,7 +790,8 @@
     width: 100% !important;
   }
   
-  .counter-title {
+  .counter-title,
+  .areas-title {
     font-size: 8pt !important;
     margin-bottom: 0.1cm !important;
     color: var(--primary-dark) !important;
@@ -738,8 +799,9 @@
     print-color-adjust: exact !important;
   }
   
-  /* Force grid to maintain multiple columns */
-  .counter-grid {
+  /* Force grid to maintain multiple columns for both counter-grid and area-tags */
+  .counter-grid,
+  .area-tags {
     display: grid !important;
     grid-template-columns: repeat(8, 1fr) !important;
     grid-template-rows: auto !important;
@@ -747,7 +809,8 @@
     width: 100% !important;
   }
   
-  .counter-item {
+  .counter-item,
+  .area-tag {
     min-height: auto !important;
     padding: 0.05cm 0.1cm !important;
     border-radius: 2pt !important;
@@ -766,44 +829,10 @@
     text-overflow: ellipsis !important;
   }
   
-  .counter-value {
+  .counter-value,
+  .area-count {
     font-size: 8pt !important;
     font-weight: 600 !important;
-  }
-  
-  /* Location areas print styles - maintain horizontal layout */
-  .location-areas {
-    margin-bottom: 0.2cm !important;
-    background-color: #f8f9fa !important;
-    padding: 0.1cm 0.15cm !important;
-    border-radius: 2pt !important;
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    text-align: center !important;
-    page-break-inside: avoid !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-  
-  .areas-title {
-    font-size: 8pt !important;
-    margin-bottom: 0.05cm !important;
-  }
-  
-  .area-tags {
-    display: flex !important;
-    flex-wrap: wrap !important;
-    gap: 0.05cm !important;
-    justify-content: center !important;
-  }
-  
-  .area-tag {
-    padding: 1pt 3pt !important;
-    border-radius: 2pt !important;
-    font-size: 6pt !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
   }
   
   /* Calendar table print styles */
@@ -837,6 +866,14 @@
     font-size: 6pt;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
+  }
+  
+  .main-unit-cell {
+    font-size: 7pt !important; /* Match font sizes between main unit and location */
+  }
+  
+  .location-name {
+    font-size: 7pt !important; /* Reduce from default print size */
   }
   
   /* Page settings */
@@ -903,7 +940,8 @@
   .calendar-actions, 
   .main-header, 
   .admin-actions, 
-  footer, 
+  footer,
+  .filter-panel, 
   .mobile-menu-toggle {
     display: none !important;
   }
@@ -921,7 +959,8 @@
     gap: 0.3rem;
   }
   
-  .counter-grid {
+  .counter-grid,
+  .area-tags {
     grid-template-columns: repeat(2, 1fr);
   }
 }

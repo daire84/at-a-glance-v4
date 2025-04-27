@@ -314,4 +314,336 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Error parsing department colors:', e);
         }
     }
+    initializeFilters();
+});
+
+// =======================================
+// Calendar Filtering Functionality
+// =======================================
+
+// 1. First define all the functions
+function toggleRowType(rowType, isVisible) {
+  console.log(`Toggling row type ${rowType} to ${isVisible ? 'visible' : 'hidden'}`);
+  const rows = document.querySelectorAll(`.calendar-row.${rowType}`);
+  rows.forEach(row => {
+      if (isVisible) {
+          row.classList.remove('filtered-hidden');
+      } else {
+          row.classList.add('filtered-hidden');
+      }
+  });
+  
+  // Update counter stats
+  updateFilterStats();
+}
+
+function toggleColumnVisibility(colName, isVisible) {
+  console.log(`Toggling column ${colName} to ${isVisible ? 'visible' : 'hidden'}`);
+  
+  // Try direct style approach for more reliable column hiding
+  const headers = document.querySelectorAll(`.${colName}-col`);
+  const cells = document.querySelectorAll(`.${colName}-cell`);
+  
+  const displayValue = isVisible ? '' : 'none';
+  
+  headers.forEach(header => {
+      header.style.display = displayValue;
+  });
+  
+  cells.forEach(cell => {
+      cell.style.display = displayValue;
+  });
+  
+  // Also update the class for CSS approach
+  const calendarContainer = document.querySelector('.calendar-container');
+  if (calendarContainer) {
+      if (isVisible) {
+          calendarContainer.classList.remove(`hide-col-${colName}`);
+      } else {
+          calendarContainer.classList.add(`hide-col-${colName}`);
+      }
+  }
+}
+
+function loadFilterPreferences() {
+  try {
+      const preferences = JSON.parse(localStorage.getItem('calendarFilterPrefs') || '{}');
+      
+      // Day types
+      const weekendToggle = document.getElementById('filter-weekends');
+      const prepToggle = document.getElementById('filter-prep');
+      const holidayToggle = document.getElementById('filter-holidays');
+      const hiatusToggle = document.getElementById('filter-hiatus');
+      const shootToggle = document.getElementById('filter-shoot');
+      
+      if (weekendToggle && preferences.hideWeekends !== undefined) {
+          weekendToggle.checked = !preferences.hideWeekends;
+      }
+      if (prepToggle && preferences.hidePrep !== undefined) {
+          prepToggle.checked = !preferences.hidePrep;
+      }
+      if (holidayToggle && preferences.hideHolidays !== undefined) {
+          holidayToggle.checked = !preferences.hideHolidays;
+      }
+      if (hiatusToggle && preferences.hideHiatus !== undefined) {
+          hiatusToggle.checked = !preferences.hideHiatus;
+      }
+      if (shootToggle && preferences.hideShoot !== undefined) {
+          shootToggle.checked = !preferences.hideShoot;
+      }
+      
+      // Column visibility
+      const sequenceColToggle = document.getElementById('filter-col-sequence');
+      const secondUnitColToggle = document.getElementById('filter-col-second-unit');
+      
+      if (sequenceColToggle && preferences.hideColSequence !== undefined) {
+          sequenceColToggle.checked = !preferences.hideColSequence;
+      }
+      
+      if (secondUnitColToggle && preferences.hideColSecondUnit !== undefined) {
+          secondUnitColToggle.checked = !preferences.hideColSecondUnit;
+      }
+  } catch (error) {
+      console.error("Error loading filter preferences:", error);
+  }
+}
+
+function saveFilterPreferences() {
+  const weekendToggle = document.getElementById('filter-weekends');
+  const prepToggle = document.getElementById('filter-prep');
+  const holidayToggle = document.getElementById('filter-holidays');
+  const hiatusToggle = document.getElementById('filter-hiatus');
+  const shootToggle = document.getElementById('filter-shoot');
+  const sequenceColToggle = document.getElementById('filter-col-sequence');
+  const secondUnitColToggle = document.getElementById('filter-col-second-unit');
+  
+  const preferences = {
+      hideWeekends: weekendToggle ? !weekendToggle.checked : false,
+      hidePrep: prepToggle ? !prepToggle.checked : false,
+      hideHolidays: holidayToggle ? !holidayToggle.checked : false,
+      hideHiatus: hiatusToggle ? !hiatusToggle.checked : false,
+      hideShoot: shootToggle ? !shootToggle.checked : false,
+      hideColSequence: sequenceColToggle ? !sequenceColToggle.checked : false,
+      hideColSecondUnit: secondUnitColToggle ? !secondUnitColToggle.checked : false
+  };
+  
+  localStorage.setItem('calendarFilterPrefs', JSON.stringify(preferences));
+}
+
+function applyAllFilters() {
+  // Reset all rows first
+  document.querySelectorAll('.calendar-row').forEach(row => {
+      row.classList.remove('filtered-hidden');
+  });
+  
+  const weekendToggle = document.getElementById('filter-weekends');
+  const prepToggle = document.getElementById('filter-prep');
+  const holidayToggle = document.getElementById('filter-holidays');
+  const hiatusToggle = document.getElementById('filter-hiatus');
+  const shootToggle = document.getElementById('filter-shoot');
+  const sequenceColToggle = document.getElementById('filter-col-sequence');
+  const secondUnitColToggle = document.getElementById('filter-col-second-unit');
+  
+  // Apply row filters
+  if (weekendToggle && !weekendToggle.checked) {
+      toggleRowType('weekend', false);
+  }
+  if (prepToggle && !prepToggle.checked) {
+      toggleRowType('prep', false);
+  }
+  if (holidayToggle && !holidayToggle.checked) {
+      toggleRowType('holiday', false);
+  }
+  if (hiatusToggle && !hiatusToggle.checked) {
+      toggleRowType('hiatus', false);
+  }
+  if (shootToggle && !shootToggle.checked) {
+      toggleRowType('shoot', false);
+  }
+  
+  // Apply column filters
+  if (sequenceColToggle) {
+      toggleColumnVisibility('sequence', sequenceColToggle.checked);
+  }
+  if (secondUnitColToggle) {
+      toggleColumnVisibility('second-unit', secondUnitColToggle.checked);
+  }
+  
+  // Update stats
+  updateFilterStats();
+}
+
+function updateFilterStats() {
+  const totalRows = document.querySelectorAll('.calendar-row').length;
+  const visibleRows = document.querySelectorAll('.calendar-row:not(.filtered-hidden)').length;
+  const totalShootDays = document.querySelectorAll('.calendar-row.shoot').length;
+  const visibleShootDays = document.querySelectorAll('.calendar-row.shoot:not(.filtered-hidden)').length;
+  
+  const statsTotal = document.getElementById('filter-stats-total');
+  const statsVisible = document.getElementById('filter-stats-visible');
+  const statsShootDays = document.getElementById('filter-stats-shoot-days');
+  
+  if (statsTotal) statsTotal.textContent = totalRows;
+  if (statsVisible) statsVisible.textContent = visibleRows;
+  if (statsShootDays) statsShootDays.textContent = `${visibleShootDays} / ${totalShootDays}`;
+}
+
+// 2. Then define the initialization function which will attach event listeners
+function initializeFilters() {
+  console.log("Initializing filters");
+  
+  // Get filter toggle elements
+  const weekendToggle = document.getElementById('filter-weekends');
+  const prepToggle = document.getElementById('filter-prep');
+  const holidayToggle = document.getElementById('filter-holidays');
+  const hiatusToggle = document.getElementById('filter-hiatus');
+  const shootToggle = document.getElementById('filter-shoot');
+  const resetButton = document.getElementById('reset-filters');
+  
+  // Column visibility toggles
+  const sequenceColToggle = document.getElementById('filter-col-sequence');
+  const secondUnitColToggle = document.getElementById('filter-col-second-unit');
+  
+  // If filter elements don't exist, we're not on the calendar page
+  if (!weekendToggle) {
+      console.log("Filter elements not found - not on calendar page");
+      return;
+  }
+  
+  console.log("Filter elements found, setting up event listeners");
+  
+  // Load saved preferences from localStorage
+  loadFilterPreferences();
+  
+  // Add event listeners to toggle controls
+  if (weekendToggle) {
+      weekendToggle.addEventListener('change', function() {
+          toggleRowType('weekend', this.checked);
+          saveFilterPreferences();
+      });
+  }
+  
+  if (prepToggle) {
+      prepToggle.addEventListener('change', function() {
+          toggleRowType('prep', this.checked);
+          saveFilterPreferences();
+      });
+  }
+  
+  if (holidayToggle) {
+      holidayToggle.addEventListener('change', function() {
+          toggleRowType('holiday', this.checked);
+          saveFilterPreferences();
+      });
+  }
+  
+  if (hiatusToggle) {
+      hiatusToggle.addEventListener('change', function() {
+          toggleRowType('hiatus', this.checked);
+          saveFilterPreferences();
+      });
+  }
+  
+  if (shootToggle) {
+      shootToggle.addEventListener('change', function() {
+          toggleRowType('shoot', this.checked);
+          saveFilterPreferences();
+      });
+  }
+  
+  if (sequenceColToggle) {
+      sequenceColToggle.addEventListener('change', function() {
+          toggleColumnVisibility('sequence', this.checked);
+          saveFilterPreferences();
+      });
+  }
+  
+  if (secondUnitColToggle) {
+      secondUnitColToggle.addEventListener('change', function() {
+          toggleColumnVisibility('second-unit', this.checked);
+          saveFilterPreferences();
+      });
+  }
+  
+  // Reset button
+  if (resetButton) {
+      resetButton.addEventListener('click', function() {
+          if (weekendToggle) weekendToggle.checked = true;
+          if (prepToggle) prepToggle.checked = true;
+          if (holidayToggle) holidayToggle.checked = true;
+          if (hiatusToggle) hiatusToggle.checked = true;
+          if (shootToggle) shootToggle.checked = true;
+          if (sequenceColToggle) sequenceColToggle.checked = true;
+          if (secondUnitColToggle) secondUnitColToggle.checked = true;
+          
+          applyAllFilters();
+          saveFilterPreferences();
+      });
+  }
+  
+  // Apply initial filter state
+  applyAllFilters();
+  
+  console.log("Filter initialization complete");
+}
+
+/**
+ * Enhance location counters with proper color coding from location data
+ */
+function enhanceLocationCounters() {
+  console.log("Enhancing location counters with proper colors");
+  
+  // Get all counter items in the location counter section
+  const locationCounters = document.querySelectorAll('.location-counters .counter-item');
+  
+  locationCounters.forEach(counter => {
+    const locationName = counter.querySelector('.counter-label').textContent.trim();
+    
+    // Check if counter already has a background color set
+    const currentColor = counter.style.backgroundColor;
+    if (!currentColor || currentColor === 'transparent' || currentColor === '') {
+      // Try to find the color from data attributes
+      const areaColor = counter.getAttribute('data-area-color');
+      if (areaColor) {
+        counter.style.backgroundColor = areaColor;
+        
+        // Ensure text contrast is appropriate for the background color
+        ensureTextContrast(counter);
+      }
+    }
+  });
+}
+
+/**
+ * Ensure text has proper contrast with background
+ * @param {HTMLElement} element - The element to check contrast for
+ */
+function ensureTextContrast(element) {
+  // Get computed background color
+  const bgColor = window.getComputedStyle(element).backgroundColor;
+  
+  // Parse RGB values
+  const rgbMatch = bgColor.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*[\d.]+)?\)/);
+  if (rgbMatch) {
+    const r = parseInt(rgbMatch[1]);
+    const g = parseInt(rgbMatch[2]);
+    const b = parseInt(rgbMatch[3]);
+    
+    // Calculate brightness (simple formula)
+    const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+    
+    // Set text color based on background brightness
+    if (brightness > 128) {
+      element.style.color = '#000000'; // Dark text for light backgrounds
+    } else {
+      element.style.color = '#ffffff'; // Light text for dark backgrounds
+    }
+  }
+}
+
+// 3. Finally, call the initialization function
+document.addEventListener('DOMContentLoaded', function() {
+  console.log("Document loaded, calling initializeFilters");
+  initializeFilters();
+  enhanceLocationCounters();
 });

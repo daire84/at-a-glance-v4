@@ -409,7 +409,7 @@ def admin_calendar(project_id):
     
     save_project_calendar(project_id, calendar_data)
     
-    return render_template('admin/calendar.html', project=project, calendar=calendar_data)
+    return render_template('admin/calendar.html', project=project, calendar=calendar_data, locations=locations)
 
 @app.route('/admin/day/<project_id>/<date>', methods=['GET', 'POST'])
 @admin_required
@@ -536,7 +536,7 @@ def viewer(project_id):
     
     save_project_calendar(project_id, calendar_data)
 
-    return render_template('viewer.html', project=project, calendar=calendar_data)
+    return render_template('viewer.html', project=project, calendar=calendar_data, locations=locations)
 
 @app.route('/admin/locations')
 @admin_required
