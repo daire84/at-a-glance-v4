@@ -42,11 +42,11 @@
     "notes": "Historic city hall building"
   },
   {
-    "id": "phoenix-park",
     "name": "Phoenix Park",
     "areaId": "north",
     "address": "Phoenix Park, Dublin 8",
-    "notes": "Large urban park with various locations"
+    "notes": "Large urban park with various locations",
+    "id": "phoenix-park"
   },
   {
     "name": "Ana's House",

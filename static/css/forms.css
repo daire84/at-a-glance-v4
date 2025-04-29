@@ -199,3 +199,65 @@ textarea:invalid {
     gap: 1rem;
   }
 }
+
+/* ======================================================== */
+/* Login Container Styles (Moved from login.html templates) */
+/* ======================================================== */
+.login-container {
+  max-width: 400px; /* Or your preferred width */
+  margin: 2rem auto; /* Centers the container */
+  padding: 2rem;
+  background-color: var(--background-alt); /* Example background */
+  border-radius: 8px; /* Example border radius */
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1); /* Example shadow */
+}
+
+/* Add any other styles that were specific to the login form's container */
+
+/* Assuming flash message styles were also in login templates */
+.flash-message {
+  margin-bottom: 1rem;
+  padding: 0.8rem 1.2rem;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  position: relative;
+}
+
+.flash-message.error {
+  background-color: #f8d7da; /* Example error colors */
+  border-color: #f5c6cb;
+  color: #721c24;
+}
+
+.flash-message.success {
+   background-color: #d4edda; /* Example success colors */
+   border-color: #c3e6cb;
+   color: #155724;
+}
+/* Add other flash types if needed */
+
+/* --- End Login Container Styles --- */
+
+
+/* ==================================================== */
+/* Day Editor Styles (Moved from admin/day.html)        */
+/* ==================================================== */
+
+/* Department/Location Tag Display */
+.location-area-display {
+  font-size: 0.85rem;
+  color: var(--text-light);
+  margin-top: 0.25rem;
+  padding: 0.3rem 0.5rem;
+  background-color: var(--border-color); /* Or a specific tag background */
+  border-radius: 3px;
+  display: inline-block;
+  /* Add border, margin-right if multiple tags can appear, etc. */
+}
+
+/* Add ALL other styles that were specific to the form elements */
+/* or layout within the admin/day.html template's <style> block */
+/* This might include styles for input fields, selects, buttons, */
+/* labels, or layout containers specific to that page. */
+
+/* --- End Day Editor Styles --- */

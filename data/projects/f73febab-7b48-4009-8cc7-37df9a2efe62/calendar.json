@@ -217,18 +217,16 @@
       "isWorkingWeekend": false,
       "dayType": "shoot",
       "shootDay": 2,
-      "mainUnit": "NEW MEXICO HOUSE",
+      "mainUnit": "",
       "extras": 0,
       "featuredExtras": 0,
-      "location": "Ana's House",
-      "locationArea": "Spain",
-      "sequence": "The House",
+      "location": "Dublin City Hall",
+      "locationArea": "Dublin South",
+      "sequence": "",
       "departments": [
-        "FDS",
-        "WNK",
-        "SFX"
+        "WNK"
       ],
-      "notes": "Yes sir ",
+      "notes": "",
       "secondUnit": "",
       "secondUnitLocation": ""
     },
@@ -278,18 +276,18 @@
       "isWorkingWeekend": false,
       "dayType": "shoot",
       "shootDay": 4,
-      "mainUnit": "CANNON HOUSE - BEDROOM",
-      "extras": 20,
-      "featuredExtras": 1,
-      "location": "D Stage",
-      "locationArea": "Ardmore Studios",
-      "sequence": "Mum V Kids",
+      "mainUnit": "NEW MEXICO HOUSE",
+      "extras": 0,
+      "featuredExtras": 0,
+      "location": "Ana's House",
+      "locationArea": "Spain",
+      "sequence": "The House",
       "departments": [
-        "STN",
-        "VFX",
+        "FDS",
+        "WNK",
         "SFX"
       ],
-      "notes": "THIS IS A NOTE",
+      "notes": "Yes sir ",
       "secondUnit": "",
       "secondUnitLocation": ""
     },
@@ -308,16 +306,18 @@
       "isWorkingWeekend": false,
       "dayType": "shoot",
       "shootDay": 5,
-      "mainUnit": "MY GAFF",
-      "extras": 22,
-      "featuredExtras": 3,
-      "location": "Daire's Gaff",
-      "locationArea": "Greystones",
-      "sequence": "Testicles",
+      "mainUnit": "CANNON HOUSE - BEDROOM",
+      "extras": 20,
+      "featuredExtras": 1,
+      "location": "D Stage",
+      "locationArea": "Ardmore Studios",
+      "sequence": "Mum V Kids",
       "departments": [
-        "FDS"
+        "STN",
+        "VFX",
+        "SFX"
       ],
-      "notes": "How is your day?",
+      "notes": "THIS IS A NOTE",
       "secondUnit": "",
       "secondUnitLocation": ""
     },
@@ -438,16 +438,16 @@
       "isWorkingWeekend": false,
       "dayType": "shoot",
       "shootDay": 8,
-      "mainUnit": "",
-      "extras": 0,
-      "featuredExtras": 0,
-      "location": "Dublin City Hall",
-      "locationArea": "Dublin South",
-      "sequence": "",
+      "mainUnit": "MY GAFF",
+      "extras": 22,
+      "featuredExtras": 3,
+      "location": "Daire's Gaff",
+      "locationArea": "Greystones",
+      "sequence": "Testicles",
       "departments": [
-        "WNK"
+        "FDS"
       ],
-      "notes": "",
+      "notes": "How is your day?",
       "secondUnit": "",
       "secondUnitLocation": ""
     },
@@ -1254,7 +1254,7 @@
       "locationArea": "",
       "sequence": "",
       "departments": [],
-      "notes": "BANK HOLIDAY: May Bank Holiday"
+      "notes": "BANK HOLIDAY: Working May Bank Holiday"
     },
     {
       "date": "2025-05-06",
@@ -2262,25 +2262,25 @@
       "id": "6a3b12f7-502a-4ddf-b5a3-7ac419bb904c"
     }
   ],
-  "lastUpdated": "2025-04-27T19:27:49.251340Z",
+  "lastUpdated": "2025-04-28T08:40:48.279287Z",
   "locationCounts": {
-    "Ana's House": 1,
+    "Dublin City Hall": 1,
     "D Stage": 2,
-    "Daire's Gaff": 1,
+    "Ana's House": 1,
     "Phoenix Park": 1,
     "Studio B": 1,
-    "Dublin City Hall": 1,
+    "Daire's Gaff": 1,
     "Studio A": 1,
     "Kilruddery House": 1,
     "Something Stage": 2
   },
   "areaCounts": {
-    "4459abff-cd87-4fdc-a238-1ff355b2e970": 1,
+    "south": 1,
     "ardmore": 2,
-    "6a3b12f7-502a-4ddf-b5a3-7ac419bb904c": 1,
+    "4459abff-cd87-4fdc-a238-1ff355b2e970": 1,
     "north": 1,
     "studio": 2,
-    "south": 1,
+    "6a3b12f7-502a-4ddf-b5a3-7ac419bb904c": 1,
     "wicklow": 1,
     "ashford": 2
   },

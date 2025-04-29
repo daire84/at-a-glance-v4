@@ -947,18 +947,31 @@
   }
 }
 
-/* === RESPONSIVE STYLES === */
 @media (max-width: 768px) {
   .project-meta {
-    flex-direction: column;
-    gap: 0.5rem;
+    /* display: flex; /* Might be set elsewhere */
+    flex-wrap: wrap; /* Allow items to wrap */
+    gap: 0.5rem; /* Keep or adjust spacing */
+    /* Remove flex-direction: column; */
   }
-  
+
+  .project-meta > * { /* Target direct children */
+     flex-basis: calc(50% - 0.25rem); /* Example: 50% width minus half the gap */
+     /* Or simply width: 50%; if using box-sizing: border-box; */
+  } 
+
+  /* Similar adjustments for .script-info if needed */
   .script-info {
-    flex-direction: column;
-    gap: 0.3rem;
+     /* display: flex; */
+     flex-wrap: wrap;
+     gap: 0.3rem;
+     /* Remove flex-direction: column; */
   }
-  
+  .script-info > * {
+     flex-basis: calc(50% - 0.15rem); 
+  }
+
+  /* Keep these as they are already 2 columns */
   .counter-grid,
   .area-tags {
     grid-template-columns: repeat(2, 1fr);

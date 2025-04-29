@@ -1,0 +1,226 @@
+/* ============================================================= */
+/* Special Dates Management Styles (Moved from admin/dates.html) */
+/* ============================================================= */
+
+.dates-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Two columns */
+    gap: 1.5rem; /* Space between columns and rows */
+    margin-top: 1rem;
+}
+
+/* Adjust layout for smaller screens */
+@media (max-width: 768px) {
+    .dates-container {
+        grid-template-columns: 1fr; /* Single column on smaller screens */
+    }
+}
+
+.special-dates-list,
+.add-special-date-form {
+    /* Styles for the list section and the form section */
+    background-color: var(--background-alt);
+    padding: 1.5rem;
+    border-radius: 5px;
+    border: 1px solid var(--border-color);
+}
+
+.special-dates-list h3,
+.add-special-date-form h3 {
+    margin-top: 0;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.special-date-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border-color-light); /* Lighter border */
+}
+
+.special-date-item:last-child {
+    border-bottom: none;
+}
+
+.special-date-info {
+    /* Styles for the date and description */
+}
+
+.special-date-actions button {
+    /* Styles for delete button, etc. */
+}
+
+/* Add other specific styles from the admin/dates.html <style> block */
+
+.dates-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+  
+  @media (max-width: 768px) {
+    .dates-container {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  .section-card {
+    background-color: white;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+  }
+  
+  .section-header {
+    background-color: var(--primary-light);
+    color: white;
+    padding: 0.8rem 1.2rem;
+  }
+  
+  .section-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+  }
+  
+  .section-content {
+    padding: 1.2rem;
+  }
+  
+  .date-list {
+    margin-top: 1.2rem;
+  }
+  
+  .date-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.6rem;
+    border-bottom: 1px solid var(--border-color);
+  }
+  
+  .date-item:last-child {
+    border-bottom: none;
+  }
+  
+  .date-info {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .date-display {
+    font-weight: 500;
+    font-size: 0.9rem;
+  }
+  
+  .date-description {
+    font-size: 0.8rem;
+    color: var(--text-light);
+  }
+  
+  .date-item .date-action {
+    display: flex;
+    gap: 0.4rem;
+  }
+  
+  .hiatus-period {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.6rem;
+    border-bottom: 1px solid var(--border-color);
+  }
+  
+  .hiatus-period:last-child {
+    border-bottom: none;
+  }
+  
+  .hiatus-dates {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .hiatus-label {
+    font-weight: 500;
+    font-size: 0.9rem;
+  }
+  
+  .hiatus-range {
+    font-size: 0.8rem;
+    color: var(--text-light);
+  }
+  
+  .hiatus-visibility {
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+    font-size: 0.8rem;
+    color: var(--text-light);
+  }
+  
+  .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+  }
+  
+  .modal.active {
+    opacity: 1;
+    visibility: visible;
+  }
+  
+  .modal-content {
+    background-color: white;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    width: 100%;
+    max-width: 450px;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  
+  .modal-header {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .modal-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+  }
+  
+  .modal-body {
+    padding: 1rem;
+  }
+  
+  .modal-footer {
+    padding: 1rem;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.6rem;
+  }
+  
+  .action-row {
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: center;
+  }
+
+/* --- End Special Dates Management Styles --- */

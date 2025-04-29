@@ -1,0 +1,61 @@
+/* ============================================================ */
+/* Admin Dashboard Styles (Moved from admin/dashboard.html)   */
+/* ============================================================ */
+
+/* Styles specific to the admin dashboard layout or components */
+
+/* Improved project cards specifically for the admin view */
+.admin-projects .project-card {
+    transition: all 0.2s ease;
+    /* Add any base project-card styles if they weren't global */
+    /* Example: background, padding, border */
+}
+
+.admin-projects .project-card:hover {
+    border-left: 3px solid var(--accent-color);
+    /* You might want other hover effects, like subtle shadow */
+    /* box-shadow: 0 4px 8px rgba(0,0,0,0.1); */
+}
+
+.admin-projects .project-card-footer {
+    /* Styles for the footer of the card in admin view */
+    /* Ensure this class exists in your HTML */
+}
+
+.admin-projects .project-card-footer .button-group {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1rem; /* Example spacing */
+}
+
+/* Add any other styles from the admin/dashboard.html <style> block */
+/* This could include grid layouts, section headers, etc. */
+
+/* Example: Maybe styles for stats boxes */
+.dashboard-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.stat-box {
+    background-color: var(--background-alt);
+    padding: 1rem;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+    display: block;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    color: var(--text-light);
+}
+
+/* --- End Admin Dashboard Styles --- */

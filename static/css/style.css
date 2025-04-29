@@ -11,7 +11,7 @@
   --background-color: #1e1e20;     /* Off-white gray background */
   --border-color: #e0e2e7;         /* Light gray for borders */
   --Top-text-color: #e0e2e7;         /* Light gray for borders */
-  --title-text-color: #df0522;         /* Light gray for borders */
+  --title-text-color: #fb203d;         /* Light gray for borders */
   --success-color: #7eb58d;        /* Muted green success */
   --error-color: #d64c4c;          /* Muted red error */
   --warning-color: #e6a954;        /* Muted orange warning */
@@ -71,7 +71,7 @@ body {
 }
 
 .main-header nav a {
-  color: var(--warning-color);
+  color: var(--Top-text-color);
   text-decoration: none;
   padding: 0.4rem 0.8rem;  /* Reduced from 0.5rem 1rem */
   transition: background-color 0.3s;
@@ -411,3 +411,64 @@ footer {
     font-size: 9pt;  /* Reduced from 10pt */
   }
 }
+
+/* ========================================== */
+/* Navigation Styles (Moved from base.html) */
+/* ========================================== */
+.main-header {
+  position: relative;
+  /* Add any existing .main-header styles here if needed */
+}
+
+.main-nav {
+  display: flex;
+  justify-content: flex-end;
+  /* Add any existing .main-nav styles here if needed */
+}
+
+/* Assuming Claude's snippet was incomplete, add other relevant nav styles */
+/* For example: */
+.nav-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+}
+
+.nav-item {
+  margin-left: 1.5rem; /* Adjust spacing as needed */
+}
+
+.nav-link {
+  text-decoration: none;
+  color: var(--text-color); /* Or your specific link color */
+  padding: 0.5rem 0;
+  position: relative;
+  transition: color 0.2s ease;
+}
+
+.nav-link:hover {
+  color: var(--accent-color); /* Or your hover color */
+}
+
+/* Styles for dropdowns if you have them */
+.nav-dropdown {
+  position: relative;
+}
+
+.nav-dropdown-toggle {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  background: none;
+  border: none;
+  color: inherit;
+  padding: 0.5rem 0; /* Match nav-link padding */
+}
+
+/* Add styles for the dropdown menu itself, icons, etc. */
+/* You will need to transfer ALL navigation-related styles */
+/* from the <style> block in base.html here. */
+
+/* --- End Navigation Styles --- */
