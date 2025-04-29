@@ -244,6 +244,22 @@
         </div>
     </div>
     
+        <div class="location-areas">
+            {% if calendar.locationAreas and calendar.locationAreas|length > 0 %}
+            <h4 class="areas-title">Location Areas</h4>
+            <div class="area-tags">
+                {% for area in calendar.locationAreas %}
+                <div class="area-tag" style="background-color: {{ area.color }}">
+                    {{ area.name }}
+                    {% if calendar.areaCounts and area.id in calendar.areaCounts %}
+                    <div class="area-count">{{ calendar.areaCounts[area.id] }}</div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    
     <div class="location-counters">
         <h4 class="counter-title">Location Counts</h4>
         <div class="counter-grid">
@@ -280,23 +296,6 @@
             {% endif %}
         </div>
     </div>
-
-    {% if calendar.locationAreas and calendar.locationAreas|length > 0 %}
-    <div class="location-areas">
-        <h4 class="areas-title">Location Areas</h4>
-        <div class="area-tags">
-            {% for area in calendar.locationAreas %}
-            <div class="area-tag" style="background-color: {{ area.color }}">
-                {{ area.name }}
-                {% if calendar.areaCounts and area.id in calendar.areaCounts %}
-                <div class="area-count">{{ calendar.areaCounts[area.id] }}</div>
-                {% endif %}
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-    {% endif %}
-
     
     <div class="calendar-table-wrapper">
         <table class="calendar-table">

@@ -1,226 +1,171 @@
-/* ============================================================= */
-/* Special Dates Management Styles (Moved from admin/dates.html) */
-/* ============================================================= */
+/**
+ * =============================================================================
+ * Special Dates Management Stylesheet (dates.css)
+ * =============================================================================
+ *
+ * Purpose: Styles the layout and components specific to the admin page for
+ * managing special dates (holidays, hiatus periods, etc.).
+ *
+ * Organization:
+ * - Main Container Layout (.dates-container)
+ * - Section Card Styles
+ * - Date List & Item Styles
+ * - Hiatus Period List & Item Styles
+ * - Action Row (Centering buttons)
+ * - Responsive Adjustments
+ *
+ * Assumes global styles (style.css), form styles (forms.css), button styles,
+ * and modal styles (modals.css) are already loaded. Modal styles previously
+ * defined here have been removed to rely on modals.css.
+ */
 
+/* === MAIN CONTAINER LAYOUT === */
+/* Grid layout for the main content area (e.g., list side-by-side with form) */
 .dates-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr; /* Two columns */
-    gap: 1.5rem; /* Space between columns and rows */
-    margin-top: 1rem;
+  display: grid; /* Use grid */
+  grid-template-columns: 1fr 1fr; /* Default to two equal columns */
+  gap: 1.5rem; /* Space between columns and rows */
+  margin-top: 1rem; /* Space above container */
 }
 
-/* Adjust layout for smaller screens */
+/* === SECTION CARD STYLES === */
+/* Reusable card style for sections like "Special Dates" or "Add New Date" */
+.section-card {
+background-color: var(--background-alt, white); /* Use alt background */
+border-radius: 6px; /* Rounded corners */
+box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); /* Subtle shadow */
+overflow: hidden; /* Contain content */
+margin-bottom: 1.5rem; /* Space below card */
+display: flex; /* Use flex for vertical layout */
+flex-direction: column; /* Stack header and content */
+}
+
+/* Header within a section card */
+.section-header {
+background-color: var(--primary-light); /* Use light primary color */
+color: white; /* White text */
+padding: 0.8rem 1.2rem; /* Padding */
+}
+
+.section-header h3 {
+margin: 0; /* Remove default margin */
+font-size: 1.1rem; /* Title size */
+color: white; /* Ensure header text is white */
+}
+
+/* Content area within a section card */
+.section-content {
+padding: 1.2rem; /* Padding */
+flex-grow: 1; /* Allow content to grow */
+}
+
+/* === DATE LIST & ITEM STYLES === */
+/* Container for the list of special dates */
+.date-list {
+margin-top: 1.2rem; /* Space above list within card */
+}
+
+/* Individual item in the special dates list */
+.date-item {
+display: flex; /* Arrange horizontally */
+justify-content: space-between; /* Push info and actions apart */
+align-items: center; /* Align vertically */
+padding: 0.6rem 0; /* Vertical padding, no horizontal needed if section-content has padding */
+border-bottom: 1px solid var(--border-color); /* Separator line */
+}
+
+/* Remove border from the last item */
+.date-item:last-child {
+border-bottom: none;
+}
+
+/* Container for the date and description */
+.date-info {
+display: flex; /* Use flex */
+flex-direction: column; /* Stack date and description */
+}
+
+/* Displayed date text */
+.date-display {
+font-weight: 500; /* Medium weight */
+font-size: 0.9rem; /* Font size */
+color: var(--text-color); /* Standard text color */
+}
+
+/* Date description text */
+.date-description {
+font-size: 0.8rem; /* Smaller font */
+color: var(--text-light); /* Lighter text */
+}
+
+/* Container for action buttons within a date item */
+.date-item .date-action {
+display: flex; /* Arrange buttons horizontally */
+gap: 0.4rem; /* Space between buttons */
+flex-shrink: 0; /* Prevent actions from shrinking */
+}
+
+/* === HIATUS PERIOD LIST & ITEM STYLES === */
+/* Individual hiatus period item */
+.hiatus-period {
+display: flex; /* Arrange horizontally */
+justify-content: space-between; /* Push info and actions apart */
+align-items: center; /* Align vertically */
+padding: 0.6rem 0; /* Padding */
+border-bottom: 1px solid var(--border-color); /* Separator */
+}
+
+.hiatus-period:last-child {
+border-bottom: none; /* Remove border from last item */
+}
+
+/* Container for hiatus label and date range */
+.hiatus-dates {
+display: flex; /* Use flex */
+flex-direction: column; /* Stack label and range */
+}
+
+/* Hiatus label (e.g., "Hiatus") */
+.hiatus-label {
+font-weight: 500; /* Medium weight */
+font-size: 0.9rem; /* Font size */
+color: var(--text-color); /* Standard text color */
+}
+
+/* Hiatus date range text */
+.hiatus-range {
+font-size: 0.8rem; /* Smaller font */
+color: var(--text-light); /* Lighter text */
+}
+
+/* Indicator for hiatus visibility (e.g., icon + text) */
+.hiatus-visibility {
+display: flex; /* Arrange icon and text */
+align-items: center; /* Align vertically */
+gap: 0.2rem; /* Space between icon and text */
+font-size: 0.8rem; /* Smaller font */
+color: var(--text-light); /* Lighter text */
+flex-shrink: 0; /* Prevent shrinking */
+}
+/* Add styles for the icon itself if needed */
+
+/* === ACTION ROW === */
+/* Centered row for single primary actions (e.g., "Add Hiatus") */
+.action-row {
+margin-top: 1.5rem; /* Space above */
+display: flex; /* Use flex */
+justify-content: center; /* Center button horizontally */
+}
+
+/* === RESPONSIVE ADJUSTMENTS === */
 @media (max-width: 768px) {
-    .dates-container {
-        grid-template-columns: 1fr; /* Single column on smaller screens */
-    }
-}
-
-.special-dates-list,
-.add-special-date-form {
-    /* Styles for the list section and the form section */
-    background-color: var(--background-alt);
-    padding: 1.5rem;
-    border-radius: 5px;
-    border: 1px solid var(--border-color);
-}
-
-.special-dates-list h3,
-.add-special-date-form h3 {
-    margin-top: 0;
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: 0.5rem;
-    margin-bottom: 1rem;
-}
-
-.special-date-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.75rem 0;
-    border-bottom: 1px solid var(--border-color-light); /* Lighter border */
-}
-
-.special-date-item:last-child {
-    border-bottom: none;
-}
-
-.special-date-info {
-    /* Styles for the date and description */
-}
-
-.special-date-actions button {
-    /* Styles for delete button, etc. */
-}
-
-/* Add other specific styles from the admin/dates.html <style> block */
-
+/* Stack columns vertically on smaller screens */
 .dates-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
-  }
-  
-  @media (max-width: 768px) {
-    .dates-container {
-      grid-template-columns: 1fr;
-    }
-  }
-  
-  .section-card {
-    background-color: white;
-    border-radius: 6px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-    overflow: hidden;
-    margin-bottom: 1.5rem;
-  }
-  
-  .section-header {
-    background-color: var(--primary-light);
-    color: white;
-    padding: 0.8rem 1.2rem;
-  }
-  
-  .section-header h3 {
-    margin: 0;
-    font-size: 1.1rem;
-  }
-  
-  .section-content {
-    padding: 1.2rem;
-  }
-  
-  .date-list {
-    margin-top: 1.2rem;
-  }
-  
-  .date-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.6rem;
-    border-bottom: 1px solid var(--border-color);
-  }
-  
-  .date-item:last-child {
-    border-bottom: none;
-  }
-  
-  .date-info {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .date-display {
-    font-weight: 500;
-    font-size: 0.9rem;
-  }
-  
-  .date-description {
-    font-size: 0.8rem;
-    color: var(--text-light);
-  }
-  
-  .date-item .date-action {
-    display: flex;
-    gap: 0.4rem;
-  }
-  
-  .hiatus-period {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.6rem;
-    border-bottom: 1px solid var(--border-color);
-  }
-  
-  .hiatus-period:last-child {
-    border-bottom: none;
-  }
-  
-  .hiatus-dates {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .hiatus-label {
-    font-weight: 500;
-    font-size: 0.9rem;
-  }
-  
-  .hiatus-range {
-    font-size: 0.8rem;
-    color: var(--text-light);
-  }
-  
-  .hiatus-visibility {
-    display: flex;
-    align-items: center;
-    gap: 0.2rem;
-    font-size: 0.8rem;
-    color: var(--text-light);
-  }
-  
-  .modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s, visibility 0.3s;
-  }
-  
-  .modal.active {
-    opacity: 1;
-    visibility: visible;
-  }
-  
-  .modal-content {
-    background-color: white;
-    border-radius: 6px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    width: 100%;
-    max-width: 450px;
-    max-height: 90vh;
-    overflow-y: auto;
-  }
-  
-  .modal-header {
-    padding: 1rem;
-    border-bottom: 1px solid var(--border-color);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .modal-header h3 {
-    margin: 0;
-    font-size: 1.1rem;
-  }
-  
-  .modal-body {
-    padding: 1rem;
-  }
-  
-  .modal-footer {
-    padding: 1rem;
-    border-top: 1px solid var(--border-color);
-    display: flex;
-    justify-content: flex-end;
-    gap: 0.6rem;
-  }
-  
-  .action-row {
-    margin-top: 1.5rem;
-    display: flex;
-    justify-content: center;
-  }
+  grid-template-columns: 1fr; /* Single column */
+}
+}
+
+/* Note: Modal styles (.modal, .modal-content, etc.) removed. */
+/* Rely on common styles from modals.css */
 
 /* --- End Special Dates Management Styles --- */

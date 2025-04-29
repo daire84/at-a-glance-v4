@@ -1,87 +1,140 @@
-/* =============================================================== */
-/* Common Modal Styles (Combined from various admin templates)   */
-/* =============================================================== */
+/**
+ * =============================================================================
+ * Common Modal Stylesheet (modals.css)
+ * =============================================================================
+ *
+ * Purpose: Provides consistent base styling for modal dialogs used across
+ * the application. Specific content within modals should be styled
+ * via form styles or component-specific CSS. This file defines the
+ * modal overlay, container, header, body, footer, and close button.
+ *
+ * Organization:
+ * - Modal Overlay (.modal)
+ * - Modal Active State (.modal.active)
+ * - Modal Content Container (.modal-content)
+ * - Modal Header (.modal-header, .modal-title)
+ * - Modal Close Button (.modal-close)
+ * - Modal Body (.modal-body)
+ * - Modal Footer (.modal-footer)
+ *
+ * Key Techniques Used:
+ * - `position: fixed` for overlay.
+ * - Flexbox for centering modal content.
+ * - `z-index` to ensure modals appear on top.
+ * - `opacity` and `visibility` with transitions for smooth fade-in/out.
+ * - `transform: scale` for subtle animation effect (optional).
+ * - CSS Variables for theming.
+ *
+ * Usage Note:
+ * Include this CSS file globally. Specific modal styles defined in other
+ * files (e.g., calendar.css, dates.css) have been removed to avoid
+ * redundancy. Rely on these common styles as the base. Add overrides
+ * in component-specific CSS only if absolutely necessary and document why.
+ */
 
+/* === MODAL OVERLAY === */
+/* The full-screen background dimming layer */
 .modal {
-    position: fixed;
+    position: fixed; /* Position relative to the viewport */
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.6); /* Slightly darker overlay */
-    display: flex;
-    align-items: center; /* Vertically center */
-    justify-content: center; /* Horizontally center */
-    z-index: 1000; /* Ensure it's on top */
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s ease, visibility 0s linear 0.3s; /* Fade out transition */
+    width: 100%; /* Cover full width */
+    height: 100%; /* Cover full height */
+    background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent black background */
+    display: flex; /* Use flexbox for centering */
+    align-items: center; /* Vertically center content */
+    justify-content: center; /* Horizontally center content */
+    z-index: 1000; /* Ensure modal is above other page content */
+    opacity: 0; /* Start fully transparent */
+    visibility: hidden; /* Start hidden for accessibility and transition */
+    /* Transition for fade-out effect */
+    transition: opacity 0.3s ease, visibility 0s linear 0.3s;
+    padding: 1rem; /* Add padding for small screens */
 }
 
+/* === MODAL ACTIVE STATE === */
+/* Styles applied when the modal should be visible */
 .modal.active {
-    opacity: 1;
-    visibility: visible;
-    transition: opacity 0.3s ease, visibility 0s linear 0s; /* Fade in transition */
+    opacity: 1; /* Fully opaque */
+    visibility: visible; /* Make it visible */
+    /* Transition for fade-in effect */
+    transition: opacity 0.3s ease, visibility 0s linear 0s;
 }
 
+/* === MODAL CONTENT CONTAINER === */
+/* The main box holding the modal's content */
 .modal-content {
-    background-color: var(--background-color); /* Or --background-alt */
-    padding: 2rem;
-    border-radius: 8px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-    max-width: 500px; /* Adjust as needed */
-    width: 90%; /* Responsive width */
-    position: relative; /* For positioning close button */
-    transform: scale(0.95); /* Optional: subtle scale effect */
-    transition: transform 0.3s ease;
+    background-color: var(--background-alt, white); /* Use alt background, fallback white */
+    padding: 1.5rem; /* Reduced padding */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); /* Shadow for depth */
+    max-width: 500px; /* Maximum width of the modal */
+    width: 100%; /* Responsive width (constrained by max-width) */
+    position: relative; /* Needed for absolute positioning of close button */
+    transform: scale(0.95); /* Start slightly scaled down (optional effect) */
+    transition: transform 0.3s ease; /* Smooth scale transition */
+    max-height: 90vh; /* Limit height to 90% of viewport height */
+    overflow-y: auto; /* Allow vertical scrolling if content exceeds max-height */
 }
 
+/* Scale effect when modal becomes active */
 .modal.active .modal-content {
-    transform: scale(1); /* Scale in effect */
+    transform: scale(1); /* Scale to normal size */
 }
 
+/* === MODAL HEADER === */
+/* Top section of the modal, usually containing title and close button */
 .modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: 1rem;
-    margin-bottom: 1rem;
+    display: flex; /* Arrange items horizontally */
+    justify-content: space-between; /* Push title and close button apart */
+    align-items: center; /* Align vertically */
+    border-bottom: 1px solid var(--border-color); /* Separator line */
+    padding-bottom: 1rem; /* Space below header */
+    margin-bottom: 1rem; /* Space above modal body */
 }
 
+/* Modal title text */
 .modal-title {
-    margin: 0;
-    font-size: 1.3rem;
+    margin: 0; /* Remove default heading margin */
+    font-size: 1.3rem; /* Title font size */
+    color: var(--text-color); /* Standard text color */
 }
 
+/* === MODAL CLOSE BUTTON === */
+/* The 'X' button to close the modal */
 .modal-close {
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    cursor: pointer;
-    color: var(--text-light);
-    padding: 0.25rem;
-    line-height: 1;
+    background: none; /* No background */
+    border: none; /* No border */
+    font-size: 1.5rem; /* Icon size */
+    cursor: pointer; /* Indicate clickable */
+    color: var(--text-light); /* Lighter text color */
+    padding: 0.25rem; /* Clickable area padding */
+    line-height: 1; /* Prevent extra spacing */
+    transition: color 0.2s ease; /* Smooth color change on hover */
 }
 
 .modal-close:hover {
-    color: var(--text-color);
+    color: var(--text-color); /* Darken on hover */
 }
 
+/* === MODAL BODY === */
+/* Main content area of the modal */
 .modal-body {
-    margin-bottom: 1.5rem;
-    /* Style for content within the modal */
+    margin-bottom: 1.5rem; /* Space below body, above footer */
+    color: var(--text-color); /* Ensure standard text color */
+    /* Add specific styles for modal content here if needed, */
+    /* but prefer using general form/component styles. */
 }
 
+/* === MODAL FOOTER === */
+/* Bottom section of the modal, usually containing action buttons */
 .modal-footer {
-    display: flex;
+    display: flex; /* Arrange buttons horizontally */
     justify-content: flex-end; /* Align buttons to the right */
     gap: 0.75rem; /* Space between buttons */
-    padding-top: 1rem;
-    border-top: 1px solid var(--border-color);
-    margin-top: 1rem;
+    padding-top: 1rem; /* Space above footer */
+    border-top: 1px solid var(--border-color); /* Separator line */
+    margin-top: 1rem; /* Ensure space even if body has no margin */
 }
-
-/* Add any other common modal element styles */
 
 /* --- End Common Modal Styles --- */

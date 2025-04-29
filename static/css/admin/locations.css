@@ -1,208 +1,169 @@
-/* ========================================================= */
-/* Location Management Styles (Moved from admin/locations.html) */
-/* ========================================================= */
+/**
+ * =============================================================================
+ * Location & Location Area Management Stylesheet (locations.css)
+ * =============================================================================
+ *
+ * Purpose: Styles the layout and components specific to the admin page for
+ * managing locations and location areas, including lists, tables,
+ * cards, color previews, and related forms or modals.
+ *
+ * Organization:
+ * - Color Preview Swatch
+ * - Location List/Table Styles
+ * - Location Area Section & Grid
+ * - Location Area Card Styles
+ * - Location Form Container (Basic)
+ *
+ * Assumes global styles (style.css), form styles (forms.css), button styles,
+ * and modal styles (modals.css) are already loaded. Modal styles previously
+ * defined here have been removed to rely on modals.css.
+ */
 
-/* Grid or list styles for locations */
-.location-list {
-    /* Or .location-grid if using a grid */
-    margin-top: 1rem;
-}
-
-.location-item {
-    background-color: var(--border-color);
-    padding: 1rem 1.5rem;
-    border-radius: 5px;
-    border: 1px solid var(--border-color);
-    margin-bottom: 1rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.location-info {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
+/* === COLOR PREVIEW SWATCH === */
+/* Small square used to show a location area's color */
 .color-preview {
-    display: inline-block;
-    width: 20px;
-    height: 20px;
-    border-radius: 3px;
-    vertical-align: middle;
-    margin-right: 6px; /* Adjust as needed */
-    border: 1px solid #ccc; /* Or var(--border-color) */
-    /* Background color will be set inline via style attribute */
+  display: inline-block; /* Allow setting dimensions and vertical alignment */
+  width: 20px; /* Swatch width */
+  height: 20px; /* Swatch height */
+  border-radius: 3px; /* Slightly rounded corners */
+  vertical-align: middle; /* Align with middle of text */
+  margin-right: 6px; /* Space to the right of the swatch */
+  border: 1px solid rgba(0,0,0,0.15); /* Subtle border */
+  /* Background color is set dynamically via inline style */
 }
 
-.location-name {
-    font-weight: bold;
+/* === LOCATION LIST/TABLE STYLES === */
+/* Container for the list or table of locations */
+.location-list,
+.location-table-container { /* Added container for potential overflow */
+  margin-top: 1.2rem; /* Space above the list/table */
+  overflow-x: auto; /* Allow horizontal scrolling if needed */
 }
 
-.location-actions .button-group {
-     display: flex;
-     gap: 0.5rem;
+/* Styling for the locations table */
+.location-table {
+  width: 100%; /* Table takes full width */
+  border-collapse: collapse; /* Merge borders */
+  margin-bottom: 1.2rem; /* Space below table */
+  font-size: 0.9rem; /* Base font size */
 }
 
-/* Styles for the 'Add/Edit Location' form if styled inline */
+/* Table header and data cells */
+.location-table th,
+.location-table td {
+  padding: 0.6rem; /* Cell padding */
+  border-bottom: 1px solid var(--border-color); /* Bottom border for rows */
+  text-align: left; /* Align text left */
+  vertical-align: middle; /* Align content vertically */
+}
+
+/* Table header specific styles */
+.location-table th {
+  font-weight: 500; /* Medium weight */
+  background-color: var(--primary-light); /* Header background */
+  color: white; /* Header text color */
+  white-space: nowrap; /* Prevent headers wrapping */
+}
+
+/* Style for action buttons within the table */
+.location-table .location-actions .button-group {
+   display: flex; /* Arrange buttons */
+   gap: 0.5rem; /* Space buttons */
+   justify-content: flex-end; /* Align right */
+}
+
+/* === LOCATION AREA SECTION & GRID === */
+/* Section containing the location areas */
+.location-area-section {
+  margin-top: 1.5rem; /* Space above section */
+  padding-top: 0.8rem; /* Space below separator */
+  border-top: 1px solid var(--border-color); /* Separator line */
+}
+
+/* Grid layout for location area cards */
+.area-grid {
+  display: grid; /* Use grid */
+  /* Responsive columns: fill space, min 180px wide */
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 0.8rem; /* Space between area cards */
+  margin-top: 0.8rem; /* Space above grid */
+}
+
+/* === LOCATION AREA CARD STYLES === */
+/* Individual card for a location area */
+.area-card {
+  background-color: var(--background-alt, white); /* Use alt background */
+  border-radius: 5px; /* Rounded corners */
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  padding: 0.8rem; /* Padding */
+  position: relative; /* For potential absolute elements */
+  border: 1px solid var(--border-color); /* Subtle border */
+  display: flex; /* Use flex */
+  flex-direction: column; /* Stack content vertically */
+}
+
+/* Header section of the area card */
+.area-card-header {
+  display: flex; /* Arrange items */
+  align-items: center; /* Align vertically */
+  justify-content: space-between; /* Push name and actions apart */
+  margin-bottom: 0.4rem; /* Space below header */
+}
+
+/* Location area name */
+.area-name {
+  font-weight: 500; /* Medium weight */
+  font-size: 1rem; /* Font size */
+  color: var(--text-color); /* Standard text color */
+}
+
+/* Container for action buttons within the area card */
+.area-actions {
+  display: flex; /* Arrange buttons */
+  gap: 0.3rem; /* Space between buttons */
+  flex-shrink: 0; /* Prevent shrinking */
+}
+
+/* Color bar indicating the area's color */
+.area-color {
+  height: 20px; /* Height of color bar */
+  border-radius: 3px; /* Rounded corners */
+  margin-bottom: 0.6rem; /* Space below color bar */
+  flex-shrink: 0; /* Prevent shrinking */
+  /* Background color set dynamically via inline style */
+}
+
+/* Text indicating count of locations using this area */
+.area-location-count {
+  font-size: 0.8rem; /* Smaller font */
+  color: var(--text-light); /* Lighter text */
+  margin-top: auto; /* Push to bottom */
+  padding-top: 0.5rem; /* Space above if content is short */
+}
+
+/* === LOCATION FORM CONTAINER === */
+/* Basic container style for the add/edit location/area form */
 .location-form {
-     margin-bottom: 2rem;
-     padding: 1.5rem;
-     background-color: var(--background-alt);
-     border-radius: 5px;
+   margin-bottom: 2rem; /* Space below form */
+   padding: 1.5rem; /* Padding */
+   background-color: var(--background-alt, white); /* Use alt background */
+   border-radius: 5px; /* Rounded corners */
+   border: 1px solid var(--border-color); /* Border */
 }
 
+/* Ensure label for color picker is block */
 .location-form label[for="color"] {
-    display: block;
-    margin-bottom: 0.5rem;
+  display: block;
+  margin-bottom: 0.5rem;
 }
 
-.location-form input[type="color"] {
-    margin-left: 0.5rem;
-    vertical-align: middle;
-}
+/* Adjust color input positioning if needed */
+/* .location-form input[type="color"] {
+  margin-left: 0.5rem;
+  vertical-align: middle;
+} */
 
-
-/* Ensure you move ALL styles from the admin/locations.html <style> tag */
-
-.color-preview {
-    display: inline-block;
-    width: 20px;
-    height: 20px;
-    border-radius: 3px;
-    vertical-align: middle;
-    margin-right: 6px;
-    border: 1px solid #ccc;
-  }
-  
-  .location-list {
-    margin-top: 1.2rem;
-  }
-  
-  .location-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 1.2rem;
-    font-size: 0.9rem;
-  }
-  
-  .location-table th,
-  .location-table td {
-    padding: 0.6rem;
-    border-bottom: 1px solid var(--border-color);
-  }
-  
-  .location-table th {
-    text-align: left;
-    font-weight: 500;
-    background-color: var(--primary-light);
-    color: white;
-  }
-  
-  .location-area-section {
-    margin-top: 1.5rem;
-    padding-top: 0.8rem;
-    border-top: 1px solid var(--border-color);
-  }
-  
-  .area-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 0.8rem;
-    margin-top: 0.8rem;
-  }
-  
-  .area-card {
-    background-color: white;
-    border-radius: 5px;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-    padding: 0.8rem;
-    position: relative;
-  }
-  
-  .area-card-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 0.4rem;
-  }
-  
-  .area-name {
-    font-weight: 500;
-    font-size: 1rem;
-  }
-  
-  .area-actions {
-    display: flex;
-    gap: 0.3rem;
-  }
-  
-  .area-color {
-    height: 20px;
-    border-radius: 3px;
-    margin-bottom: 0.6rem;
-  }
-  
-  .area-location-count {
-    font-size: 0.8rem;
-    color: var(--text-light);
-  }
-  
-  .modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s, visibility 0.3s;
-  }
-  
-  .modal.active {
-    opacity: 1;
-    visibility: visible;
-  }
-  
-  .modal-content {
-    background-color: white;
-    border-radius: 6px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    width: 100%;
-    max-width: 450px;
-    max-height: 90vh;
-    overflow-y: auto;
-  }
-  
-  .modal-header {
-    padding: 1rem;
-    border-bottom: 1px solid var(--border-color);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .modal-header h3 {
-    margin: 0;
-    font-size: 1.1rem;
-  }
-  
-  .modal-body {
-    padding: 1rem;
-  }
-  
-  .modal-footer {
-    padding: 1rem;
-    border-top: 1px solid var(--border-color);
-    display: flex;
-    justify-content: flex-end;
-    gap: 0.6rem;
-  }
+/* Note: Modal styles (.modal, .modal-content, etc.) removed. */
+/* Rely on common styles from modals.css */
 
 /* --- End Location Management Styles --- */

@@ -1,183 +1,141 @@
-/* ============================================================= */
-/* Department Management Styles (Moved from admin/departments.html) */
-/* ============================================================= */
+/**
+ * =============================================================================
+ * Department Management Stylesheet (departments.css)
+ * =============================================================================
+ *
+ * Purpose: Styles the layout and components specific to the admin page for
+ * managing departments, including the department grid/cards and
+ * related forms or modals.
+ *
+ * Organization:
+ * - Department Grid Layout
+ * - Department Card Styles (Header, Color Bar, Content, Name, Code, Actions)
+ * - Department Tag Preview
+ * - Add/Edit Department Form Styles (Basic container)
+ *
+ * Assumes global styles (style.css), form styles (forms.css), button styles,
+ * and modal styles (modals.css) are already loaded. Modal styles previously
+ * defined here have been removed to rely on modals.css.
+ */
 
+/* === DEPARTMENT GRID LAYOUT === */
+/* Grid container for displaying department cards */
 .department-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 1rem;
-    margin-top: 1rem;
+  display: grid; /* Use grid layout */
+  /* Responsive columns: fill space, min 220px wide */
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem; /* Space between cards */
+  margin-top: 1rem; /* Space above grid */
 }
 
+/* === DEPARTMENT CARD STYLES === */
+/* Individual card for displaying department information */
 .department-card {
-    background-color: var(--background-alt);
-    padding: 1rem;
-    border-radius: 5px;
-    border: 1px solid var(--border-color);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+  background-color: var(--background-alt, white); /* Use alt background */
+  border-radius: 6px; /* Rounded corners */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); /* Subtle shadow */
+  overflow: hidden; /* Contain child elements (like color bar) */
+  display: flex; /* Use flexbox for layout */
+  flex-direction: column; /* Stack elements vertically */
+  border: 1px solid var(--border-color); /* Add subtle border */
 }
 
-.department-card h3 {
-    margin-top: 0;
-    margin-bottom: 0.5rem;
-    font-size: 1.1rem;
+/* Top color bar indicating department color */
+.department-color-bar {
+  height: 6px; /* Height of the color bar */
+  /* Background color is set dynamically via inline style */
+  flex-shrink: 0; /* Prevent bar from shrinking */
 }
 
-.department-card p {
-    font-size: 0.9rem;
-    color: var(--text-light);
-    flex-grow: 1; /* Pushes buttons down */
-    margin-bottom: 1rem;
+/* Header section below the color bar (optional, if needed) */
+.department-header {
+  padding: 0.8rem; /* Padding */
+  display: flex; /* Arrange items */
+  justify-content: space-between; /* Push items apart */
+  align-items: center; /* Align vertically */
+  /* border-bottom: 1px solid var(--border-color); */ /* Optional separator */
 }
 
-.department-card .button-group {
-    display: flex;
-    gap: 0.5rem;
-    justify-content: flex-end; /* Aligns buttons to the right */
+/* Main content area of the card */
+.department-content {
+  padding: 0.8rem; /* Padding */
+  flex-grow: 1; /* Allow content to take available space */
+  display: flex; /* Flex for vertical spacing */
+  flex-direction: column; /* Stack content */
 }
 
-/* Add styles for forms or other elements specific to this page */
-/* For example, the 'Add Department' form if it was styled inline */
+/* Department name text */
+.department-name {
+  font-size: 1.1rem; /* Font size */
+  font-weight: 500; /* Medium weight */
+  margin-bottom: 0.4rem; /* Space below */
+  color: var(--text-color); /* Standard text color */
+}
+
+/* Department code (short identifier) */
+.department-code {
+  display: inline-block; /* Allow padding and background */
+  background-color: #f5f5f5; /* Light gray background */
+  padding: 0.2rem 0.4rem; /* Padding */
+  border-radius: 3px; /* Rounded corners */
+  font-size: 0.85rem; /* Font size */
+  font-weight: 500; /* Medium weight */
+  margin-bottom: 0.6rem; /* Space below */
+  font-family: monospace; /* Optional: Monospace font for codes */
+}
+
+/* Department description text */
+.department-description {
+  color: var(--text-light); /* Lighter text */
+  margin-bottom: 0.8rem; /* Space below */
+  font-size: 0.9rem; /* Font size */
+  flex-grow: 1; /* Take remaining space before actions */
+  line-height: 1.3; /* Adjust line height */
+}
+
+/* Container for action buttons at the bottom of the card */
+.department-actions {
+  border-top: 1px solid var(--border-color); /* Separator line */
+  padding: 0.6rem 0.8rem; /* Padding */
+  display: flex; /* Arrange buttons */
+  justify-content: flex-end; /* Align buttons to the right */
+  gap: 0.4rem; /* Space between buttons */
+  margin-top: auto; /* Push actions to bottom */
+}
+
+/* === DEPARTMENT TAG PREVIEW === */
+/* Small preview of how the department tag will look */
+.department-tag-preview {
+  display: inline-block; /* Allow padding/background */
+  padding: 0.15rem 0.4rem; /* Padding */
+  border-radius: 3px; /* Rounded corners */
+  font-size: 0.8rem; /* Font size */
+  font-weight: 500; /* Medium weight */
+  margin-top: 0.4rem; /* Space above */
+  border: 1px solid rgba(0,0,0,0.1); /* Subtle border */
+  /* Background and text color set dynamically via inline style */
+}
+
+/* Label specifically for the tag preview in forms */
+.tag-preview-label {
+  display: block; /* Ensure label is on its own line */
+  margin-bottom: 0.4rem; /* Space below label */
+  font-weight: 500; /* Medium weight */
+  font-size: 0.9rem; /* Font size */
+  color: var(--text-color); /* Standard text color */
+}
+
+/* === ADD/EDIT DEPARTMENT FORM CONTAINER === */
+/* Basic container style for the add/edit form (if not using .form-container) */
 .add-department-form {
-    margin-bottom: 2rem;
-    padding: 1.5rem;
-    background-color: var(--background-alt);
-    border-radius: 5px;
+  margin-bottom: 2rem; /* Space below form */
+  padding: 1.5rem; /* Padding */
+  background-color: var(--background-alt, white); /* Use alt background */
+  border-radius: 5px; /* Rounded corners */
+  border: 1px solid var(--border-color); /* Border */
 }
 
-/* Ensure you move ALL styles from the admin/departments.html <style> tag */
-
-.department-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 1rem;
-    margin-top: 1rem;
-  }
-  
-  .department-card {
-    background-color: white;
-    border-radius: 6px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-    overflow: hidden;
-  }
-  
-  .department-header {
-    padding: 0.8rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .department-color-bar {
-    height: 6px;
-  }
-  
-  .department-content {
-    padding: 0.8rem;
-  }
-  
-  .department-name {
-    font-size: 1.1rem;
-    font-weight: 500;
-    margin-bottom: 0.4rem;
-  }
-  
-  .department-code {
-    display: inline-block;
-    background-color: #f5f5f5;
-    padding: 0.2rem 0.4rem;
-    border-radius: 3px;
-    font-size: 0.85rem;
-    font-weight: 500;
-    margin-bottom: 0.6rem;
-  }
-  
-  .department-description {
-    color: var(--text-light);
-    margin-bottom: 0.8rem;
-    font-size: 0.9rem;
-  }
-  
-  .department-actions {
-    border-top: 1px solid var(--border-color);
-    padding: 0.6rem 0.8rem;
-    display: flex;
-    justify-content: flex-end;
-    gap: 0.4rem;
-  }
-  
-  .department-tag-preview {
-    display: inline-block;
-    padding: 0.15rem 0.4rem;
-    border-radius: 3px;
-    font-size: 0.8rem;
-    font-weight: 500;
-    margin-top: 0.4rem;
-  }
-  
-  .modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s, visibility 0.3s;
-  }
-  
-  .modal.active {
-    opacity: 1;
-    visibility: visible;
-  }
-  
-  .modal-content {
-    background-color: white;
-    border-radius: 6px;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
-    width: 100%;
-    max-width: 480px;
-    max-height: 90vh;
-    overflow-y: auto;
-  }
-  
-  .modal-header {
-    padding: 1rem;
-    border-bottom: 1px solid var(--border-color);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .modal-header h3 {
-    margin: 0;
-    font-size: 1.1rem;
-  }
-  
-  .modal-body {
-    padding: 1rem;
-  }
-  
-  .modal-footer {
-    padding: 1rem;
-    border-top: 1px solid var(--border-color);
-    display: flex;
-    justify-content: flex-end;
-    gap: 0.6rem;
-  }
-  
-  .tag-preview-label {
-    display: block;
-    margin-bottom: 0.4rem;
-    font-weight: 500;
-    font-size: 0.9rem;
-  }
+/* Note: Modal styles (.modal, .modal-content, etc.) removed. */
+/* Rely on common styles from modals.css */
 
 /* --- End Department Management Styles --- */
