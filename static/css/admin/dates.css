@@ -147,6 +147,12 @@ font-size: 0.8rem; /* Smaller font */
 color: var(--text-light); /* Lighter text */
 flex-shrink: 0; /* Prevent shrinking */
 }
+
+/* Empty state messaging */
+.empty-state {
+  color: var(--text-light);
+}
+
 /* Add styles for the icon itself if needed */
 
 /* === ACTION ROW === */

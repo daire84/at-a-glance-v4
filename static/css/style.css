@@ -38,24 +38,33 @@
  */
 
  :root {
-  /* Color Palette Definition */
-  /* Using CSS variables allows for easy theme changes */
-  --primary-color: #5b5b5c;        /* Slate blue-gray (Used for headers, backgrounds) */
-  --primary-light: #514f54;        /* Lighter blue-gray (Used for card headers, secondary buttons) */
-  --primary-dark: #656a6c;         /* Darker blue-gray (Used for counter text in calendar) */
-  --accent-color: #0b5fb3;         /* Muted blue (Used for primary buttons, active tabs, links) */
-  --accent-light: #3e3f3f;         /* Lighter muted blue (Potential use) */
-  --accent-dark: #8a8c8d;          /* Darker muted blue (Used for button hover states) */
-  --text-color: #323233;           /* Dark slate for primary text */
-  --text-light: #7f8182;           /* Medium gray for secondary/hint text */
-  --background-color: #1e1e20;     /* Off-white gray main background */
-  --background-alt: #ffffff;     /* Alternative background (e.g., cards, forms - WAS #f8f9fa) */
-  --border-color: #e0e2e7;         /* Light gray for borders and dividers */
-  --Top-text-color: #e0e2e7;         /* Light gray for header text */
-  --title-text-color: #b20a21;         /* Specific color for h3 titles */
-  --success-color: #7eb58d;        /* Muted green for success states/messages */
-  --error-color: #d64c4c;          /* Muted red for error states/messages */
-  --warning-color: #e6a954;        /* Muted orange for warning states/messages */
+  /* Base colors - adjusted for better contrast in dark mode */
+  --primary-color: #5b5b5c;        /* Slate blue-gray */
+  --primary-light: #514f54;        /* Lighter blue-gray */
+  --primary-dark: #656a6c;         /* Darker blue-gray */
+  --accent-color: #0b5fb3;         /* Muted blue */
+  --accent-light: #3e8fd1;         /* Lightened accent color for better visibility */
+  --accent-dark: #8a8c8d;          /* Darker muted blue */
+  
+  /* Text colors - adjusted for better readability */
+  --text-color: #e0e2e7;           /* Light gray for text on dark backgrounds */
+  --text-light: #a0a4ad;           /* Medium-light gray for secondary text */
+  --text-dark: #323233;            /* Dark text for light backgrounds (future use) */
+  
+  /* Background colors */
+  --background-color: #1e1e20;     /* Dark background (current) */
+  --background-alt: #2a2a2c;       /* Slightly lighter background for contrast */
+  --background-light: #f8f9fa;     /* Light background (future use) */
+  
+  /* Other UI colors */
+  --border-color: #444548;         /* Adjusted darker border for dark theme */
+  --header-text-color: #ffffff;    /* White for text in headers */
+  --title-text-color: #fb203d;     /* Your red title color */
+  
+  /* Status colors */
+  --success-color: #7eb58d;        /* Muted green */
+  --error-color: #d64c4c;          /* Muted red */
+  --warning-color: #e6a954;        /* Muted orange */
 }
 
 /* === CSS RESET === */
@@ -93,7 +102,7 @@ body {
 /* Styles for the main site header */
 .main-header {
   background-color: var(--primary-color); /* Header background */
-  color: var(--Top-text-color); /* Header text color */
+  color: var(--header-text-color); /* Ensure header text is white/light */
   padding: 0.75rem 0;  /* Reduced vertical padding */
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Subtle shadow */
   position: relative; /* Needed for potential absolute positioning inside (e.g., mobile menu) */
@@ -110,12 +119,17 @@ body {
 .main-header h1 {
   font-size: 1.3rem;  /* Reduced title size */
   font-weight: 500; /* Medium weight */
+  color: var(--header-text-color);
 }
 
 /* Main navigation container */
 .main-nav {
   display: flex; /* Use flex for horizontal layout */
   justify-content: flex-end; /* Align nav items to the right */
+}
+
+.main-nav ul li a {
+  color: var(--header-text-color);
 }
 
 /* Navigation list */
@@ -187,38 +201,35 @@ h3 {
 
 /* === ADMIN HEADER & TABS STYLES === */
 /* Header specific to admin sections */
-.admin-header {
-  display: flex; /* Arrange items horizontally */
-  justify-content: space-between; /* Push title and actions apart */
-  align-items: center; /* Align vertically */
-  margin-bottom: 1.5rem;  /* Reduced space below */
+/* Admin header and tabs styling fixes */
+.admin-header h2 {
+  color: var(--header-text-color);
+  font-size: 1.4rem;
+  margin-bottom: 1.2rem;
 }
 
-/* Admin navigation tabs container */
 .admin-tabs {
-  display: flex; /* Arrange tabs horizontally */
-  margin-bottom: 1.5rem; /* Space below tabs */
-  border-bottom: 1px solid var(--border-color); /* Bottom border */
-  overflow-x: auto; /* Allow horizontal scrolling on small screens */
+  display: flex;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+  overflow-x: auto;
 }
 
-/* Individual admin tab link */
 .admin-tabs a {
-  padding: 0.6rem 1rem; /* Padding inside tab */
-  color: var(--Top-text-color); /* Use header text color for contrast */
-  text-decoration: none; /* Remove underline */
-  border-bottom: 2px solid transparent; /* Space for active indicator */
-  font-weight: 500; /* Medium weight */
-  font-size: 0.9rem; /* Tab font size */
-  white-space: nowrap; /* Prevent tabs from wrapping */
-  transition: color 0.2s, border-bottom-color 0.2s; /* Smooth transitions */
+  padding: 0.6rem 1rem;
+  color: var(--header-text-color); /* Changed from --Top-text-color to ensure visibility */
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  font-weight: 500;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  transition: color 0.2s, border-bottom-color 0.2s;
 }
 
-/* Active and hover states for admin tabs */
 .admin-tabs a.active,
 .admin-tabs a:hover {
-  color: var(--accent-color); /* Highlight color */
-  border-bottom-color: var(--accent-color); /* Show active indicator */
+  color: var(--accent-light); /* Changed from --accent-color for better visibility */
+  border-bottom-color: var(--accent-light);
 }
 
 /* Container for action buttons within admin sections */

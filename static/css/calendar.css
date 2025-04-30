@@ -42,6 +42,7 @@
 /* === GLOBAL CONTAINER STYLES === */
 .calendar-container {
   background-color: var(--background-alt, white); /* Use alt background */
+  color: var(--text-color);
   border-radius: 6px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   padding: 1.2rem;
@@ -92,6 +93,7 @@
 .meta-value {
   font-weight: 500;
   font-size: 0.9rem;
+  color: var(--text-color);
 }
 
 .version-badge {
@@ -109,7 +111,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 1.2rem;
-  background-color: #f8f9fa; /* Consider var(--background-alt) or similar */
+  background-color: var(--background-alt); /* Consider var(--background-alt) or similar */
   padding: 0.6rem 0.8rem;
   border-radius: 3px;
   margin-top: 0.8rem;
@@ -125,7 +127,7 @@
 
 .script-label {
   font-weight: 500;
-  color: var(--primary-color);
+  color: var(--accent-light); /* Brighter blue for better visibility */
   font-size: 0.85rem;
 }
 
@@ -165,7 +167,8 @@
 .location-counters,
 .location-areas {
   margin-bottom: 1.2rem;
-  background-color: #f8f9fa; /* Consider var(--background-alt) */
+  background-color: var(--background-alt);
+  border-color: var(--border-color);
   padding: 0.8rem;
   border-radius: 4px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
@@ -176,7 +179,7 @@
 .areas-title {
   font-size: 0.9rem;
   margin-bottom: 0.5rem;
-  color: var(--primary-dark);
+  color: var(--title-text-color);
 }
 
 .counter-grid,
@@ -184,6 +187,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
   gap: 0.7rem 0.5rem;
+  color: var(--text-dark);
 }
 
 .counter-item,
@@ -235,11 +239,14 @@
   border-collapse: collapse;
   border: 1px solid #dee2e6;
   font-size: 0.85rem;
+  border-color: var(--border-color);
 }
 
 .calendar-table th,
 .calendar-table td {
   border: 1px solid #dee2e6;
+  border-color: var(--border-color);
+  color: var(--text-color);
   padding: 0.3rem;
   vertical-align: top;
   text-align: left;
@@ -305,22 +312,22 @@
 }
 
 .calendar-row.weekend {
-  background-color: color-mix(in srgb, #f0f0f0 75%, var(--row-area-color, white)) !important;
+  background-color: color-mix(in srgb, #3c3c3c 75%, var(--row-area-color, var(--background-alt))) !important;
 }
 .calendar-row.prep {
-  background-color: color-mix(in srgb, #e0ffe0 75%, var(--row-area-color, white)) !important;
+  background-color: color-mix(in srgb, #2e3e2e 75%, var(--row-area-color, var(--background-alt))) !important;
 }
 .calendar-row.shoot {
-  background-color: color-mix(in srgb, #e0f0ff 75%, var(--row-area-color, white)) !important;
+  background-color: color-mix(in srgb, #2e3e4e 75%, var(--row-area-color, var(--background-alt))) !important;
 }
 .calendar-row.hiatus {
-  background-color: color-mix(in srgb, #ffe0e0 75%, var(--row-area-color, white)) !important;
+  background-color: color-mix(in srgb, #4e2e2e 75%, var(--row-area-color, var(--background-alt))) !important;
 }
 .calendar-row.holiday {
-  background-color: color-mix(in srgb, #fff0e0 75%, var(--row-area-color, white)) !important;
+  background-color: color-mix(in srgb, #4e3e2e 75%, var(--row-area-color, var(--background-alt))) !important;
 }
 .calendar-row.working-weekend {
-  background-color: color-mix(in srgb, #e0f0e0 75%, var(--row-area-color, white)) !important;
+  background-color: color-mix(in srgb, #2e4e2e 75%, var(--row-area-color, var(--background-alt))) !important;
 }
 
 .calendar-row.working-weekend .date-cell::after {
@@ -357,6 +364,7 @@
 }
 
 .date-display {
+  color: var(--text-color);
   margin-bottom: 0.15rem;
   font-size: 0.75rem;
 }
@@ -366,9 +374,15 @@
   color: var(--text-light);
 }
 
+.date-description {
+  color: var(--text-light);
+  font-size: 0.7rem;
+}
+
 .day-cell {
   font-size: 0.9rem;
   font-weight: 600;
+  color: var(--text-light);
 }
 
 .main-unit-cell {
@@ -376,6 +390,7 @@
   font-size: 0.8rem; /* Slightly smaller for more content */
   white-space: pre-line;
   line-height: 1.3; /* Slightly increased line height */
+  color: var(--text-color);
 }
 
 .extras-cell,
@@ -394,6 +409,7 @@
 .location-name {
   font-weight: 500;
   font-size: 0.8rem;
+  color: var(--text-color);
 }
 
 .location-area {
@@ -431,7 +447,7 @@
   text-transform: uppercase;
   box-shadow: 0 1px 1px rgba(0,0,0,0.05);
   margin: 0;
-  border: 1px solid rgba(0,0,0,0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   line-height: 1;
   /* Background/color set dynamically */
 }
@@ -486,7 +502,8 @@
 
 /* === FILTER PANEL STYLES === */
 .filter-panel {
-  background-color: #f8f9fa; /* Consider var(--background-alt) */
+  background-color: var(--background-alt);
+  border-color: var(--border-color);
   border-radius: 6px;
   padding: 0.8rem;
   margin-bottom: 1rem;
@@ -497,7 +514,7 @@
   margin-top: 0;
   margin-bottom: 0.8rem;
   font-size: 1rem;
-  color: var(--primary-color);
+  color: var(--title-text-color);
 }
 
 .filter-section {
@@ -531,6 +548,7 @@
 .toggle-label {
   /* margin-left: 0.4rem; *//* Removed as checkbox now has margin */
   font-size: 0.85rem;
+  color: var(--text-color);
 }
 
 .stats-row {
@@ -541,6 +559,8 @@
   margin-top: 0.8rem; /* Add spacing above stats */
   padding-top: 0.8rem; /* Add padding above stats */
   border-top: 1px solid var(--border-color); /* Separator */
+  border-top-color: var(--border-color);
+
 }
 
 .filter-actions {
@@ -561,10 +581,15 @@
   .calendar-container {
     box-shadow: none; padding: 0.5cm; width: 100%; margin: 0;
     border: none; /* Remove border for print */
+    background-color: var(--background-alt);
+    color: var(--text-color);
   }
+  
   .project-info-header {
     margin-bottom: 0.3cm; padding-bottom: 0.2cm; border-bottom: 1pt solid #ccc;
     page-break-inside: avoid; display: block; width: 100%;
+    background-color: var(--background-alt);
+    border-bottom-color: var(--border-color);
   }
   .project-header-top {
     display: flex !important; width: 100%; flex-direction: row !important;
@@ -573,6 +598,7 @@
   }
   .project-title {
     font-size: 12pt; font-weight: bold; color: var(--primary-color) !important;
+    color: var(--title-text-color);
   }
   .project-meta {
     display: flex !important; flex-direction: row !important; flex-wrap: wrap !important;
@@ -669,3 +695,4 @@
    .calendar-table .departments-col { width: 90px; }
    .calendar-table .notes-col { width: 100px; }
 } /* End @media (max-width: 768px) */
+

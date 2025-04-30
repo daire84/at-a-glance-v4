@@ -40,6 +40,25 @@
   overflow-x: auto; /* Allow horizontal scrolling if needed */
 }
 
+/* Content container */
+.content-container {
+  color: var(--text-color);
+}
+
+/* Main headings */
+.location-list h3, 
+.location-area-section h3 {
+  color: var(--title-text-color);
+  margin-bottom: 0.8rem;
+}
+
+/* Descriptive text */
+.location-list p, 
+.location-area-section p {
+  color: var(--text-color);
+  margin-bottom: 1rem;
+}
+
 /* Styling for the locations table */
 .location-table {
   width: 100%; /* Table takes full width */
