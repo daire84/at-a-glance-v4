@@ -37,36 +37,69 @@
  * - Media Queries for responsiveness and print.
  */
 
- :root {
-  /* Base colors - adjusted for better contrast in dark mode */
+/* Theme CSS Variables - Replace your current :root variables in static/css/style.css */
+
+:root {
+  /* Base Theme - Dark Mode by Default */
+  
+  /* Base colors */
   --primary-color: #5b5b5c;        /* Slate blue-gray */
   --primary-light: #514f54;        /* Lighter blue-gray */
   --primary-dark: #656a6c;         /* Darker blue-gray */
   --accent-color: #0b5fb3;         /* Muted blue */
-  --accent-light: #3e8fd1;         /* Lightened accent color for better visibility */
+  --accent-light: #3e8fd1;         /* Lightened accent */
   --accent-dark: #8a8c8d;          /* Darker muted blue */
   
-  /* Text colors - adjusted for better readability */
-  --text-color: #e0e2e7;           /* Light gray for text on dark backgrounds */
+  /* Text colors */
+  --text-color: #e0e2e7;           /* Light gray text */
   --text-light: #a0a4ad;           /* Medium-light gray for secondary text */
-  --text-dark: #323233;            /* Dark text for light backgrounds (future use) */
+  --text-dark: #323233;            /* Dark text for special cases */
   
   /* Background colors */
-  --background-color: #1e1e20;     /* Dark background (current) */
-  --background-alt: #2a2a2c;       /* Slightly lighter background for contrast */
-  --background-light: #f8f9fa;     /* Light background (future use) */
+  --background-color: #1e1e20;     /* Dark background */
+  --background-alt: #2a2a2c;       /* Slightly lighter background */
   
   /* Other UI colors */
-  --border-color: #444548;         /* Adjusted darker border for dark theme */
-  --header-text-color: #ffffff;    /* White for text in headers */
-  --title-text-color: #fb203d;     /* Your red title color */
-  
+  --border-color: #444548;         /* Dark theme borders */
+  --header-text-color: #ffffff;    /* White header text */
+  --title-text-color: #fb203d;     /* Red title color */
+  --page-title-color: white;       /* Will change with theme */
+
   /* Status colors */
   --success-color: #7eb58d;        /* Muted green */
   --error-color: #d64c4c;          /* Muted red */
   --warning-color: #e6a954;        /* Muted orange */
 }
 
+/* Light Theme Variables */
+body.light-theme {
+  /* Base colors */
+  --primary-color: #546e7a;        /* Blue-gray */
+  --primary-light: #78909c;        /* Lighter blue-gray */
+  --primary-dark: #37474f;         /* Darker blue-gray */
+  --accent-color: #29b6f6;         /* Bright blue */
+  --accent-light: #4fc3f7;         /* Lightened accent */
+  --accent-dark: #0288d1;          /* Darker blue */
+  
+  /* Text colors */
+  --text-color: #37474f;           /* Dark text */
+  --text-light: #546e7a;           /* Medium dark for secondary text */
+  --text-dark: #263238;            /* Very dark text for emphasis */
+  
+  /* Background colors */
+  --background-color: #f5f7f8;     /* Light background */
+  --background-alt: #ffffff;       /* White background */
+  
+  /* Other UI colors */
+  --border-color: #cfd8dc;         /* Light borders */
+  --header-text-color: #ffffff;    /* Keep white text for headers */
+  --title-text-color: #fb203d;     /* Keep red title color */
+  
+  /* Status colors - slightly muted for light theme */
+  --success-color: #4caf50;        /* Green */
+  --error-color: #f44336;          /* Red */
+  --warning-color: #ff9800;        /* Orange */
+}
 /* === CSS RESET === */
 /* Basic reset to remove default browser styling inconsistencies */
 *, *::before, *::after {
@@ -203,7 +236,7 @@ h3 {
 /* Header specific to admin sections */
 /* Admin header and tabs styling fixes */
 .admin-header h2 {
-  color: var(--header-text-color);
+  color: var(--page-title-color);
   font-size: 1.4rem;
   margin-bottom: 1.2rem;
 }

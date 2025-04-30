@@ -41,11 +41,18 @@
                     {% else %}
                         <li><a href="/login">Login</a></li>
                     {% endif %}
+                    
+                    <li>
+                      <button id="theme-toggle" class="theme-toggle-btn">
+                        <span class="theme-icon">☀️</span>
+                        <span class="theme-text">Light Mode</span>
+                      </button>
+                    </li>
                 </ul>
             </nav>
         </div>
     </header>
-    
+
     {% if get_flashed_messages() %}
     <div class="flash-messages">
         <div class="container">
@@ -111,5 +118,6 @@
         });
     </script>
     {% block scripts %}{% endblock %}
+    <script src="/static/js/theme-toggle.js"></script>
 </body>
 </html>

@@ -253,9 +253,10 @@
   font-size: 0.75rem;
 }
 
+/* Update table header styles to use variables */
 .calendar-table th {
-  background-color: var(--primary-color);
-  color: white;
+  background-color: var(--table-header-bg, var(--primary-color));
+  color: var(--table-header-color, white);
   font-weight: 500;
   position: sticky;
   top: 0;
@@ -308,26 +309,27 @@
 }
 
 .calendar-row:hover {
-  background-color: color-mix(in srgb, var(--row-area-color) 25%, #f5f5f5); /* Mix with light gray on hover */
+  background-color: color-mix(in srgb, var(--row-area-color) 25%, var(--background-color));
 }
 
+/* Update your existing row background color definitions */
 .calendar-row.weekend {
-  background-color: color-mix(in srgb, #3c3c3c 75%, var(--row-area-color, var(--background-alt))) !important;
+  background-color: var(--weekend-color, color-mix(in srgb, #3c3c3c 75%, var(--row-area-color, var(--background-alt))));
 }
 .calendar-row.prep {
-  background-color: color-mix(in srgb, #2e3e2e 75%, var(--row-area-color, var(--background-alt))) !important;
+  background-color: var(--prep-color, color-mix(in srgb, #2e3e2e 75%, var(--row-area-color, var(--background-alt))));
 }
 .calendar-row.shoot {
-  background-color: color-mix(in srgb, #2e3e4e 75%, var(--row-area-color, var(--background-alt))) !important;
+  background-color: var(--shoot-color, color-mix(in srgb, #2e3e4e 75%, var(--row-area-color, var(--background-alt))));
 }
 .calendar-row.hiatus {
-  background-color: color-mix(in srgb, #4e2e2e 75%, var(--row-area-color, var(--background-alt))) !important;
+  background-color: var(--hiatus-color, color-mix(in srgb, #4e2e2e 75%, var(--row-area-color, var(--background-alt))));
 }
 .calendar-row.holiday {
-  background-color: color-mix(in srgb, #4e3e2e 75%, var(--row-area-color, var(--background-alt))) !important;
+  background-color: var(--holiday-color, color-mix(in srgb, #4e3e2e 75%, var(--row-area-color, var(--background-alt))));
 }
 .calendar-row.working-weekend {
-  background-color: color-mix(in srgb, #2e4e2e 75%, var(--row-area-color, var(--background-alt))) !important;
+  background-color: var(--working-weekend-color, color-mix(in srgb, #2e4e2e 75%, var(--row-area-color, var(--background-alt))));
 }
 
 .calendar-row.working-weekend .date-cell::after {
@@ -573,105 +575,272 @@
 /* ============================================= */
 /* === PRINT STYLES ============================ */
 /* ============================================= */
+/* Print Styles - Replace the @media print section in static/css/calendar.css */
+
 @media print {
+  /* Force light theme colors for printing regardless of active theme */
   body {
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
+    color: #323233 !important; /* Dark text */
+    background-color: white !important;
   }
+  
+  /* Reset all colors to light theme for printing */
   .calendar-container {
-    box-shadow: none; padding: 0.5cm; width: 100%; margin: 0;
-    border: none; /* Remove border for print */
-    background-color: var(--background-alt);
-    color: var(--text-color);
+    box-shadow: none; 
+    padding: 0.5cm; 
+    width: 100%; 
+    margin: 0;
+    border: none; 
+    background-color: white !important;
+    color: #323233 !important;
   }
   
   .project-info-header {
-    margin-bottom: 0.3cm; padding-bottom: 0.2cm; border-bottom: 1pt solid #ccc;
-    page-break-inside: avoid; display: block; width: 100%;
-    background-color: var(--background-alt);
-    border-bottom-color: var(--border-color);
+    margin-bottom: 0.3cm; 
+    padding-bottom: 0.2cm; 
+    border-bottom: 1pt solid #ccc;
+    page-break-inside: avoid; 
+    display: block; 
+    width: 100%;
+    background-color: white !important;
+    border-bottom-color: #cfd8dc !important;
   }
+  
   .project-header-top {
-    display: flex !important; width: 100%; flex-direction: row !important;
-    justify-content: space-between !important; align-items: center !important;
+    display: flex !important; 
+    width: 100%; 
+    flex-direction: row !important;
+    justify-content: space-between !important; 
+    align-items: center !important;
     margin-bottom: 0.2cm;
   }
+  
   .project-title {
-    font-size: 12pt; font-weight: bold; color: var(--primary-color) !important;
-    color: var(--title-text-color);
+    font-size: 12pt; 
+    font-weight: bold; 
+    color: #546e7a !important; /* Blue-gray */
   }
+  
   .project-meta {
-    display: flex !important; flex-direction: row !important; flex-wrap: wrap !important;
-    gap: 0.3cm !important; margin-bottom: 0.2cm !important;
-    justify-content: space-between !important; width: 100% !important;
+    display: flex !important; 
+    flex-direction: row !important; 
+    flex-wrap: wrap !important;
+    gap: 0.3cm !important; 
+    margin-bottom: 0.2cm !important;
+    justify-content: space-between !important; 
+    width: 100% !important;
   }
+  
   .meta-group {
-    display: flex !important; flex-direction: column !important;
-    min-width: 2cm !important; flex: 0 0 auto !important;
+    display: flex !important; 
+    flex-direction: column !important;
+    min-width: 2cm !important; 
+    flex: 0 0 auto !important;
   }
-  .meta-label { font-size: 6pt; margin-bottom: 1pt; color: #666 !important; }
-  .meta-value { font-size: 8pt; font-weight: 500; }
+  
+  .meta-label { 
+    font-size: 6pt; 
+    margin-bottom: 1pt; 
+    color: #666 !important; 
+  }
+  
+  .meta-value { 
+    font-size: 8pt; 
+    font-weight: 500; 
+    color: #333 !important;
+  }
 
+  /* Light-themed information blocks */
   .script-info,
   .department-counters,
   .location-counters,
   .location-areas {
-      border: 0.5pt solid #ddd !important; /* Add subtle border */
-      background-color: #f8f9fa !important;
-      padding: 0.15cm !important;
-      margin-bottom: 0.2cm !important;
-      page-break-inside: avoid !important;
-      width: 100% !important;
+    border: 0.5pt solid #ddd !important; 
+    background-color: #f8f9fa !important;
+    padding: 0.15cm !important;
+    margin-bottom: 0.2cm !important;
+    page-break-inside: avoid !important;
+    width: 100% !important;
+    color: #333 !important;
   }
+  
   .script-info {
-      display: flex !important; flex-direction: row !important; flex-wrap: wrap !important;
-      gap: 0.3cm !important; border-radius: 2pt !important; margin-top: 0.15cm !important;
-      justify-content: space-between !important;
+    display: flex !important; 
+    flex-direction: row !important; 
+    flex-wrap: wrap !important;
+    gap: 0.3cm !important; 
+    border-radius: 2pt !important; 
+    margin-top: 0.15cm !important;
+    justify-content: space-between !important;
+    background-color: var(--script-info-bg, var(--background-alt));
+    border: 1px solid var(--script-info-border, var(--border-color));
   }
-  .script-item { display: flex !important; align-items: center !important; margin-right: 0.2cm !important; flex: 0 0 auto !important;}
-  .script-label { font-weight: 500 !important; color: var(--primary-color) !important; font-size: 6pt !important;}
-  .script-value { font-size: 7pt !important; }
-  .script-color-badge { padding: 1pt 3pt !important; border-radius: 2pt !important; font-size: 6pt !important; border: 0.5pt solid rgba(0, 0, 0, 0.1) !important; }
-
-  .counter-title, .areas-title { font-size: 8pt !important; margin-bottom: 0.1cm !important; color: var(--primary-dark) !important;}
-  .counter-grid, .area-tags {
-    display: grid !important; grid-template-columns: repeat(8, 1fr) !important;
-    grid-template-rows: auto !important; gap: 0.1cm !important; width: 100% !important;
+  
+  .script-item { 
+    display: flex !important; 
+    align-items: center !important; 
+    margin-right: 0.2cm !important; 
+    flex: 0 0 auto !important;
   }
-  .counter-item, .area-tag {
-    min-height: auto !important; padding: 0.05cm 0.1cm !important; border-radius: 2pt !important;
-    display: flex !important; flex-direction: column !important; margin: 0 !important;
-    border: 0.5pt solid #eee !important; /* Add border to items */
+  
+  .script-label { 
+    font-weight: 500 !important; 
+    color: #546e7a !important; 
+    font-size: 6pt !important;
   }
-  .counter-label { font-size: 5pt !important; margin-bottom: 1pt !important; white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important;}
-  .counter-value, .area-count { font-size: 8pt !important; font-weight: 600 !important; }
+  
+  .script-value { 
+    font-size: 7pt !important; 
+    color: #333 !important;
+  }
+  
+  .counter-title, 
+  .areas-title { 
+    font-size: 8pt !important; 
+    margin-bottom: 0.1cm !important; 
+    color: #546e7a !important;
+  }
+  
+  .counter-grid, 
+  .area-tags {
+    display: grid !important; 
+    grid-template-columns: repeat(8, 1fr) !important;
+    grid-template-rows: auto !important; 
+    gap: 0.1cm !important; 
+    width: 100% !important;
+  }
+  
+  .counter-item, 
+  .area-tag {
+    min-height: auto !important; 
+    padding: 0.05cm 0.1cm !important; 
+    border-radius: 2pt !important;
+    display: flex !important; 
+    flex-direction: column !important; 
+    margin: 0 !important;
+    border: 0.5pt solid #eee !important; 
+    color: #333 !important;
+  }
+  
+  .counter-label { 
+    font-size: 5pt !important; 
+    margin-bottom: 1pt !important; 
+    white-space: nowrap !important; 
+    overflow: hidden !important; 
+    text-overflow: ellipsis !important;
+    color: #555 !important;
+  }
+  
+  .counter-value, 
+  .area-count { 
+    font-size: 8pt !important; 
+    font-weight: 600 !important; 
+    color: #333 !important;
+  }
 
-  .calendar-table-wrapper { overflow: visible; } /* Disable scroll wrapper */
-  .calendar-table { font-size: 8pt; width: 100% !important; page-break-inside: auto; }
-  .calendar-table th, .calendar-table td { padding: 2pt; font-size: 7pt; border: 0.5pt solid #dee2e6; }
-  .calendar-table th { background-color: var(--primary-color) !important; color: white !important; }
-  .departments-cell { gap: 1pt; max-height: none; overflow: visible; }
-  .department-tag { padding: 0.5pt 2pt; font-size: 6pt; border: 0.25pt solid rgba(0,0,0,0.1) !important; }
-  .main-unit-cell, .location-name { font-size: 7pt !important; }
-
-  @page { size: landscape; margin: 0.5cm; }
-  .calendar-row { page-break-inside: avoid; }
-  .calendar-table thead { display: table-header-group; }
-
-  .calendar-row.has-area-color { background-color: color-mix(in srgb, var(--row-area-color) 15%, white) !important; }
-  .calendar-row.weekend { background-color: color-mix(in srgb, #f0f0f0 75%, var(--row-area-color, white)) !important; }
-  .calendar-row.prep { background-color: color-mix(in srgb, #e0ffe0 75%, var(--row-area-color, white)) !important; }
-  .calendar-row.shoot { background-color: color-mix(in srgb, #e0f0ff 75%, var(--row-area-color, white)) !important; }
-  .calendar-row.hiatus { background-color: color-mix(in srgb, #ffe0e0 75%, var(--row-area-color, white)) !important; }
-  .calendar-row.holiday { background-color: color-mix(in srgb, #fff0e0 75%, var(--row-area-color, white)) !important; }
-  .calendar-row.working-weekend { background-color: color-mix(in srgb, #e0f0e0 75%, var(--row-area-color, white)) !important; }
-  .calendar-row.working-weekend .date-cell::after { display: none; } /* Hide "Working" badge in print */
-
-  /* Hide non-print elements */
-  .calendar-actions, .filter-panel, .loading-overlay, .admin-calendar .calendar-row {
+  /* Calendar table styles */
+  .calendar-table-wrapper { 
+    overflow: visible; 
+  }
+  
+  .calendar-table { 
+    font-size: 8pt; 
+    width: 100% !important; 
+    page-break-inside: auto; 
+    border-color: #ddd !important;
+  }
+  
+  .calendar-table th, 
+  .calendar-table td { 
+    padding: 2pt; 
+    font-size: 7pt; 
+    border: 0.5pt solid #ddd !important;
+    color: #333 !important;
+  }
+  
+  .calendar-table th { 
+    background-color: #546e7a !important; 
+    color: white !important; 
+  }
+  
+  /* Row colors for light theme printing */
+  .calendar-row { 
+    background-color: white !important; 
+  }
+  
+  .calendar-row.has-area-color { 
+    background-color: color-mix(in srgb, var(--row-area-color) 15%, white) !important; 
+  }
+  
+  .calendar-row.weekend { 
+    background-color: #f0f0f0 !important; 
+  }
+  
+  .calendar-row.prep { 
+    background-color: #e0ffe0 !important; 
+  }
+  
+  .calendar-row.shoot { 
+    background-color: #e0f0ff !important; 
+  }
+  
+  .calendar-row.hiatus { 
+    background-color: #ffe0e0 !important; 
+  }
+  
+  .calendar-row.holiday { 
+    background-color: #fff0e0 !important; 
+  }
+  
+  .calendar-row.working-weekend { 
+    background-color: #e0f0e0 !important; 
+  }
+  
+  /* Fix department tags for printing */
+  .departments-cell { 
+    gap: 1pt; 
+    max-height: none; 
+    overflow: visible; 
+  }
+  
+  .department-tag { 
+    padding: 0.5pt 2pt; 
+    font-size: 6pt; 
+    border: 0.25pt solid rgba(0,0,0,0.1) !important; 
+  }
+  
+  .main-unit-cell, 
+  .location-name { 
+    font-size: 7pt !important; 
+    color: #333 !important;
+  }
+  
+  /* Hide various UI elements in print */
+  .calendar-actions, 
+  .filter-panel, 
+  .loading-overlay, 
+  .admin-calendar .calendar-row,
+  .theme-toggle-btn {
     display: none !important;
   }
-} /* End @media print */
+  
+  /* Page layout settings */
+  @page { 
+    size: landscape; 
+    margin: 0.5cm; 
+  }
+  
+  .calendar-row { 
+    page-break-inside: avoid; 
+  }
+  
+  .calendar-table thead { 
+    display: table-header-group; 
+  }
+}
+/* End @media print */
 
 /* ============================================= */
 /* === RESPONSIVE STYLES ======================= */
