@@ -575,7 +575,8 @@
 /* ============================================= */
 /* === PRINT STYLES ============================ */
 /* ============================================= */
-/* Print Styles - Replace the @media print section in static/css/calendar.css */
+
+/* Updated @media print section with refined styles */
 
 @media print {
   /* Force light theme colors for printing regardless of active theme */
@@ -666,43 +667,42 @@
     color: #333 !important;
   }
   
-  .script-info {
-    display: flex !important; 
-    flex-direction: row !important; 
-    flex-wrap: wrap !important;
-    gap: 0.3cm !important; 
-    border-radius: 2pt !important; 
-    margin-top: 0.15cm !important;
-    justify-content: space-between !important;
-    background-color: var(--script-info-bg, var(--background-alt));
-    border: 1px solid var(--script-info-border, var(--border-color));
-  }
-  
   .script-item { 
     display: flex !important; 
-    align-items: center !important; 
+    align-items: center !important; /* Ensure vertical alignment */
     margin-right: 0.2cm !important; 
     flex: 0 0 auto !important;
+    line-height: 1 !important; /* Consistent line height */
   }
   
   .script-label { 
     font-weight: 500 !important; 
-    color: #546e7a !important; 
-    font-size: 6pt !important;
+    color: #165dd8 !important; 
+    font-size: 8pt !important;
+    margin-bottom: 0 !important; /* Remove any bottom margin */
+    padding: 0 !important; /* Remove any padding */
   }
   
   .script-value { 
-    font-size: 7pt !important; 
-    color: #333 !important;
+    font-size: 8pt !important; 
+    color: #000000 !important;
+    font-weight: 500 !important;
+    margin-bottom: 0 !important; /* Remove any bottom margin */
+    padding: 0 !important; /* Remove any padding */
+    vertical-align: baseline !important; /* Align text baselines */
   }
   
+  /* Uniform title sizing for all counter sections */
   .counter-title, 
-  .areas-title { 
-    font-size: 8pt !important; 
+  .areas-title,
+  .location-counters h4 { 
+    font-size: 10pt !important; 
     margin-bottom: 0.1cm !important; 
     color: #546e7a !important;
+    font-weight: 500 !important;
   }
   
+  /* Fix counter grid layout and make uniform */
   .counter-grid, 
   .area-tags {
     display: grid !important; 
@@ -712,32 +712,39 @@
     width: 100% !important;
   }
   
+  /* Better counter item styling to match viewer */
   .counter-item, 
   .area-tag {
-    min-height: auto !important; 
-    padding: 0.05cm 0.1cm !important; 
+    min-height: 2rem !important;
+    padding: 0.1cm !important; 
     border-radius: 2pt !important;
     display: flex !important; 
     flex-direction: column !important; 
     margin: 0 !important;
-    border: 0.5pt solid #eee !important; 
+    border: 0.5pt solid rgba(0,0,0,0.1) !important; 
     color: #333 !important;
+    text-align: center !important;
+    align-items: center !important;
+    justify-content: center !important;
   }
   
+  /* Fixed sizes for counter labels */
   .counter-label { 
-    font-size: 5pt !important; 
-    margin-bottom: 1pt !important; 
+    font-size: 7pt !important; 
+    margin-bottom: 3pt !important; 
     white-space: nowrap !important; 
     overflow: hidden !important; 
     text-overflow: ellipsis !important;
-    color: #555 !important;
+    color: #333 !important;
+    font-weight: 500 !important;
   }
   
+  /* Fixed sizes for counter values */
   .counter-value, 
   .area-count { 
-    font-size: 8pt !important; 
+    font-size: 10pt !important; 
     font-weight: 600 !important; 
-    color: #333 !important;
+    color: #000 !important;
   }
 
   /* Calendar table styles */
@@ -746,24 +753,48 @@
   }
   
   .calendar-table { 
-    font-size: 8pt; 
+    font-size: 9pt; 
     width: 100% !important; 
     page-break-inside: auto; 
     border-color: #ddd !important;
   }
   
+  /* Fix cell padding and ensure all columns are visible */
   .calendar-table th, 
   .calendar-table td { 
-    padding: 2pt; 
-    font-size: 7pt; 
+    padding: 3pt; 
+    font-size: 8pt; 
     border: 0.5pt solid #ddd !important;
     color: #333 !important;
+    display: table-cell !important; /* Ensure all cells are visible */
   }
   
+  /* Ensure column headers are visible and styled correctly */
   .calendar-table th { 
     background-color: #546e7a !important; 
     color: white !important; 
+    font-weight: 500 !important;
+    text-align: left !important;
+    padding: 5pt 3pt !important;
   }
+  
+  /* Ensure the extras and featured extras columns are visible */
+  .extras-col, .featured-extras-col,
+  .extras-cell, .featured-extras-cell {
+    display: table-cell !important;
+    text-align: center !important;
+  }
+  
+  /* Fix column widths to match viewer */
+  .date-col { width: 80px !important; }
+  .day-col { width: 30px !important; text-align: center !important; }
+  .main-unit-col { width: 170px !important; }
+  .extras-col, .featured-extras-col { width: 25px !important; text-align: center !important; }
+  .location-col { width: 110px !important; }
+  .sequence-col { width: 70px !important; }
+  .departments-col { width: 110px !important; }
+  .notes-col { width: 160px !important; }
+  .second-unit-col { width: 90px !important; }
   
   /* Row colors for light theme printing */
   .calendar-row { 
@@ -798,23 +829,100 @@
     background-color: #e0f0e0 !important; 
   }
   
+  /* Fixed date cell display - Make date visible and properly formatted */
+  .date-cell {
+    display: flex !important;
+    flex-direction: column !important;
+    padding: 2pt !important;
+  }
+  
+  .date-display {
+    color: #000 !important;
+    font-weight: 500 !important;
+    font-size: 8pt !important;
+    margin-bottom: 2pt !important;
+    display: block !important;
+  }
+  
+  .date-day {
+    color: #444 !important;
+    font-size: 7pt !important;
+    display: block !important;
+  }
+  
+  /* Fixed day cell formatting - Center the day number properly */
+  .day-cell {
+    font-size: 10pt !important;
+    font-weight: 600 !important;
+    color: #000 !important;
+    text-align: center !important;
+    vertical-align: middle !important;
+  }
+  
+  /* Improved main unit cell formatting */
+  .main-unit-cell {
+    font-weight: 500 !important;
+    font-size: 8pt !important;
+    line-height: 1.3 !important;
+    color: #000 !important;
+  }
+  
+  /* Fixed extras cell formatting */
+  .extras-cell,
+  .featured-extras-cell {
+    font-weight: 500 !important;
+    text-align: center !important;
+    font-size: 8pt !important;
+    color: #000 !important;
+  }
+  
+  /* Fixed location cell styling */
+  .location-cell {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 2pt !important;
+  }
+  
+  .location-name {
+    font-weight: 500 !important;
+    font-size: 8pt !important;
+    color: #000 !important;
+    display: block !important;
+  }
+  
+  .location-area {
+    font-size: 7pt !important;
+    color: #333 !important;
+    font-style: italic !important;
+    display: block !important;
+  }
+  
   /* Fix department tags for printing */
   .departments-cell { 
-    gap: 1pt; 
-    max-height: none; 
-    overflow: visible; 
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 2pt !important; 
+    max-height: none !important; 
+    overflow: visible !important;
+    padding: 2pt !important;
   }
   
   .department-tag { 
-    padding: 0.5pt 2pt; 
-    font-size: 6pt; 
-    border: 0.25pt solid rgba(0,0,0,0.1) !important; 
+    padding: 1pt 3pt !important; 
+    font-size: 6pt !important;
+    font-weight: 600 !important;
+    border: 0.5pt solid rgba(0,0,0,0.2) !important;
+    border-radius: 2pt !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
   }
   
-  .main-unit-cell, 
-  .location-name { 
-    font-size: 7pt !important; 
-    color: #333 !important;
+  /* Better notes cell styling */
+  .notes-cell {
+    font-size: 7pt !important;
+    line-height: 1.3 !important;
+    color: #000 !important;
   }
   
   /* Hide various UI elements in print */
