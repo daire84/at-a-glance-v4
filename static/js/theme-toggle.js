@@ -50,12 +50,12 @@ function applyTheme(theme) {
         document.documentElement.style.setProperty('--text-light', '#555555');
         
         // Calendar row colors for light theme
-        document.documentElement.style.setProperty('--weekend-color', '#f0f0f0');
-        document.documentElement.style.setProperty('--prep-color', '#e0ffe0');
-        document.documentElement.style.setProperty('--shoot-color', '#e0f0ff');
-        document.documentElement.style.setProperty('--hiatus-color', '#ffe0e0');
-        document.documentElement.style.setProperty('--holiday-color', '#fff0e0');
-        document.documentElement.style.setProperty('--working-weekend-color', '#e0f0e0');
+        document.documentElement.style.setProperty('--weekend-color', 'color-mix(in srgb, #f0f0f0 75%, var(--row-area-color, transparent))');
+        document.documentElement.style.setProperty('--prep-color', 'color-mix(in srgb, #e0ffe0 75%, var(--row-area-color, transparent))');
+        document.documentElement.style.setProperty('--shoot-color', 'color-mix(in srgb, #e0f0ff 75%, var(--row-area-color, transparent))');
+        document.documentElement.style.setProperty('--hiatus-color', 'color-mix(in srgb, #ffe0e0 75%, var(--row-area-color, transparent))');
+        document.documentElement.style.setProperty('--holiday-color', 'color-mix(in srgb, #fff0e0 75%, var(--row-area-color, transparent))');
+        document.documentElement.style.setProperty('--working-weekend-color', 'color-mix(in srgb, #e0f0e0 75%, var(--row-area-color, transparent))');
         
         // Table header colors
         document.documentElement.style.setProperty('--table-header-bg', '#546e7a');
@@ -88,6 +88,17 @@ function applyTheme(theme) {
         document.documentElement.style.setProperty('--script-info-bg', 'var(--background-alt)');
         document.documentElement.style.setProperty('--script-info-border', 'var(--border-color)');
     }
+    
+    // Re-apply location area colors after theme change
+    setTimeout(function() {
+        if (typeof window.applyLocationAreaColors === 'function') {
+            const areas = window.getLocationAreas ? window.getLocationAreas() : {};
+            window.applyLocationAreaColors(areas);
+        } else if (typeof applyLocationAreaColors === 'function') {
+            const areas = typeof getLocationAreas === 'function' ? getLocationAreas() : {};
+            applyLocationAreaColors(areas);
+        }
+    }, 10);
 }
 
 /**

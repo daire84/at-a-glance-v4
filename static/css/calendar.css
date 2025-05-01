@@ -360,6 +360,26 @@
   display: none;
 }
 
+/* Make location area colors more specific */
+.calendar-row.has-area-color.weekend,
+.calendar-row.has-area-color.prep,
+.calendar-row.has-area-color.shoot,
+.calendar-row.has-area-color.hiatus,
+.calendar-row.has-area-color.holiday,
+.calendar-row.has-area-color.working-weekend {
+  background-color: color-mix(in srgb, var(--row-area-color) 30%, var(--background-alt));
+}
+
+/* Override the standard row colors when an area is present */
+body .calendar-row.has-area-color.weekend,
+body .calendar-row.has-area-color.prep,
+body .calendar-row.has-area-color.shoot,
+body .calendar-row.has-area-color.hiatus,
+body .calendar-row.has-area-color.holiday,
+body .calendar-row.has-area-color.working-weekend {
+  background-color: color-mix(in srgb, var(--row-area-color) 40%, var(--weekend-color));
+}
+
 /* === CELL CONTENT STYLING - COMPACT === */
 .date-cell {
   font-weight: 500;

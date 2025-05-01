@@ -35,6 +35,9 @@ function getLocationAreas() {
   return areas;
 }
 
+// Make available globally
+window.getLocationAreas = getLocationAreas;
+
 /**
  * Apply location area colors to rows
  */
@@ -67,6 +70,9 @@ function applyLocationAreaColors(areas) {
     }
   });
 }
+
+// Make available globally
+window.applyLocationAreaColors = applyLocationAreaColors;
 
 /**
  * Apply department tag colors
