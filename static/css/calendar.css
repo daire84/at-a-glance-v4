@@ -953,23 +953,241 @@
 /* ============================================= */
 /* === RESPONSIVE STYLES ======================= */
 /* ============================================= */
+/* Enhanced Mobile Responsive Styles for Calendar 
+   Add these to your static/css/calendar.css file */
+
+/* Improved mobile breakpoint handling */
 @media (max-width: 768px) {
-  .project-meta { gap: 0.5rem; }
-  .project-meta > .meta-group { flex-basis: calc(50% - 0.25rem); min-width: 0; }
-  .script-info { gap: 0.3rem; }
-  .script-info > .script-item { flex-basis: calc(50% - 0.15rem); }
-  .counter-grid, .area-tags { grid-template-columns: repeat(2, 1fr); gap: 0.5rem; }
+  /* General sizing adjustments */
+  .calendar-table th, 
+  .calendar-table td {
+    padding: 0.2rem; /* Further reduced padding */
+    font-size: 0.7rem; /* Smaller font size */
+  }
+  
+  /* Adjust project info header for mobile */
+  .project-meta {
+    gap: 0.3rem; /* Tighter spacing */
+  }
+  
+  .meta-group {
+    min-width: 0; /* Allow groups to be smaller */
+    flex-basis: calc(50% - 0.15rem); /* Two columns layout */
+  }
+  
+  /* Make counter grid more compact */
+  .counter-grid, 
+  .area-tags {
+    grid-template-columns: repeat(3, 1fr); /* Three columns on mobile */
+    gap: 0.3rem; /* Smaller gap */
+  }
+  
+  .counter-item, 
+  .area-tag {
+    min-height: 2.5rem; /* Shorter height */
+    padding: 0.25rem; /* Less padding */
+  }
+  
+  /* Enhance column visibility for mobile */
+  .calendar-table .sequence-col,
+  .calendar-table .sequence-cell,
+  .calendar-table .extras-col,
+  .calendar-table .extras-cell,
+  .calendar-table .featured-extras-col,
+  .calendar-table .featured-extras-cell,
+  .calendar-table .second-unit-col,
+  .calendar-table .second-unit-cell {
+    display: none; /* Hide less critical columns */
+  }
+  
+  /* Create condensed columns for critical data */
+  .calendar-table .main-unit-col { width: 100px; }
+  .calendar-table .location-col { width: 80px; }
+  .calendar-table .departments-col { width: 80px; }
+  .calendar-table .notes-col { width: 80px; }
+  
+  /* Adjust cell content for smaller spaces */
+  .location-name {
+    font-size: 0.7rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 80px;
+  }
+  
+  .location-area {
+    font-size: 0.65rem;
+  }
+  
+  /* Department tags adjustments */
+  .department-tag {
+    padding: 0.05rem 0.15rem;
+    font-size: 0.6rem;
+  }
+  
+  /* Add horizontal scroll indicator */
+  .calendar-table-wrapper {
+    position: relative;
+  }
+  
+  .calendar-table-wrapper::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 0;
+    width: 15px;
+    height: 40px;
+    background: linear-gradient(90deg, transparent, rgba(0,0,0,0.2));
+    border-radius: 0 4px 4px 0;
+    pointer-events: none;
+    display: none; /* Hidden by default, shown if scrollable */
+  }
+  
+  .calendar-table-wrapper.scrollable::after {
+    display: block;
+  }
+}
 
-  /* Hide less critical columns on smaller screens */
-   .calendar-table .sequence-col,
-   .calendar-table .extras-col,
-   .calendar-table .featured-extras-col,
-   .calendar-table .second-unit-col {
-       display: none;
-   }
-   .calendar-table .main-unit-col { width: 120px; } /* Adjust widths */
-   .calendar-table .location-col { width: 90px; }
-   .calendar-table .departments-col { width: 90px; }
-   .calendar-table .notes-col { width: 100px; }
-} /* End @media (max-width: 768px) */
+/* Extreme narrow screens (phones in portrait) */
+@media (max-width: 480px) {
+  /* Further column reduction */
+  .calendar-table .departments-col,
+  .calendar-table .departments-cell {
+    display: none; /* Hide departments column on very small screens */
+  }
+  
+  /* Stack project metadata for very small screens */
+  .project-meta {
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+  
+  .meta-group {
+    flex-basis: 100%;
+  }
+  
+  /* Make project header more compact */
+  .project-info-header {
+    margin-bottom: 0.8rem;
+    padding-bottom: 0.5rem;
+  }
+  
+  /* Smaller counter grid */
+  .counter-grid, 
+  .area-tags {
+    grid-template-columns: repeat(2, 1fr); /* Two columns on very small screens */
+  }
+  
+  /* Smaller row height */
+  .calendar-row {
+    min-height: 2.5rem;
+  }
+}
 
+/* Add JS detection for scrollable content */
+/* This requires a small JavaScript addition to detect if the table is scrollable horizontally */
+
+/* Add this to your static/css/calendar.css file */
+
+/* Mobile zoom controls */
+.calendar-mobile-controls {
+  display: none; /* Hidden by default - visible only on mobile */
+  margin-bottom: 0.8rem;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.zoom-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.zoom-button {
+  background-color: var(--primary-light);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.zoom-button:hover {
+  background-color: var(--accent-color);
+}
+
+.zoom-level {
+  font-size: 0.8rem;
+  color: var(--text-color);
+  min-width: 3rem;
+  text-align: center;
+}
+
+.scroll-hint {
+  font-size: 0.8rem;
+  color: var(--text-light);
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.scroll-hint .arrow {
+  display: inline-block;
+  animation: bounce 1.5s infinite;
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateX(0);
+  }
+  40% {
+    transform: translateX(5px);
+  }
+  60% {
+    transform: translateX(3px);
+  }
+}
+
+/* Show controls only on mobile */
+@media (max-width: 768px) {
+  .calendar-mobile-controls {
+    display: flex;
+  }
+}
+
+/* For extremely small screens */
+@media (max-width: 480px) {
+  .calendar-mobile-controls {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+}
+
+/* Zoom levels for the table */
+.calendar-table-wrapper.zoom-75 .calendar-table {
+  font-size: 0.75em;
+  transform-origin: top left;
+}
+
+.calendar-table-wrapper.zoom-50 .calendar-table {
+  font-size: 0.5em;
+  transform-origin: top left;
+}
+
+.calendar-table-wrapper.fit-width .calendar-table {
+  width: 100%;
+  table-layout: fixed;
+}
+
+.calendar-table-wrapper.fit-width .calendar-table th,
+.calendar-table-wrapper.fit-width .calendar-table td {
+  word-break: break-word;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

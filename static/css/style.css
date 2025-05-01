@@ -436,8 +436,26 @@ h3 {
 /* === MOBILE MENU TOGGLE === */
 /* Hide mobile menu toggle by default on larger screens */
 /* The !important might be necessary depending on specificity conflicts */
-body .mobile-menu-toggle {
-  display: none !important;
+
+* Mobile menu toggle button styling */
+.mobile-menu-toggle {
+  display: none; /* Hidden by default */
+  background: none;
+  border: none;
+  color: var(--header-text-color);
+  padding: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  border-radius: 4px;
+}
+
+.mobile-menu-toggle:hover,
+.mobile-menu-toggle:focus {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.mobile-menu-toggle .menu-icon {
+  display: block;
 }
 
 /* === EMPTY STATE STYLES === */
@@ -549,9 +567,46 @@ footer {
 }
 
 /* === RESPONSIVE STYLES === */
+/* For smaller screens, show the menu toggle and adjust nav */
 @media (max-width: 768px) {
-  /* Styles for tablets and smaller screens */
-
+  .mobile-menu-toggle {
+    display: block; /* Show on mobile */
+  }
+  
+  .main-nav {
+    display: none; /* Hide nav by default on mobile */
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: var(--primary-color);
+    z-index: 100;
+    padding: 0.5rem 0;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .main-nav.active {
+    display: block; /* Show when active */
+  }
+  
+  .main-nav ul {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .main-nav ul li {
+    margin: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .main-nav ul li:last-child {
+    border-bottom: none;
+  }
+  
+  .main-nav ul li a {
+    padding: 0.75rem 1rem;
+    display: block;
+  }
   /* Stack admin header items vertically */
   .admin-header {
     flex-direction: column; /* Stack vertically */

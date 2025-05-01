@@ -647,3 +647,183 @@ document.addEventListener('DOMContentLoaded', function() {
   initializeFilters();
   enhanceLocationCounters();
 });
+
+/**
+ * Add this code to your static/js/calendar.js file or create a new file if it doesn't exist
+ * This detects if calendar tables are scrollable and adds appropriate visual indicators
+ */
+document.addEventListener('DOMContentLoaded', function() {
+  // Detect scrollable tables and add indicators
+  const tableWrappers = document.querySelectorAll('.calendar-table-wrapper');
+  
+  function checkIfScrollable() {
+    tableWrappers.forEach(wrapper => {
+      const table = wrapper.querySelector('.calendar-table');
+      if (!table) return;
+      
+      // Check if the table is wider than its container
+      if (table.scrollWidth > wrapper.clientWidth) {
+        wrapper.classList.add('scrollable');
+      } else {
+        wrapper.classList.remove('scrollable');
+      }
+    });
+  }
+  
+  // Check on load
+  checkIfScrollable();
+  
+  // Check on resize
+  window.addEventListener('resize', checkIfScrollable);
+  
+  // Add small swipe hint for mobile users
+  tableWrappers.forEach(wrapper => {
+    // Only add for mobile screens
+    if (window.innerWidth <= 768) {
+      let startX, startScrollLeft;
+      
+      wrapper.addEventListener('touchstart', function(e) {
+        startX = e.touches[0].pageX;
+        startScrollLeft = wrapper.scrollLeft;
+      }, { passive: true });
+      
+      wrapper.addEventListener('touchmove', function(e) {
+        const x = e.touches[0].pageX;
+        const dist = startX - x;
+        wrapper.scrollLeft = startScrollLeft + dist;
+      }, { passive: true });
+    }
+  });
+  
+  // Add double tap to optimize view (optional enhancement)
+  tableWrappers.forEach(wrapper => {
+    let lastTap = 0;
+    wrapper.addEventListener('touchend', function(e) {
+      const currentTime = new Date().getTime();
+      const tapLength = currentTime - lastTap;
+      
+      if (tapLength < 300 && tapLength > 0) {
+        // Double tap detected
+        e.preventDefault();
+        
+        // Toggle between original view and "fit content" view
+        const table = wrapper.querySelector('.calendar-table');
+        if (table.style.width === '100%') {
+          // Reset to original size
+          table.style.width = '';
+          table.style.fontSize = '';
+        } else {
+          // Fit to container width
+          table.style.width = '100%';
+          table.style.fontSize = '0.7rem';
+        }
+      }
+      
+      lastTap = currentTime;
+    });
+  });
+});
+
+/**
+ * Add this code to your static/js/calendar.js file after the existing code
+ * This enables zoom functionality for the calendar on mobile devices
+ */
+
+// Initialize zoom controls
+document.addEventListener('DOMContentLoaded', function() {
+  const tableWrappers = document.querySelectorAll('.calendar-table-wrapper');
+  
+  // Set up zoom controls for each table wrapper
+  tableWrappers.forEach(wrapper => {
+    const zoomInBtn = document.querySelector('.zoom-in');
+    const zoomOutBtn = document.querySelector('.zoom-out');
+    const fitWidthBtn = document.querySelector('.fit-width');
+    const zoomLevelDisplay = document.querySelector('.zoom-level');
+    
+    // Skip if controls aren't found
+    if (!zoomInBtn || !zoomOutBtn || !fitWidthBtn || !zoomLevelDisplay) return;
+    
+    // Initialize zoom level
+    let currentZoom = 100;
+    
+    // Zoom in function
+    zoomInBtn.addEventListener('click', function() {
+      if (currentZoom >= 150) return; // Max zoom
+      
+      currentZoom += 25;
+      applyZoom();
+    });
+    
+    // Zoom out function
+    zoomOutBtn.addEventListener('click', function() {
+      if (currentZoom <= 50) return; // Min zoom
+      
+      currentZoom -= 25;
+      applyZoom();
+    });
+    
+    // Fit to width function
+    fitWidthBtn.addEventListener('click', function() {
+      // Toggle fit-width class
+      wrapper.classList.toggle('fit-width');
+      
+      if (wrapper.classList.contains('fit-width')) {
+        zoomLevelDisplay.textContent = 'Fit';
+        
+        // Remove other zoom classes
+        wrapper.classList.remove('zoom-75', 'zoom-50');
+      } else {
+        // Reset to current zoom level
+        applyZoom();
+      }
+    });
+    
+    // Apply zoom level to the table
+    function applyZoom() {
+      // Update zoom display
+      zoomLevelDisplay.textContent = currentZoom + '%';
+      
+      // Remove fit-width class if active
+      wrapper.classList.remove('fit-width');
+      
+      // Apply zoom classes
+      wrapper.classList.remove('zoom-75', 'zoom-50');
+      
+      if (currentZoom === 75) {
+        wrapper.classList.add('zoom-75');
+      } else if (currentZoom === 50) {
+        wrapper.classList.add('zoom-50');
+      }
+      
+      // Directly set scale for other zoom levels
+      const table = wrapper.querySelector('.calendar-table');
+      if (table) {
+        if (currentZoom === 100) {
+          table.style.transform = '';
+        } else if (currentZoom === 125) {
+          table.style.transform = 'scale(1.25)';
+        } else if (currentZoom === 150) {
+          table.style.transform = 'scale(1.5)';
+        }
+      }
+      
+      // Check if scrollable after zoom
+      setTimeout(checkIfScrollable, 100);
+    }
+  });
+  
+  // Hide scroll hint after user has scrolled
+  tableWrappers.forEach(wrapper => {
+    const scrollHint = document.querySelector('.scroll-hint');
+    if (!scrollHint) return;
+    
+    wrapper.addEventListener('scroll', function() {
+      if (wrapper.scrollLeft > 10) {
+        scrollHint.style.opacity = '0';
+        setTimeout(() => {
+          scrollHint.style.display = 'none';
+        }, 500);
+      }
+    });
+  });
+});

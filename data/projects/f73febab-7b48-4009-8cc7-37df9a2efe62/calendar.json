@@ -306,18 +306,16 @@
       "isWorkingWeekend": false,
       "dayType": "shoot",
       "shootDay": 5,
-      "mainUnit": "CANNON HOUSE - BEDROOM",
-      "extras": 20,
-      "featuredExtras": 1,
-      "location": "D Stage",
-      "locationArea": "Ardmore Studios",
-      "sequence": "Mum V Kids",
+      "mainUnit": "",
+      "extras": 0,
+      "featuredExtras": 0,
+      "location": "Phoenix Park",
+      "locationArea": "Dublin North",
+      "sequence": "",
       "departments": [
-        "STN",
-        "VFX",
-        "SFX"
+        "CST"
       ],
-      "notes": "THIS IS A NOTE",
+      "notes": "",
       "secondUnit": "",
       "secondUnitLocation": ""
     },
@@ -384,16 +382,18 @@
       "isWorkingWeekend": false,
       "dayType": "shoot",
       "shootDay": 6,
-      "mainUnit": "",
-      "extras": 0,
-      "featuredExtras": 0,
-      "location": "Phoenix Park",
-      "locationArea": "Dublin North",
-      "sequence": "",
+      "mainUnit": "CANNON HOUSE - BEDROOM",
+      "extras": 20,
+      "featuredExtras": 1,
+      "location": "D Stage",
+      "locationArea": "Ardmore Studios",
+      "sequence": "Mum V Kids",
       "departments": [
-        "CST"
+        "STN",
+        "VFX",
+        "SFX"
       ],
-      "notes": "",
+      "notes": "THIS IS A NOTE",
       "secondUnit": "",
       "secondUnitLocation": ""
     },
