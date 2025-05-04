@@ -1,0 +1,16 @@
+[
+  {
+    "date": "2025-04-21",
+    "name": "Easter",
+    "isWorking": false,
+    "isShootDay": false,
+    "id": "fc947c28-fcd8-469c-a132-8e94bf0521e4"
+  },
+  {
+    "date": "2025-05-05",
+    "name": "May Holiday",
+    "isWorking": true,
+    "isShootDay": true,
+    "id": "42f5c269-4c70-4197-9f38-5d2510ce3603"
+  }
+]

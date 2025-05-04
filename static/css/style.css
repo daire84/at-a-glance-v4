@@ -259,6 +259,11 @@ h3 {
   transition: color 0.2s, border-bottom-color 0.2s;
 }
 
+/* Add this new rule after the existing .admin-tabs a selector */
+body.light-theme .admin-tabs a {
+  color: var(--text-color); /* Dark text in light mode */
+}
+
 .admin-tabs a.active,
 .admin-tabs a:hover {
   color: var(--accent-light); /* Changed from --accent-color for better visibility */

@@ -52,6 +52,18 @@ label {
   color: var(--text-color);
 }
 
+/* Ensure label text is always readable in both themes */
+body:not(.light-theme) label,
+body:not(.light-theme) .form-section h3 {
+  color: #625f5f;  
+}
+
+/* Add styles for field groups like "Project Information" */
+body:not(.light-theme) .meta-label,
+body:not(.light-theme) .form-section h3 {
+  color: #2e2d2d;  
+}
+
 input[type="text"],
 input[type="number"],
 input[type="date"],
@@ -59,12 +71,12 @@ input[type="email"],
 input[type="password"],
 select,
 textarea {
-  background-color: #f8f9fa;
-  border: 1px solid #dee2e6;
+  background-color: #f8f9fa;  /* Back to a light background regardless of theme */
+  border: 1px solid var(--border-color);
   border-radius: 4px;
   padding: 0.75rem;
   font-size: 0.95rem;
-  color: var(--text-color);
+  color: #2e2d2d;  
   transition: border-color 0.3s, box-shadow 0.3s;
 }
 
