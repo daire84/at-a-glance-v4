@@ -192,7 +192,6 @@
       "sequence": "Dinner time",
       "departments": [
         "FOD",
-        "STN",
         "VFX",
         "SFX",
         "INT",
@@ -217,16 +216,19 @@
       "isWorkingWeekend": false,
       "dayType": "shoot",
       "shootDay": 2,
-      "mainUnit": "",
-      "extras": 0,
-      "featuredExtras": 0,
-      "location": "Dublin City Hall",
-      "locationArea": "Dublin South",
-      "sequence": "",
+      "mainUnit": "CAIRO POLICE STATION - OFFICE",
+      "extras": 35,
+      "featuredExtras": 2,
+      "location": "D Stage",
+      "locationArea": "Ardmore Studios",
+      "sequence": "Meet Zaki",
       "departments": [
-        "WNK"
+        "SFX",
+        "STN",
+        "ST",
+        "FDS"
       ],
-      "notes": "",
+      "notes": "This isnt real",
       "secondUnit": "",
       "secondUnitLocation": ""
     },
@@ -245,19 +247,18 @@
       "isWorkingWeekend": false,
       "dayType": "shoot",
       "shootDay": 3,
-      "mainUnit": "CAIRO POLICE STATION - OFFICE",
-      "extras": 35,
-      "featuredExtras": 2,
+      "mainUnit": "CANNON HOUSE - BEDROOM",
+      "extras": 20,
+      "featuredExtras": 1,
       "location": "D Stage",
       "locationArea": "Ardmore Studios",
-      "sequence": "Meet Zaki",
+      "sequence": "Mum V Kids",
       "departments": [
-        "SFX",
         "STN",
-        "ST",
-        "FDS"
+        "VFX",
+        "SFX"
       ],
-      "notes": "This isnt real",
+      "notes": "THIS IS A NOTE",
       "secondUnit": "",
       "secondUnitLocation": ""
     },
@@ -276,18 +277,19 @@
       "isWorkingWeekend": false,
       "dayType": "shoot",
       "shootDay": 4,
-      "mainUnit": "NEW MEXICO HOUSE",
+      "mainUnit": "",
       "extras": 0,
       "featuredExtras": 0,
-      "location": "Ana's House",
-      "locationArea": "Spain",
-      "sequence": "The House",
+      "location": "D Stage",
+      "locationArea": "Ardmore Studios",
+      "sequence": "",
       "departments": [
         "FDS",
-        "WNK",
-        "SFX"
+        "CST",
+        "INT",
+        "STN"
       ],
-      "notes": "Yes sir ",
+      "notes": "",
       "secondUnit": "",
       "secondUnitLocation": ""
     },
@@ -306,16 +308,16 @@
       "isWorkingWeekend": false,
       "dayType": "shoot",
       "shootDay": 5,
-      "mainUnit": "",
-      "extras": 0,
-      "featuredExtras": 0,
-      "location": "Phoenix Park",
-      "locationArea": "Dublin North",
-      "sequence": "",
+      "mainUnit": "MY GAFF",
+      "extras": 22,
+      "featuredExtras": 3,
+      "location": "Powerscourt",
+      "locationArea": "Wicklow",
+      "sequence": "Testicles",
       "departments": [
-        "CST"
+        "FDS"
       ],
-      "notes": "",
+      "notes": "How is your day?",
       "secondUnit": "",
       "secondUnitLocation": ""
     },
@@ -382,18 +384,16 @@
       "isWorkingWeekend": false,
       "dayType": "shoot",
       "shootDay": 6,
-      "mainUnit": "CANNON HOUSE - BEDROOM",
-      "extras": 20,
-      "featuredExtras": 1,
-      "location": "D Stage",
-      "locationArea": "Ardmore Studios",
-      "sequence": "Mum V Kids",
+      "mainUnit": "",
+      "extras": 0,
+      "featuredExtras": 0,
+      "location": "Dublin City Hall",
+      "locationArea": "Dublin South",
+      "sequence": "",
       "departments": [
-        "STN",
-        "VFX",
-        "SFX"
+        "WNK"
       ],
-      "notes": "THIS IS A NOTE",
+      "notes": "",
       "secondUnit": "",
       "secondUnitLocation": ""
     },
@@ -415,8 +415,8 @@
       "mainUnit": "",
       "extras": 0,
       "featuredExtras": 0,
-      "location": "Studio B",
-      "locationArea": "Studio",
+      "location": "Trinity College",
+      "locationArea": "Dublin South",
       "sequence": "",
       "departments": [],
       "notes": "",
@@ -438,16 +438,14 @@
       "isWorkingWeekend": false,
       "dayType": "shoot",
       "shootDay": 8,
-      "mainUnit": "MY GAFF",
-      "extras": 22,
-      "featuredExtras": 3,
-      "location": "Daire's Gaff",
-      "locationArea": "Greystones",
-      "sequence": "Testicles",
-      "departments": [
-        "FDS"
-      ],
-      "notes": "How is your day?",
+      "mainUnit": "",
+      "extras": 0,
+      "featuredExtras": 0,
+      "location": "Fosters Place",
+      "locationArea": "Dublin South",
+      "sequence": "",
+      "departments": [],
+      "notes": "",
       "secondUnit": "",
       "secondUnitLocation": ""
     },
@@ -469,8 +467,8 @@
       "mainUnit": "",
       "extras": 0,
       "featuredExtras": 0,
-      "location": "Studio A",
-      "locationArea": "Studio",
+      "location": "Glenmaroon",
+      "locationArea": "Dublin North",
       "sequence": "",
       "departments": [],
       "notes": "",
@@ -495,14 +493,11 @@
       "mainUnit": "",
       "extras": 0,
       "featuredExtras": 0,
-      "location": "Kilruddery House",
-      "locationArea": "Wicklow",
+      "location": "Phoenix Park",
+      "locationArea": "Dublin North",
       "sequence": "",
       "departments": [
-        "FDS",
-        "CST",
-        "INT",
-        "STN"
+        "CST"
       ],
       "notes": "",
       "secondUnit": "",
@@ -571,16 +566,16 @@
       "isWorkingWeekend": false,
       "dayType": "shoot",
       "shootDay": 11,
-      "mainUnit": "",
+      "mainUnit": "JEFF",
       "extras": 0,
       "featuredExtras": 0,
-      "location": "Something Stage",
-      "locationArea": "Ashford Studios",
+      "location": "",
+      "locationArea": "Dublin North",
       "sequence": "",
       "departments": [],
       "notes": "",
-      "secondUnit": "",
-      "secondUnitLocation": ""
+      "secondUnit": "Shooting next to us",
+      "secondUnitLocation": "Mexico"
     },
     {
       "date": "2025-04-08",
@@ -597,16 +592,20 @@
       "isWorkingWeekend": false,
       "dayType": "shoot",
       "shootDay": 12,
-      "mainUnit": "JEFF",
+      "mainUnit": "NEW MEXICO HOUSE",
       "extras": 0,
       "featuredExtras": 0,
-      "location": "Something Stage",
-      "locationArea": "Ashford Studios",
-      "sequence": "",
-      "departments": [],
-      "notes": "",
-      "secondUnit": "Shooting next to us",
-      "secondUnitLocation": "Mexico"
+      "location": "Ana's House",
+      "locationArea": "Spain",
+      "sequence": "The House",
+      "departments": [
+        "FDS",
+        "WNK",
+        "SFX"
+      ],
+      "notes": "Yes sir ",
+      "secondUnit": "",
+      "secondUnitLocation": ""
     },
     {
       "date": "2025-04-09",
@@ -2197,7 +2196,7 @@
   ],
   "departmentCounts": {
     "sfx": 4,
-    "stn": 4,
+    "stn": 3,
     "crane": 0,
     "stead": 1,
     "pros": 1,
@@ -2222,29 +2221,24 @@
   },
   "locationAreas": [
     {
-      "id": "studio",
-      "name": "Studio",
-      "color": "#fffbc8"
-    },
-    {
-      "id": "north",
       "name": "Dublin North",
-      "color": "#d4e9ff"
+      "color": "#74b5fb",
+      "id": "north"
     },
     {
-      "id": "south",
       "name": "Dublin South",
-      "color": "#ffd8d8"
+      "color": "#d18989",
+      "id": "south"
     },
     {
-      "id": "wicklow",
       "name": "Wicklow",
-      "color": "#e6ffd8"
+      "color": "#ffcb3d",
+      "id": "wicklow"
     },
     {
-      "id": "ardmore",
       "name": "Ardmore Studios",
-      "color": "#f2d8ff"
+      "color": "#9a4bfb",
+      "id": "ardmore"
     },
     {
       "id": "ashford",
@@ -2255,34 +2249,25 @@
       "name": "Spain",
       "color": "#e486fe",
       "id": "4459abff-cd87-4fdc-a238-1ff355b2e970"
-    },
-    {
-      "name": "Greystones",
-      "color": "#39d5b6",
-      "id": "6a3b12f7-502a-4ddf-b5a3-7ac419bb904c"
     }
   ],
-  "lastUpdated": "2025-04-28T08:40:48.279287Z",
+  "lastUpdated": "2025-05-04T02:57:13.268044Z",
   "locationCounts": {
+    "D Stage": 3,
+    "Powerscourt": 1,
     "Dublin City Hall": 1,
-    "D Stage": 2,
-    "Ana's House": 1,
+    "Trinity College": 1,
+    "Fosters Place": 1,
+    "Glenmaroon": 1,
     "Phoenix Park": 1,
-    "Studio B": 1,
-    "Daire's Gaff": 1,
-    "Studio A": 1,
-    "Kilruddery House": 1,
-    "Something Stage": 2
+    "Ana's House": 1
   },
   "areaCounts": {
-    "south": 1,
-    "ardmore": 2,
-    "4459abff-cd87-4fdc-a238-1ff355b2e970": 1,
-    "north": 1,
-    "studio": 2,
-    "6a3b12f7-502a-4ddf-b5a3-7ac419bb904c": 1,
+    "ardmore": 3,
     "wicklow": 1,
-    "ashford": 2
+    "south": 2,
+    "north": 1,
+    "4459abff-cd87-4fdc-a238-1ff355b2e970": 1
   },
   "departments": [
     {

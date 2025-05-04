@@ -1,24 +1,24 @@
 [
   {
-    "id": "studio-a",
-    "name": "Studio A",
-    "areaId": "studio",
-    "address": "Studio Complex, Sound Stage A",
-    "notes": "Full sound stage with green screen capability"
-  },
-  {
-    "id": "studio-b",
-    "name": "Studio B",
-    "areaId": "studio",
-    "address": "Studio Complex, Sound Stage B",
-    "notes": "Medium sound stage with water tank"
-  },
-  {
-    "id": "ardmore-a",
     "name": "A Stage",
     "areaId": "ardmore",
+    "address": "Studio Complex, Sound Stage A",
+    "notes": "",
+    "id": "studio-a"
+  },
+  {
+    "name": "B Stage",
+    "areaId": "ardmore",
+    "address": "Studio Complex, Sound Stage B",
+    "notes": "",
+    "id": "studio-b"
+  },
+  {
+    "name": "C Stage",
+    "areaId": "ardmore",
     "address": "Ardmore Studios, Bray",
-    "notes": "Large sound stage"
+    "notes": "Large sound stage",
+    "id": "ardmore-a"
   },
   {
     "id": "ardmore-d",
@@ -28,24 +28,17 @@
     "notes": "Medium sound stage"
   },
   {
-    "id": "mansion",
-    "name": "Kilruddery House",
-    "areaId": "wicklow",
-    "address": "Kilruddery House, Bray",
-    "notes": "Historic mansion with extensive grounds"
+    "name": "St Pats",
+    "areaId": "north",
+    "address": "",
+    "notes": "",
+    "id": "mansion"
   },
   {
-    "id": "city-hall",
-    "name": "Dublin City Hall",
-    "areaId": "south",
-    "address": "City Hall, Dame Street, Dublin 2",
-    "notes": "Historic city hall building"
-  },
-  {
-    "name": "Phoenix Park",
+    "name": "Glenmaroon",
     "areaId": "north",
     "address": "Phoenix Park, Dublin 8",
-    "notes": "Large urban park with various locations",
+    "notes": "",
     "id": "phoenix-park"
   },
   {
@@ -56,17 +49,24 @@
     "id": "93c2d018-4023-40e7-a2fd-0096848186b5"
   },
   {
-    "name": "Daire's Gaff",
-    "areaId": "6a3b12f7-502a-4ddf-b5a3-7ac419bb904c",
+    "name": "Trinity College",
+    "areaId": "south",
     "address": "",
     "notes": "",
-    "id": "1d667f10-5ed3-4317-9c5a-f78edb480f02"
+    "id": "4883666b-383a-4d16-8ae9-1a43f9761a20"
   },
   {
-    "name": "Something Stage",
-    "areaId": "ashford",
+    "name": "Powerscourt",
+    "areaId": "wicklow",
     "address": "",
     "notes": "",
-    "id": "5ebf3878-328e-423a-8f72-6f59ac4f5dd8"
+    "id": "c7749b2a-aeee-4f80-b27c-46ece444c8a1"
+  },
+  {
+    "name": "Fosters Place",
+    "areaId": "south",
+    "address": "",
+    "notes": "",
+    "id": "b0d2f068-9984-4966-a249-972a675a3c9f"
   }
 ]

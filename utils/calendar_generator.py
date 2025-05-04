@@ -19,6 +19,12 @@ def generate_calendar_days(project, existing_calendar=None):
         dict: Calendar data with days array
     """
     try:
+         # Log project dates
+        logger.info(f"Calendar generation for project: {project.get('id')}")
+        logger.info(f"Prep Start: {project.get('prepStartDate')}")
+        logger.info(f"Shoot Start: {project.get('shootStartDate')}")
+        logger.info(f"Wrap Date: {project.get('wrapDate')}")
+        
         # Validate required fields
         if not project.get('prepStartDate') or not project.get('shootStartDate'):
             logger.error("Missing required dates for calendar generation")
