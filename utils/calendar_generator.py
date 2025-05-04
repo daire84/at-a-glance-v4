@@ -533,7 +533,7 @@ def update_calendar_with_departments(calendar_data):
 def calculate_department_counts(calendar_data):
     """
     Calculate department counts based on the calendar days, only counting
-    currently defined departments.
+    departments defined in departments.json.
     """
     try:
         days = calendar_data.get('days', [])
@@ -544,71 +544,26 @@ def calculate_department_counts(calendar_data):
         base_data_dir = os.path.join(data_dir, '..', 'data') # Go up one level then into data
         departments_file = os.path.join(base_data_dir, 'departments.json')
 
-        dept_map = {}
+        dept_code_to_id = {}  # Map department codes to their IDs
         departments = []
+        
         if os.path.exists(departments_file):
             try:
                 with open(departments_file, 'r') as f:
                     departments = json.load(f)
 
-                # Create a mapping from department code to key for counting
-                # AND initialize counts to 0 for all currently defined departments
+                # Initialize counts to 0 for all departments
                 for dept in departments:
-                    if 'code' in dept and ('id' in dept or 'name' in dept):
-                        code = dept['code']
-                        # Use id if available, otherwise use name converted to snake_case
-                        id_key = dept.get('id', '').lower()
-                        name_key = dept.get('name', '').lower().replace(' ', '_')
-                        key = id_key if id_key else name_key # Prioritize ID as key if available
-
-                        if code and key:
-                            dept_map[code] = key
-                            counts[key] = 0 # Initialize count for this known department
-                            logger.debug(f"Mapped department code {code} to key {key} and initialized count.")
+                    if 'id' in dept:
+                        counts[dept['id']] = 0
+                        
+                    # Create mapping from code to ID for counting
+                    if 'code' in dept and 'id' in dept:
+                        dept_code_to_id[dept['code'].upper()] = dept['id']
+                        logger.debug(f"Mapped department code {dept['code']} to ID {dept['id']}")
 
             except Exception as e:
                 logger.error(f"Error loading or processing departments.json: {str(e)}")
-
-        # Default mapping for common department codes (if not defined in departments.json)
-        default_map = {
-            "SFX": "sfx", "STN": "stunts", "CR": "crane", "ST": "steadicam",
-            "PR": "prosthetics", "LL": "lowLoader", "VFX": "vfx", "ANI": "animals",
-            "UW": "underwater", "INCY": "intimacy"
-            # Removed "TEST" - custom departments should come from departments.json
-        }
-
-        # Combine mappings - dept_map (from JSON) takes precedence
-        combined_map = {**default_map, **dept_map}
-
-        # Pre-initialize counts for default map items if they weren't in departments.json
-        for code, key in default_map.items():
-            if key not in counts:
-                counts[key] = 0
-                logger.debug(f"Initialized count for default code {code} with key {key}.")
-
-
-        # --- Standard Metric Counting (Main Unit, Second Unit, Sixth Day, Split Day) ---
-        # Count days for standard metrics (these keys should ideally be predefined or handled separately)
-        # Initialize standard counts that are always expected
-        counts["main"] = 0
-        counts["secondUnit"] = 0
-        counts["sixthDay"] = 0
-        counts["splitDay"] = 0
-
-        counts["main"] = sum(1 for d in days if d.get("isShootDay"))
-        counts["secondUnit"] = sum(1 for d in days if d.get("secondUnit")) # Assuming 'secondUnit' is a boolean or truthy value indicating second unit presence
-        counts["sixthDay"] = sum(
-            1 for d in days
-            if d.get("isShootDay") and
-            datetime.strptime(d["date"], "%Y-%m-%d").weekday() == 5  # Saturday
-        )
-        counts["splitDay"] = sum(
-            1 for d in days
-            if d.get("isShootDay") and
-            d.get("isSplitDay", False) # Check for an explicit 'isSplitDay' flag
-        )
-        # --- End Standard Metric Counting ---
-
 
         # --- Department Tag Counting ---
         # Count specific department days based on tags
@@ -619,22 +574,30 @@ def calculate_department_counts(calendar_data):
                 if not dept_code:
                     continue
 
-                # ONLY count if the department code is in our map of known departments
-                if dept_code in combined_map:
-                    key = combined_map[dept_code]
-                    # Ensure the key actually exists in counts before incrementing (should always if initialized correctly)
-                    if key in counts:
-                         counts[key] = counts.get(key, 0) + 1
-                         logger.debug(f"Counted known department {dept_code} using key {key}, new count: {counts[key]}")
-                    else:
-                         # This case should ideally not happen if initialization is correct
-                         logger.warning(f"Key '{key}' for code '{dept_code}' was not pre-initialized in counts. Initializing now.")
-                         counts[key] = 1
+                # Look up the department ID by its code
+                if dept_code in dept_code_to_id:
+                    dept_id = dept_code_to_id[dept_code]
+                    counts[dept_id] = counts.get(dept_id, 0) + 1
+                    logger.debug(f"Counted department {dept_code} using ID {dept_id}, new count: {counts[dept_id]}")
                 else:
-                    # Log ignored tags for debugging if needed
-                    logger.debug(f"Ignoring unknown/deleted department tag: {dept_code} found on date {day.get('date')}")
-        # --- End Department Tag Counting ---
+                    # Log unknown tags for debugging
+                    logger.debug(f"Ignoring unknown department tag: {dept_code} found on date {day.get('date')}")
 
+        # --- Standard Metrics Counting ---
+        # These standard metrics are always counted regardless of departments
+        counts["main"] = sum(1 for d in days if d.get("isShootDay"))
+        counts["secondUnit"] = sum(1 for d in days if d.get("secondUnit"))
+        counts["sixthDay"] = sum(
+            1 for d in days
+            if d.get("isShootDay") and
+            datetime.strptime(d["date"], "%Y-%m-%d").weekday() == 5  # Saturday
+        )
+        counts["splitDay"] = sum(
+            1 for d in days
+            if d.get("isShootDay") and
+            d.get("isSplitDay", False)
+        )
+        # --- End Standard Metric Counting ---
 
         # Store the final counts dict in calendar data
         calendar_data["departmentCounts"] = counts
@@ -649,10 +612,10 @@ def calculate_department_counts(calendar_data):
 
     except Exception as e:
         logger.error(f"Error calculating department counts: {str(e)}")
-        # Ensure departmentCounts exists even on error, maybe with just initialized values?
+        # Ensure departmentCounts exists even on error
         if "departmentCounts" not in calendar_data:
-             calendar_data["departmentCounts"] = counts # Return potentially partial counts
-        return calendar_data # Always return calendar_data
+             calendar_data["departmentCounts"] = {}
+        return calendar_data
 
 # This function will calculate how many times each location appears in the calendar
 def calculate_location_counts(calendar_data):
