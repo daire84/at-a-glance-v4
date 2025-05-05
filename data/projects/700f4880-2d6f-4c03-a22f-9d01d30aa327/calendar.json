@@ -3960,13 +3960,6 @@
     "11c71102-9c7e-4514-a7d4-b4e40b9c174d": 1,
     "b2a632d2-844d-41e7-bdcf-1fc5c1602006": 1,
     "257de5dc-f04a-4285-8d6e-3ca68c9c3b97": 1,
-    "stunts": 0,
-    "steadicam": 0,
-    "prosthetics": 0,
-    "lowLoader": 0,
-    "animals": 0,
-    "underwater": 0,
-    "intimacy": 0,
     "main": 60,
     "secondUnit": 0,
     "sixthDay": 2,
@@ -4099,5 +4092,19 @@
       "color": "#4ae35c",
       "id": "257de5dc-f04a-4285-8d6e-3ca68c9c3b97"
     }
-  ]
+  ],
+  "areaColorMap": {
+    "north": "#a1cdfc",
+    "Dublin North": "#a1cdfc",
+    "south": "#e3b0b0",
+    "Dublin South": "#e3b0b0",
+    "wicklow": "#ffcb3d",
+    "Wicklow": "#ffcb3d",
+    "ardmore": "#9cf7dc",
+    "Ardmore Studios": "#9cf7dc",
+    "ashford": "#ffd8e6",
+    "Ashford Studios": "#ffd8e6",
+    "4459abff-cd87-4fdc-a238-1ff355b2e970": "#eca8ff",
+    "Spain": "#eca8ff"
+  }
 }

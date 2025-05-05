@@ -473,6 +473,14 @@ def update_calendar_with_location_areas(calendar_data):
         area_map = {area['id']: area for area in areas}
         area_name_map = {area['name']: area for area in areas}
         
+        # Create color lookup map
+        area_color_map = {}
+        for area in areas:
+            if 'id' in area:
+                area_color_map[area['id']] = area.get('color', '#f8f9fa')
+            if 'name' in area:
+                area_color_map[area['name']] = area.get('color', '#f8f9fa')
+        
         # Update days with location area info
         for day in calendar_data.get('days', []):
             location_name = day.get('location', '')
@@ -480,6 +488,8 @@ def update_calendar_with_location_areas(calendar_data):
             
             # If day already has an area name, make sure it has the corresponding color
             if area_name and area_name in area_name_map:
+                # Add the color directly to the day object for easy access in templates
+                day['locationAreaColor'] = area_name_map[area_name].get('color', '#f8f9fa')
                 # The area exists in our map, keep using it
                 continue
             
@@ -490,9 +500,11 @@ def update_calendar_with_location_areas(calendar_data):
                 
                 if area_id and area_id in area_map:
                     day['locationArea'] = area_map[area_id]['name']
+                    day['locationAreaColor'] = area_map[area_id].get('color', '#f8f9fa')
         
         # Add location areas to calendar data
         calendar_data['locationAreas'] = areas
+        calendar_data['areaColorMap'] = area_color_map
         
         return calendar_data
     
@@ -632,10 +644,27 @@ def calculate_location_counts(calendar_data):
         days = calendar_data.get('days', [])
         location_counts = {}
         area_counts = {}
+        area_color_map = {}  # Added: Map to store area colors for easy lookup
         
         # Load locations data to get area mappings
         data_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         locations_file = os.path.join(data_dir, 'data', 'locations.json')
+        areas_file = os.path.join(data_dir, 'data', 'areas.json')  # Added: Load areas file
+        
+        # Load areas to get colors
+        if os.path.exists(areas_file):
+            try:
+                with open(areas_file, 'r') as f:
+                    areas = json.load(f)
+                    # Create area color map
+                    for area in areas:
+                        if 'id' in area and 'color' in area:
+                            area_color_map[area['id']] = area['color']
+                            # Also create name-based mapping for template use
+                            if 'name' in area:
+                                area_color_map[area['name']] = area['color']
+            except Exception as e:
+                logger.error(f"Error loading areas for color mapping: {str(e)}")
         
         # Create mapping of location name to area ID
         location_to_area = {}
@@ -661,10 +690,17 @@ def calculate_location_counts(calendar_data):
                     area_id = location_to_area[location]
                     if area_id:
                         area_counts[area_id] = area_counts.get(area_id, 0) + 1
-        
+                        day['locationAreaId'] = area_id # STORE THE AREA ID
+
+                        # If day has a location but no locationArea, try to set it based on mapping
+                        if not day.get('locationArea'): # Keep this logic to set name if missing
+                            area_name = next((a['name'] for a in areas if a['id'] == area_id), None)
+                            if area_name:
+                                day['locationArea'] = area_name
         # Add counts to calendar data
         calendar_data['locationCounts'] = location_counts
         calendar_data['areaCounts'] = area_counts
+        calendar_data['areaColorMap'] = area_color_map  # Added: Make colors available to templates
         
         return calendar_data
     except Exception as e:

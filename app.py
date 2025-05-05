@@ -399,16 +399,30 @@ def admin_calendar(project_id):
         except Exception as e:
             logger.error(f"Error loading locations: {str(e)}")
     
-    # Ensure the departments are available in the calendar data
+# Load latest areas
+    areas = []
+    areas_file = os.path.join(DATA_DIR, 'areas.json')
+    if os.path.exists(areas_file):
+        try:
+            with open(areas_file, 'r') as f:
+                areas = json.load(f)
+        except Exception as e:
+            logger.error(f"Error loading areas in admin_calendar: {str(e)}")
+
+    # Ensure the latest departments and areas are available in the calendar_data object
     calendar_data['departments'] = departments
-    
-    # Make sure department counts are up to date
+    calendar_data['locationAreas'] = areas # Add/overwrite with the fresh list
+
+    # Make sure counts are calculated using the latest data
+    # Note: calculate_location_counts now also adds areaColorMap
     calendar_data = calculate_department_counts(calendar_data)
-    # Calculate location counts (add this line)
     calendar_data = calculate_location_counts(calendar_data)
-    
-    save_project_calendar(project_id, calendar_data)
-    
+
+    # Optional: You might not need to save the calendar here just for viewing,
+    # unless count calculation modifies day objects you want to persist.
+    # Consider if save_project_calendar is needed here.
+    # save_project_calendar(project_id, calendar_data)
+
     return render_template('admin/calendar.html', project=project, calendar=calendar_data, locations=locations)
 
 @app.route('/admin/day/<project_id>/<date>', methods=['GET', 'POST'])

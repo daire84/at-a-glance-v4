@@ -253,6 +253,12 @@
   font-size: 0.75rem;
 }
 
+/* Add this rule to increase border contrast in light mode */
+body.light-theme .calendar-table th,
+body.light-theme .calendar-table td {
+  border-color: #ccc; /* Darker border for light mode */
+}
+
 /* Update table header styles to use variables */
 .calendar-table th {
   background-color: var(--table-header-bg, var(--primary-color));
@@ -287,7 +293,7 @@
 
 .second-unit-location {
   font-size: 0.7rem;
-  color: var(--text-light);
+  color: var(--text-dark);
   font-style: italic;
 }
 
@@ -596,13 +602,14 @@ body .calendar-row.has-area-color.working-weekend {
 /* === PRINT STYLES ============================ */
 /* ============================================= */
 
-/* Updated @media print section with refined styles */
+/* Enhanced @media print section with location area color fixes */
 
 @media print {
-  /* Force light theme colors for printing regardless of active theme */
-  body {
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
+  /* Global color adjustment for printing */
+  html, body {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important; /* Modern browsers */
     color: #323233 !important; /* Dark text */
     background-color: white !important;
   }
@@ -746,6 +753,10 @@ body .calendar-row.has-area-color.working-weekend {
     text-align: center !important;
     align-items: center !important;
     justify-content: center !important;
+    /* Preserve background colors in print */
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
   }
   
   /* Fixed sizes for counter labels */
@@ -796,6 +807,9 @@ body .calendar-row.has-area-color.working-weekend {
     font-weight: 500 !important;
     text-align: left !important;
     padding: 5pt 3pt !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
   }
   
   /* Ensure the extras and featured extras columns are visible */
@@ -821,32 +835,72 @@ body .calendar-row.has-area-color.working-weekend {
     background-color: white !important; 
   }
   
+  /* ENHANCED: Fix for location area colors - multiple approaches to ensure browser compatibility */
   .calendar-row.has-area-color { 
-    background-color: color-mix(in srgb, var(--row-area-color) 15%, white) !important; 
+    /* Use multiple approaches for maximum compatibility */
+    background-color: var(--row-area-color, transparent) !important;
+    /* Use attribute selector as backup */
+    background-color: attr(data-color) !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
   }
   
-  .calendar-row.weekend { 
-    background-color: #f0f0f0 !important; 
+  /* High-specificity selectors for standard row types */
+  .calendar-table tbody tr.calendar-row.weekend:not(.has-area-color) { 
+    background-color: #f0f0f0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
   }
   
-  .calendar-row.prep { 
-    background-color: #e0ffe0 !important; 
+  .calendar-table tbody tr.calendar-row.prep:not(.has-area-color) { 
+    background-color: #e0ffe0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
   }
   
-  .calendar-row.shoot { 
-    background-color: #e0f0ff !important; 
+  .calendar-table tbody tr.calendar-row.shoot:not(.has-area-color) { 
+    background-color: #e0f0ff !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
   }
   
-  .calendar-row.hiatus { 
-    background-color: #ffe0e0 !important; 
+  .calendar-table tbody tr.calendar-row.hiatus:not(.has-area-color) { 
+    background-color: #ffe0e0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
   }
   
-  .calendar-row.holiday { 
-    background-color: #fff0e0 !important; 
+  .calendar-table tbody tr.calendar-row.holiday:not(.has-area-color) { 
+    background-color: #fff0e0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
   }
   
-  .calendar-row.working-weekend { 
-    background-color: #e0f0e0 !important; 
+  .calendar-table tbody tr.calendar-row.working-weekend:not(.has-area-color) { 
+    background-color: #e0f0e0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+  
+  /* CRITICAL: Ensure location area colors take precedence over standard row types */
+  .calendar-table tbody tr.calendar-row.has-area-color.weekend,
+  .calendar-table tbody tr.calendar-row.has-area-color.prep,
+  .calendar-table tbody tr.calendar-row.has-area-color.shoot,
+  .calendar-table tbody tr.calendar-row.has-area-color.hiatus,
+  .calendar-table tbody tr.calendar-row.has-area-color.holiday,
+  .calendar-table tbody tr.calendar-row.has-area-color.working-weekend {
+    /* Inline style precedence without using invalid attr function */
+    background-color: var(--row-area-color, transparent) !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
   }
   
   /* Fixed date cell display - Make date visible and properly formatted */
@@ -872,7 +926,7 @@ body .calendar-row.has-area-color.working-weekend {
   
   /* Fixed day cell formatting - Center the day number properly */
   .day-cell {
-    font-size: 10pt !important;
+    font-size: 8pt !important;
     font-weight: 600 !important;
     color: #000 !important;
     text-align: center !important;
@@ -912,7 +966,7 @@ body .calendar-row.has-area-color.working-weekend {
   
   .location-area {
     font-size: 7pt !important;
-    color: #333 !important;
+    color: #1e1d1d !important;
     font-style: italic !important;
     display: block !important;
   }
@@ -936,6 +990,9 @@ body .calendar-row.has-area-color.working-weekend {
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
   }
   
   /* Better notes cell styling */
@@ -950,6 +1007,8 @@ body .calendar-row.has-area-color.working-weekend {
   .filter-panel, 
   .loading-overlay, 
   .admin-calendar .calendar-row,
+  .zoom-controls,
+  .scroll-hint,
   .theme-toggle-btn {
     display: none !important;
   }
@@ -966,6 +1025,11 @@ body .calendar-row.has-area-color.working-weekend {
   
   .calendar-table thead { 
     display: table-header-group; 
+  }
+  
+  /* Special class for when preparing to print - adds by JS */
+  body.preparing-to-print .calendar-row.has-area-color {
+    background-color: var(--row-area-color, transparent) !important;
   }
 }
 /* End @media print */

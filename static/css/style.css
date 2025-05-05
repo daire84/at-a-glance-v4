@@ -161,8 +161,38 @@ body {
   justify-content: flex-end; /* Align nav items to the right */
 }
 
+.main-nav ul {
+  list-style: none; /* Remove bullet points */
+  padding: 0;       /* Remove default left padding */
+  margin: 0;        /* Remove default margins */
+  display: flex;    /* Arrange items horizontally */
+  align-items: center; /* Align items vertically in the center */
+  gap: 1em;         /* Add space between navigation items */
+}
+
+.main-nav li {
+  /* No specific styles needed for basic horizontal layout */
+  /* Ensure button li aligns well */
+  display: flex;
+  align-items: center;
+}
+
 .main-nav ul li a {
   color: var(--header-text-color);
+}
+
+.main-nav a {
+  text-decoration: none; /* Remove underline */
+  color: var(--text-color); /* Use your theme's text color, or specify one like #333 */
+  padding: 0.5em 0;    /* Add some vertical padding */
+  transition: color 0.2s ease; /* Smooth transition for hover */
+}
+
+.main-nav a:hover,
+.main-nav a:focus {
+  color: var(--accent-light); /* Use your theme's primary/accent color, or specify one */
+  /* Optional: Add underline back on hover */
+  text-decoration: underline;
 }
 
 /* Navigation list */
@@ -210,6 +240,30 @@ body {
   padding: 0.4rem 0.8rem; /* Match nav-link padding */
   font-size: 0.9rem; /* Match nav-link font size */
 }
+
+/* Style the theme toggle button to blend in */
+.theme-toggle-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5em; /* Adjust padding to match links if needed */
+  font-size: 1.2em; /* Adjust icon size */
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-color); /* Match link color */
+}
+
+.theme-toggle-btn:hover,
+.theme-toggle-btn:focus {
+    color: var(--primary-color); /* Match link hover color */
+}
+
+.theme-icon {
+  font-size: 1.1em;
+}
+
 /* Add styles for the actual dropdown menu, icons etc. as needed */
 
 /* === MAIN CONTENT AREA STYLES === */
@@ -561,6 +615,10 @@ body.light-theme .admin-tabs a {
   color: var(--text-light); /* Lighter text color */
 }
 
+.mobile-menu-toggle {
+  display: none; /* Hidden by default */
+}
+
 /* === FOOTER STYLES === */
 footer {
   background-color: var(--primary-color); /* Footer background */
@@ -595,23 +653,53 @@ footer {
   }
   
   .main-nav ul {
-    flex-direction: column;
-    align-items: stretch;
+    /* Override desktop styles for mobile menu */
+    display: none; /* Hide the nav list initially */
+    flex-direction: column; /* Stack items vertically */
+    position: absolute; /* Position it absolutely */
+    top: 60px; /* Position below the header (adjust as needed) */
+    right: 0;
+    background-color: var(--background-color, white); /* Correct background */
+    border: 1px solid var(--border-color, #ccc);
+    padding: 1em;
+    gap: 0.5em; /* Adjust gap for vertical */
+    z-index: 1000; /* Ensure it's above other content */
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
   }
   
+  .main-nav.active ul { /* Add 'active' class via JS */
+    display: flex;
+  }
+
+  .main-nav li {
+    width: 100%; /* Make list items full width */
+  }
+
   .main-nav ul li {
     margin: 0;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   }
-  
+
+  .main-nav a {
+    display: block; /* Make links take full width of li */
+    padding: 0.75em 1em; /* Adjust padding for touch targets */
+    text-align: left;
+    color: var(--text-color); /* Use your theme's text color, or specify one like #333 */
+  }
+
   .main-nav ul li:last-child {
     border-bottom: none;
   }
   
   .main-nav ul li a {
-    padding: 0.75rem 1rem;
-    display: block;
+    display: block; /* Make links take full width of li */
+    padding: 0.75em 1em; /* Adjust padding for touch targets */
+    text-align: left;
+    color: var(--text-color); /* Apply the THEME text color, overriding the global --header-text-color */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* Keep your separator */
   }
+
   /* Stack admin header items vertically */
   .admin-header {
     flex-direction: column; /* Stack vertically */
@@ -641,6 +729,15 @@ footer {
   .main-nav {
       /* Add styles here to hide .main-nav and potentially show a mobile version */
       /* display: none; */
+  }
+
+  .mobile-menu-toggle {
+    display: block; /* Show the toggle button */
+    /* Style the button (background, border, color etc.) */
+    background: none;
+    border: none;
+    cursor: pointer;
+    z-index: 1001; /* Above the menu */
   }
 }
 

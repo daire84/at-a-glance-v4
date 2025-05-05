@@ -104,9 +104,19 @@
                         {% elif project.scriptColor == 'Yellow' %}#ffff99
                         {% elif project.scriptColor == 'Green' %}#90ee90
                         {% elif project.scriptColor == 'Goldenrod' %}#daa520
+                        {% elif project.scriptColor == 'Buff' %}#f0dc82
+                        {% elif project.scriptColor == 'Salmon' %}#fa8072
+                        {% elif project.scriptColor == 'Cherry' %}#de3163
+                        {% elif project.scriptColor == '2nd Blue' %}#00bfff
+                        {% elif project.scriptColor == '2nd Pink' %}#ff69b4
+                        {% elif project.scriptColor == '2nd Yellow' %}#ffeb3b
+                        {% elif project.scriptColor == '2nd Green' %}#32cd32
+                        {% elif project.scriptColor == '2nd Goldenrod' %}#b8860b
+                        {% elif project.scriptColor == '2nd Buff' %}#e6be8a
+                        {% elif project.scriptColor == '2nd Salmon' %}#e9967a
+                        {% elif project.scriptColor == '2nd Cherry' %}#c71585
                         {% else %}#ffffff{% endif %}; 
-                        color: {% if project.scriptColor == 'White' %}#000000
-                        {% elif project.scriptColor == 'Yellow' %}#000000
+                        color: {% if project.scriptColor in ["White", "Yellow", "Buff", "2nd Yellow", "2nd Buff"] %}#000000
                         {% else %}#ffffff{% endif %};">
                         {{ project.scriptColor }}
                     </span>
@@ -167,12 +177,13 @@
                 </label>
             </div>
         </div>
-        
+
         <div class="filter-section">
             <h5>Filter Stats</h5>
             <div class="stats-row">
                 <div>Days: <span id="filter-stats-visible">--</span> / <span id="filter-stats-total">--</span></div>
                 <div>Shoot Days: <span id="filter-stats-shoot-days">--</span></div>
+                <div>Second Unit: <span id="filter-stats-second-unit">--</span></div>
             </div>
         </div>
         
@@ -216,21 +227,23 @@
         </div>
     </div>
 
-        <div class="location-areas">
-            {% if calendar.locationAreas and calendar.locationAreas|length > 0 %}
-            <h4 class="areas-title">Location Areas</h4>
-            <div class="area-tags">
-                {% for area in calendar.locationAreas %}
-                <div class="area-tag" style="background-color: {{ area.color }}">
-                    {{ area.name }}
-                    {% if calendar.areaCounts and area.id in calendar.areaCounts %}
-                    <div class="area-count">{{ calendar.areaCounts[area.id] }}</div>
-                    {% endif %}
-                </div>
-                {% endfor %}
+    {% if calendar.locationAreas and calendar.locationAreas|length > 0 %}
+    <div class="location-areas">
+        <h4 class="areas-title">Location Areas</h4>
+        <div class="area-tags">
+            {% for area in calendar.locationAreas %}
+            <div class="area-tag" style="background-color: {{ area.color }}">
+                {{ area.name }}
+                {% if calendar.areaCounts and area.id in calendar.areaCounts %}
+                <div class="area-count">{{ calendar.areaCounts[area.id] }}</div>
+                {% else %}
+                <div class="area-count">0</div>
+                {% endif %}
             </div>
+            {% endfor %}
         </div>
-        {% endif %}
+    </div>
+    {% endif %}
     
     <div class="location-counters">
         <h4 class="counter-title">Location Counts</h4>
@@ -268,7 +281,7 @@
             {% endif %}
         </div>
     </div>
-    
+
     <div class="calendar-mobile-controls">
         <div class="zoom-controls">
             <button class="zoom-button zoom-out" aria-label="Zoom out">
@@ -310,6 +323,7 @@
                     <th class="sequence-col">Sequence</th>
                     <th class="departments-col">Department Tags</th>
                     <th class="notes-col">Notes</th>
+                    <th class="second-unit-col">Second Unit</th>
                 </tr>
             </thead>
             <tbody>
@@ -317,8 +331,11 @@
                 <tr class="calendar-row {% if day.dayType %}{{ day.dayType }}{% elif day.isWeekend %}weekend{% elif day.isHoliday %}holiday{% elif day.isHiatus %}hiatus{% elif day.isPrep %}prep{% elif day.isShootDay %}shoot{% endif %} {% if day.locationArea %}has-area-color{% endif %}" 
                 data-date="{{ day.date }}" 
                 data-area="{{ day.locationArea }}"
-                {% if day.locationArea and calendar.locationAreas %}
-                style="--row-area-color: {% for area in calendar.locationAreas %}{% if area.name == day.locationArea %}{{ area.color }}{% endif %}{% endfor %};"
+                {# Use locationAreaId for more reliable color lookup #}
+                {% if day.locationAreaId and calendar.locationAreas %}
+                style="--row-area-color: {% for area in calendar.locationAreas %}{% if area.id == day.locationAreaId %}{{ area.color }}{% endif %}{% endfor %};"
+                {# data-color attribute might not be needed if using CSS variable, but update it too #}
+                data-color="{% for area in calendar.locationAreas %}{% if area.id == day.locationAreaId %}{{ area.color }}{% endif %}{% endfor %}"
                 {% endif %}
                 >
                     <td class="date-cell">
@@ -344,6 +361,16 @@
                         {% endfor %}
                     </td>
                     <td class="notes-cell">{{ day.notes }}</td>
+                    <td class="second-unit-cell">
+                        {% if day.secondUnit %}
+                        <div class="second-unit-content">
+                            <div class="second-unit-description">{{ day.secondUnit }}</div>
+                            {% if day.secondUnitLocation %}
+                            <div class="second-unit-location">{{ day.secondUnitLocation }}</div>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>

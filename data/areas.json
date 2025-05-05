@@ -1,12 +1,12 @@
 [
   {
     "name": "Dublin North",
-    "color": "#74b5fb",
+    "color": "#a1cdfc",
     "id": "north"
   },
   {
     "name": "Dublin South",
-    "color": "#d18989",
+    "color": "#e3b0b0",
     "id": "south"
   },
   {
@@ -16,7 +16,7 @@
   },
   {
     "name": "Ardmore Studios",
-    "color": "#9a4bfb",
+    "color": "#bb98fb",
     "id": "ardmore"
   },
   {
@@ -26,7 +26,7 @@
   },
   {
     "name": "Spain",
-    "color": "#e486fe",
+    "color": "#c660e2",
     "id": "4459abff-cd87-4fdc-a238-1ff355b2e970"
   }
 ]

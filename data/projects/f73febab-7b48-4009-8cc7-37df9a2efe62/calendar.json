@@ -230,7 +230,8 @@
       ],
       "notes": "This isnt real",
       "secondUnit": "",
-      "secondUnitLocation": ""
+      "secondUnitLocation": "",
+      "locationAreaId": "ardmore"
     },
     {
       "date": "2025-03-26",
@@ -260,7 +261,8 @@
       ],
       "notes": "THIS IS A NOTE",
       "secondUnit": "",
-      "secondUnitLocation": ""
+      "secondUnitLocation": "",
+      "locationAreaId": "ardmore"
     },
     {
       "date": "2025-03-27",
@@ -291,7 +293,8 @@
       ],
       "notes": "",
       "secondUnit": "",
-      "secondUnitLocation": ""
+      "secondUnitLocation": "",
+      "locationAreaId": "ardmore"
     },
     {
       "date": "2025-03-28",
@@ -319,7 +322,8 @@
       ],
       "notes": "How is your day?",
       "secondUnit": "",
-      "secondUnitLocation": ""
+      "secondUnitLocation": "",
+      "locationAreaId": "wicklow"
     },
     {
       "date": "2025-03-29",
@@ -421,7 +425,8 @@
       "departments": [],
       "notes": "",
       "secondUnit": "",
-      "secondUnitLocation": ""
+      "secondUnitLocation": "",
+      "locationAreaId": "south"
     },
     {
       "date": "2025-04-02",
@@ -445,17 +450,6 @@
       "locationArea": "Dublin South",
       "sequence": "",
       "departments": [
-        "ANI",
-        "CST",
-        "CR",
-        "FDS",
-        "INT",
-        "LL",
-        "PR",
-        "SFX",
-        "ST",
-        "STN",
-        "UW",
         "VFX"
       ],
       "notes": "",
@@ -486,7 +480,8 @@
       "departments": [],
       "notes": "",
       "secondUnit": "",
-      "secondUnitLocation": ""
+      "secondUnitLocation": "",
+      "locationAreaId": "north"
     },
     {
       "date": "2025-04-04",
@@ -618,7 +613,8 @@
       ],
       "notes": "Yes sir ",
       "secondUnit": "",
-      "secondUnitLocation": ""
+      "secondUnitLocation": "",
+      "locationAreaId": "4459abff-cd87-4fdc-a238-1ff355b2e970"
     },
     {
       "date": "2025-04-09",
@@ -2208,26 +2204,19 @@
     }
   ],
   "departmentCounts": {
-    "sfx": 5,
-    "stn": 4,
-    "crane": 1,
-    "stead": 2,
-    "pros": 2,
-    "ll": 1,
+    "sfx": 4,
+    "stn": 3,
+    "crane": 0,
+    "stead": 1,
+    "pros": 1,
+    "ll": 0,
     "vfx": 3,
-    "ani": 1,
-    "uw": 1,
-    "d5d255c0-b909-452e-9d7e-5681db738e58": 3,
-    "11c71102-9c7e-4514-a7d4-b4e40b9c174d": 5,
-    "b2a632d2-844d-41e7-bdcf-1fc5c1602006": 3,
+    "ani": 0,
+    "uw": 0,
+    "d5d255c0-b909-452e-9d7e-5681db738e58": 2,
+    "11c71102-9c7e-4514-a7d4-b4e40b9c174d": 4,
+    "b2a632d2-844d-41e7-bdcf-1fc5c1602006": 2,
     "257de5dc-f04a-4285-8d6e-3ca68c9c3b97": 0,
-    "stunts": 0,
-    "steadicam": 0,
-    "prosthetics": 0,
-    "lowLoader": 0,
-    "animals": 0,
-    "underwater": 0,
-    "intimacy": 0,
     "main": 58,
     "secondUnit": 1,
     "sixthDay": 1,
@@ -2374,5 +2363,19 @@
       "color": "#4ae35c",
       "id": "257de5dc-f04a-4285-8d6e-3ca68c9c3b97"
     }
-  ]
+  ],
+  "areaColorMap": {
+    "north": "#a1cdfc",
+    "Dublin North": "#a1cdfc",
+    "south": "#e3b0b0",
+    "Dublin South": "#e3b0b0",
+    "wicklow": "#ffcb3d",
+    "Wicklow": "#ffcb3d",
+    "ardmore": "#bb98fb",
+    "Ardmore Studios": "#bb98fb",
+    "ashford": "#ffd8e6",
+    "Ashford Studios": "#ffd8e6",
+    "4459abff-cd87-4fdc-a238-1ff355b2e970": "#c660e2",
+    "Spain": "#c660e2"
+  }
 }
