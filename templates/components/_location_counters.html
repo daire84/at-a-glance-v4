@@ -1,0 +1,36 @@
+<div class="location-counters">
+    <h4 class="counter-title">Location Counts</h4>
+    <div class="counter-grid">
+        {% if calendar.locationCounts %}
+            {% for location, count in calendar.locationCounts.items() %}
+                {% if count > 0 %}
+                    {% set area_color = "#f8f9fa" %}
+                    {% set location_area = None %}
+
+                    {% for loc in locations %}
+                        {% if loc.name == location %}
+                            {% set location_area = loc.areaId %}
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if location_area %}
+                        {% for area in calendar.locationAreas %}
+                            {% if area.id == location_area %}
+                                {% set area_color = area.color %}
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+
+                    <div class="counter-item" style="background-color: {{ area_color }};">
+                        <div class="counter-label">{{ location }}</div>
+                        <div class="counter-value">{{ count }}</div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <p>No location counts available</p>
+            </div>
+        {% endif %}
+    </div>
+</div>

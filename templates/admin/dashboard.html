@@ -16,10 +16,14 @@
 
 <!-- Admin Navigation Tabs -->
 <div class="admin-tabs">
-    <a href="/admin" class="active">Projects</a>
-    <a href="/admin/locations">Locations</a>
-    <a href="/admin/departments">Departments</a>
-    <a href="/admin/dates">Special Dates</a>
+    {# Points to the 'admin_dashboard' function in the 'admin' blueprint #}
+    <a href="{{ url_for('admin.admin_dashboard') }}" class="active">Projects</a>
+    {# Points to the 'admin_locations' function in the 'admin' blueprint #}
+    <a href="{{ url_for('admin.admin_locations') }}">Locations</a>
+    {# Points to the 'admin_departments' function in the 'admin' blueprint #}
+    <a href="{{ url_for('admin.admin_departments') }}">Departments</a>
+    {# Points to the 'admin_dates' function in the 'admin' blueprint (without project_id for the main link) #}
+    <a href="{{ url_for('admin.admin_dates') }}">Special Dates</a>
 </div>
 
 <div class="project-list admin-projects">
@@ -42,9 +46,12 @@
                     </div>
                     <div class="project-card-footer">
                         <div class="button-group">
-                            <a href="/admin/project/{{ project.id }}" class="button small">Edit Details</a>
-                            <a href="/admin/calendar/{{ project.id }}" class="button small">Edit Calendar</a>
-                            <a href="/viewer/{{ project.id }}" class="button small secondary">View</a>
+                            {# Points to 'admin_project' function, passing the specific project.id #}
+                            <a href="{{ url_for('admin.admin_project', project_id=project.id) }}" class="button small">Edit Details</a>
+                            {# Points to 'admin_calendar' function, passing the specific project.id #}
+                            <a href="{{ url_for('admin.admin_calendar', project_id=project.id) }}" class="button small">Edit Calendar</a>
+                            {# Points to the 'viewer' function in the 'main' blueprint, passing project.id #}
+                            <a href="{{ url_for('main.viewer', project_id=project.id) }}" class="button small secondary">View</a>
                         </div>
                     </div>
                 </div>

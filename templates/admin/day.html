@@ -3,8 +3,8 @@
 {% block title %}Edit Day - {{ day.date }} - Schedule, At a Glance!{% endblock %}
 
 {% block styles %}
-<link rel="stylesheet" href="/static/css/forms.css">
-<link rel="stylesheet" href="/static/css/calendar.css">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/forms.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/calendar.css') }}">
 {% endblock %}
 
 {% block content %}
@@ -15,9 +15,11 @@
         {% else %}
             Edit Shoot Day {{ day.shootDay if day.shootDay }}
         {% endif %}
+         <span style="font-weight: normal; font-size: 0.9em;">({{ day.date }})</span> {# Added date to header #}
     </h2>
     <div class="admin-actions">
-        <a href="/admin/calendar/{{ project.id }}" class="button secondary">Back to Calendar</a>
+        {# Points to 'admin_calendar' function in 'admin' blueprint, passing project_id #}
+        <a href="{{ url_for('admin.admin_calendar', project_id=project.id) }}" class="button secondary">Back to Calendar</a>
     </div>
 </div>
 
@@ -128,7 +130,7 @@
         </div>
         
         <div class="form-actions">
-            <a href="/admin/calendar/{{ project.id }}" class="button secondary">Cancel</a>
+            <a href="{{ url_for('admin.admin_calendar', project_id=project.id) }}" class="button secondary">Cancel</a>
             <button type="submit" class="button">Save Changes</button>
         </div>
     </form>

@@ -2,10 +2,16 @@
 
 {% block title %}Page Not Found - Film Production Scheduler{% endblock %}
 
+{# Optionally add specific styles for error pages if needed #}
+{# {% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/errors.css') }}">
+{% endblock %} #}
+
 {% block content %}
-<div class="error-container">
+<div class="error-container" style="text-align: center; padding: 2rem;"> {# Added some inline style for basic layout #}
     <h2>404 - Page Not Found</h2>
     <p>The page you're looking for doesn't exist or has been moved.</p>
-    <a href="/" class="button">Go to Home Page</a>
+    {# Points to the 'index' function in the 'main' blueprint #}
+    <a href="{{ url_for('main.index') }}" class="button">Go to Home Page</a>
 </div>
 {% endblock %}

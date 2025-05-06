@@ -3,7 +3,7 @@
 {% block title %}{{ 'New Project' if not project.id else 'Edit Project' }} - Film Production Scheduler{% endblock %}
 
 {% block styles %}
-<link rel="stylesheet" href="/static/css/forms.css">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/forms.css') }}">
 {% endblock %}
 
 {% block content %}
@@ -11,9 +11,11 @@
     <h2>{{ 'Create New Project' if not project.id else 'Edit Project Details' }}</h2>
     <div class="admin-actions">
         {% if project.id %}
-        <a href="/admin/calendar/{{ project.id }}" class="button">Go to Calendar</a>
+            {# Points to 'admin_calendar' function in 'admin' blueprint, passing project.id #}
+            <a href="{{ url_for('admin.admin_calendar', project_id=project.id) }}" class="button">Go to Calendar</a>
         {% endif %}
-        <a href="/admin" class="button secondary">Back to Dashboard</a>
+        {# Points to 'admin_dashboard' function in 'admin' blueprint #}
+        <a href="{{ url_for('admin.admin_dashboard') }}" class="button secondary">Back to Dashboard</a>
     </div>
 </div>
 
@@ -159,12 +161,13 @@
         </div>
         
         <div class="form-actions">
-            <a href="/admin" class="button secondary">Cancel</a>
+            {# Points to 'admin_dashboard' function in 'admin' blueprint #}
+            <a href="{{ url_for('admin.admin_dashboard') }}" class="button secondary">Cancel</a>
             <button type="submit" class="button">Save Project</button>
         </div>
-    </form>
-</div>
-{% endblock %}
+    </form> {# Removed the extra closing </div> tag from the original snippet #}
+    
+    {% endblock %}
 
 {% block scripts %}
 <script>

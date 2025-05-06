@@ -3,7 +3,7 @@
 {% block title %}Department Management - Schedule, At a Glance!{% endblock %}
 
 {% block styles %}
-<link rel="stylesheet" href="/static/css/admin/departments.css">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin/departments.css') }}">
 {% endblock %}
 
 {% block content %}
@@ -11,16 +11,21 @@
     <h2>Department Management</h2>
     <div class="admin-actions">
         <button id="add-department-btn" class="button">Add Department</button>
-        <a href="/admin" class="button secondary">Back to Dashboard</a>
+        {# Points to 'admin_dashboard' function in 'admin' blueprint #}
+        <a href="{{ url_for('admin.admin_dashboard') }}" class="button secondary">Back to Dashboard</a>
     </div>
 </div>
 
 <!-- Admin Navigation Tabs -->
 <div class="admin-tabs">
-    <a href="/admin">Projects</a>
-    <a href="/admin/locations">Locations</a>
-    <a href="/admin/departments" class="active">Departments</a>
-    <a href="/admin/dates">Special Dates</a>
+    {# Points to 'admin_dashboard' function in 'admin' blueprint #}
+    <a href="{{ url_for('admin.admin_dashboard') }}">Projects</a>
+    {# Points to 'admin_locations' function in 'admin' blueprint #}
+    <a href="{{ url_for('admin.admin_locations') }}">Locations</a>
+    {# Points to 'admin_departments' function in 'admin' blueprint #}
+    <a href="{{ url_for('admin.admin_departments') }}" class="active">Departments</a>
+    {# Points to 'admin_dates' function in 'admin' blueprint #}
+    <a href="{{ url_for('admin.admin_dates') }}">Special Dates</a>
 </div>
 
 <div class="content-container">

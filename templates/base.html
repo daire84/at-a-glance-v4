@@ -3,23 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Favicon links -->
-    <link rel="icon" type="image/svg+xml" href="/static/images/favicon.svg">
-    <link rel="icon" type="image/png" sizes="96x96" href="/static/images/favicon-96x96.png">
-    <link rel="shortcut icon" href="/static/images/favicon.ico">
-    <link rel="apple-touch-icon" href="/static/images/apple-touch-icon.png">
-    <link rel="manifest" href="/static/images/site.webmanifest">
-    
-    <title>{% block title %}Your Schedule, At a Glance!{% endblock %}</title>
-    <link rel="stylesheet" href="/static/css/style.css">
-    <link rel="stylesheet" href="/static/css/components/modals.css">
+    {# Use url_for for all static assets #}
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='images/favicon.svg') }}">
+    <link rel="icon" type="image/png" sizes="96x96" href="{{ url_for('static', filename='images/favicon-96x96.png') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/apple-touch-icon.png') }}">
+    <link rel="manifest" href="{{ url_for('static', filename='images/site.webmanifest') }}">
+
+    <title>{% block title %}Your Schedule, At a Glance!{% endblock %}</title> {# Kept your default title #}
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/modals.css') }}">
     {% block styles %}{% endblock %}
 </head>
-<body>
+{# Add class for theme handling - Ensure theme-toggle.js sets this class #}
+<body class="{{ session.get('theme', 'dark') }}-theme">
     <header class="main-header">
         <div class="container">
-            <h1>Your Schedule, At a Glance!</h1>
-            
+             {# Link site title back to appropriate dashboard using url_for #}
+             <h1><a href="{{ url_for('admin.admin_dashboard') if session.get('user_role') == 'admin' else url_for('main.index') }}" style="color: inherit; text-decoration: none;">Your Schedule, At a Glance!</a></h1>
+
             <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Menu">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="menu-icon">
                     <line x1="3" y1="12" x2="21" y2="12"></line>
@@ -27,96 +30,90 @@
                     <line x1="3" y1="18" x2="21" y2="18"></line>
                 </svg>
             </button>
-            
+
             <nav class="main-nav" id="main-nav">
-                <ul>
-                    <li><a href="/">Dashboard</a></li>
-                    
+                <ul class="nav-list"> {# Use nav-list class from style.css #}
+                    {# Link to 'index' function in 'main' blueprint (Viewer Dashboard/Project List) #}
+                    <li class="nav-item"><a href="{{ url_for('main.index') }}" class="nav-link">Dashboard</a></li>
+
                     {% if session.get('user_role') == 'admin' %}
-                        <li><a href="/admin">Admin</a></li>
+                        {# Link to 'admin_dashboard' function in 'admin' blueprint #}
+                        <li class="nav-item"><a href="{{ url_for('admin.admin_dashboard') }}" class="nav-link">Admin</a></li>
                     {% endif %}
-                    
+
                     {% if session.get('user_role') %}
-                        <li><a href="/logout">Logout</a></li>
+                        {# Link to 'logout' function in 'auth' blueprint #}
+                        <li class="nav-item"><a href="{{ url_for('auth.logout') }}" class="nav-link">Logout</a></li>
                     {% else %}
-                        <li><a href="/login">Login</a></li>
+                         {# Link to 'login' function in 'auth' blueprint (Viewer Login) #}
+                        <li class="nav-item"><a href="{{ url_for('auth.login') }}" class="nav-link">Login</a></li>
                     {% endif %}
-                    
-                    <li>
-                      <button id="theme-toggle" class="theme-toggle-btn">
-                        <span class="theme-icon">☀️</span>
-                      </button>
+
+                    {# Theme Toggle Button Placement #}
+                    <li class="nav-item">
+                         <button id="theme-toggle-btn" class="theme-toggle-btn" aria-label="Toggle theme">
+                             <span class="theme-icon"></span> {# Icon likely added via theme-toggle.js #}
+                         </button>
                     </li>
                 </ul>
             </nav>
         </div>
     </header>
 
-    {% if get_flashed_messages() %}
-    <div class="flash-messages">
-        <div class="container">
-            {% for category, message in get_flashed_messages(with_categories=true) %}
-            <div class="flash-message {{ category }}">
-                {{ message }}
-                <button class="close-button">&times;</button>
-            </div>
-            {% endfor %}
+    {# Flash Messages Section - Moved outside <main> for better layout often #}
+    {# Check if get_flashed_messages returns anything before rendering the container #}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {# Removed extra container div, assuming flash-messages class handles width/margins #}
+        <div class="flash-messages container"> {# Added container class here #}
+              {% for category, message in messages %}
+                {# Added type="button" to close button #}
+                <div class="flash-message {{ category }}">{{ message }}
+                     <button type="button" class="close-button" onclick="this.parentElement.style.display='none';">&times;</button>
+                </div>
+              {% endfor %}
         </div>
-    </div>
-    {% endif %}
-    
+      {% endif %}
+    {% endwith %}
+
     <main>
         <div class="container">
             {% block content %}{% endblock %}
         </div>
     </main>
-    
+
     <footer>
         <div class="container">
+             {# Kept your footer text #}
             <p>Your Schedule, At a Glance! v1</p>
         </div>
     </footer>
-    
+
+    {# Combined JS blocks #}
     <script>
         // Close flash messages
         document.addEventListener('DOMContentLoaded', function() {
-            // Flash messages
             document.querySelectorAll('.flash-message .close-button').forEach(function(button) {
                 button.addEventListener('click', function() {
                     this.parentElement.style.display = 'none';
                 });
             });
-            
-            // Dropdown menu
-            const adminDropdownToggle = document.getElementById('admin-dropdown-toggle');
-            const adminDropdownMenu = document.getElementById('admin-dropdown-menu');
-            
-            if (adminDropdownToggle && adminDropdownMenu) {
-                adminDropdownToggle.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    adminDropdownMenu.classList.toggle('active');
-                });
-                
-                // Close dropdown when clicking outside
-                document.addEventListener('click', function(e) {
-                    if (!e.target.closest('.nav-dropdown') && adminDropdownMenu.classList.contains('active')) {
-                        adminDropdownMenu.classList.remove('active');
-                    }
-                });
-            }
-            
-            // Mobile menu
+
+            // Mobile menu toggle logic
             const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
             const mainNav = document.getElementById('main-nav');
-            
             if (mobileMenuToggle && mainNav) {
                 mobileMenuToggle.addEventListener('click', function() {
+                    // Use a class like 'active' or 'is-open' defined in your CSS
                     mainNav.classList.toggle('active');
                 });
             }
+
+            // Removed admin dropdown logic as elements weren't in HTML provided
         });
     </script>
-    {% block scripts %}{% endblock %}
-    <script src="/static/js/theme-toggle.js"></script>
+    {# Use url_for for theme toggle JS #}
+    <script src="{{ url_for('static', filename='js/theme-toggle.js') }}"></script>
+    {% block scripts %}{% endblock %} {# For page-specific scripts #}
 </body>
 </html>

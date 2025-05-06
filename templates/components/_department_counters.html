@@ -1,0 +1,32 @@
+<div class="department-counters">
+    <h4 class="counter-title">Department Counts</h4>
+    <div class="counter-grid">
+        <div class="counter-item" style="background-color: #fffbc8;">
+            <div class="counter-label">Main Unit</div>
+            <div class="counter-value">{{ calendar.departmentCounts.main or 0 }}</div>
+        </div>
+        <div class="counter-item" style="background-color: #ffd8d8;">
+            <div class="counter-label">Second Unit</div>
+            <div class="counter-value">{{ calendar.departmentCounts.secondUnit or 0 }}</div>
+        </div>
+        <div class="counter-item" style="background-color: #d4e9ff;">
+            <div class="counter-label">Split Day</div>
+            <div class="counter-value">{{ calendar.departmentCounts.splitDay or 0 }}</div>
+        </div>
+        <div class="counter-item" style="background-color: #ffccc8;">
+            <div class="counter-label">6th Day</div>
+            <div class="counter-value">{{ calendar.departmentCounts.sixthDay or 0 }}</div>
+        </div>
+
+        {% if calendar.departments %}
+            {% for dept in calendar.departments %}
+                {% if dept.id in calendar.departmentCounts %}
+                <div class="counter-item" style="background-color: {{ dept.color }};">
+                    <div class="counter-label">{{ dept.name }}</div>
+                    <div class="counter-value">{{ calendar.departmentCounts[dept.id] or 0 }}</div>
+                </div>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </div>
+</div>

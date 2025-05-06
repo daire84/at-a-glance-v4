@@ -2,10 +2,18 @@
 
 {% block title %}Server Error - Film Production Scheduler{% endblock %}
 
+{# Optionally add specific styles for error pages if needed #}
+{# {% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/errors.css') }}">
+{% endblock %} #}
+
 {% block content %}
-<div class="error-container">
+<div class="error-container" style="text-align: center; padding: 2rem;"> {# Added some inline style for basic layout #}
     <h2>500 - Server Error</h2>
-    <p>Something went wrong on the server. Please try again later.</p>
-    <a href="/" class="button">Go to Home Page</a>
+    <p>Something went wrong on the server. We've been notified and will look into it. Please try again later.</p> {# Slightly more informative message #}
+    {# Points to the 'index' function in the 'main' blueprint #}
+    <a href="{{ url_for('main.index') }}" class="button">Go to Home Page</a>
+    {# Optionally add a link to logout or contact support #}
+    {# <a href="{{ url_for('auth.logout') }}" class="button secondary">Logout</a> #}
 </div>
 {% endblock %}

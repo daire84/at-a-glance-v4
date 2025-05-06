@@ -1,35 +1,52 @@
 {% extends "base.html" %}
 
-{% block title %}Admin Login - Your Schedule, At a Glance!{% endblock %}
+{% block title %}Admin Login - Film Scheduler{% endblock %}
 
 {% block styles %}
-<link rel="stylesheet" href="/static/css/forms.css">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/forms.css') }}">
 {% endblock %}
 
 {% block content %}
 <div class="content-container login-container">
     <h2>Admin Login</h2>
-    
+
+    {# Standard Flask flash message handling #}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-messages">
+          {% for category, message in messages %}
+            <div class="flash-message {{ category }}">{{ message }}
+                <button type="button" class="close-button" onclick="this.parentElement.style.display='none';">&times;</button>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    {# Display specific login error if passed from the route #}
     {% if error %}
     <div class="flash-message error">
         {{ error }}
-        <button class="close-button">&times;</button>
+        <button type="button" class="close-button" onclick="this.parentElement.style.display='none';">&times;</button>
     </div>
     {% endif %}
-    
-    <form method="POST" class="form-container">
+
+    {# **** THIS FORM ACTION IS THE KEY DIFFERENCE **** #}
+    {# Form posts back to the 'admin_login' function in the 'auth' blueprint #}
+    <form method="POST" action="{{ url_for('auth.admin_login', next=request.args.get('next')) }}" class="form-container">
         <div class="form-section">
             <div class="form-row">
                 <div class="form-group full-width">
-                    <label for="password">Admin Password</label>
+                    <label for="password">Admin Password</label> {# Changed label slightly for clarity #}
                     <input type="password" id="password" name="password" required>
                 </div>
             </div>
         </div>
-        
+
         <div class="form-actions">
             <button type="submit" class="button">Login</button>
-            <a href="{{ url_for('login') }}" class="button secondary">Viewer Login</a>
+            {# Optional: Link back to viewer login if needed #}
+            {# <a href="{{ url_for('auth.login') }}" class="button secondary">Viewer Login</a> #}
         </div>
     </form>
 </div>

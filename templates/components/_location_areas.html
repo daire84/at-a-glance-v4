@@ -1,0 +1,17 @@
+{% if calendar.locationAreas and calendar.locationAreas|length > 0 %}
+<div class="location-areas">
+    <h4 class="areas-title">Location Areas</h4>
+    <div class="area-tags">
+        {% for area in calendar.locationAreas %}
+        <div class="area-tag" style="background-color: {{ area.color }}">
+            {{ area.name }}
+            {% if calendar.areaCounts and area.id in calendar.areaCounts %}
+            <div class="area-count">{{ calendar.areaCounts[area.id] }}</div>
+            {% else %}
+            <div class="area-count">0</div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
