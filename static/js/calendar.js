@@ -694,5 +694,27 @@ document.addEventListener('DOMContentLoaded', function() {
         console.error("Error during zoom control setup:", error);
     }
 
+    // --- 7. Sticky Header Enhancement --- ADD THIS NEW SECTION HERE
+    try {
+        // Add sticky header effects
+        const tableWrappers = document.querySelectorAll('.calendar-table-wrapper');
+        
+        tableWrappers.forEach(wrapper => {
+            // Add shadow to header on scroll
+            wrapper.addEventListener('scroll', function() {
+                const thead = this.querySelector('thead');
+                if (this.scrollTop > 0) {
+                    thead.classList.add('scrolled');
+                } else {
+                    thead.classList.remove('scrolled');
+                }
+            });
+        });
+        
+        console.log("Sticky header enhancement added");
+    } catch (error) {
+        console.error("Error setting up sticky header:", error);
+    }
+    
     console.log("All initializers called.");
 });
