@@ -4,19 +4,34 @@
  */
 
 document.addEventListener('DOMContentLoaded', function() {
+    console.log("Initializing calendar drag and drop...");
+    
     // Only initialize in admin calendar page
-    if (!document.querySelector('.admin-calendar')) {
+    const adminCalendar = document.querySelector('.admin-calendar');
+    if (!adminCalendar) {
+        console.log("Admin calendar not found, skipping drag and drop initialization");
         return;
     }
 
-    console.log('Initializing enhanced calendar drag and drop functionality');
+    // Add diagnostic class to body for debugging
+    document.body.classList.add('drag-drop-initialized');
+    console.log("Drag and drop initialization started for admin calendar");
 
     // Elements
-    const rows = document.querySelectorAll('.calendar-row');
+    const calendarRows = document.querySelectorAll('.calendar-row');
     let draggedRow = null;
     
+    // Get project ID
+    const projectIdElement = document.getElementById('project-id');
+    if (!projectIdElement) {
+        console.error("Project ID element not found - drag and drop cannot be initialized");
+        return;
+    }
+    const projectId = projectIdElement.value;
+    console.log(`Initializing drag and drop for project ID: ${projectId}`);
+    
     // Make days with shoot day numbers draggable
-    rows.forEach(row => {
+    calendarRows.forEach(row => {
         const shootDayCell = row.querySelector('.day-cell');
         const hasShootDay = shootDayCell && shootDayCell.textContent && shootDayCell.textContent.trim() !== '';
         
@@ -28,6 +43,9 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Drag start
             row.addEventListener('dragstart', function(e) {
+                // Prevent default click navigation during drag
+                e.stopPropagation();
+                
                 // Set data transfer
                 const date = this.getAttribute('data-date');
                 const shootDay = this.querySelector('.day-cell').textContent.trim();
@@ -45,22 +63,35 @@ document.addEventListener('DOMContentLoaded', function() {
                 draggedRow = this;
                 setTimeout(() => {
                     this.classList.add('dragging');
+                    // Add class to body to signal drag is in progress
+                    document.body.classList.add('calendar-dragging');
                 }, 0);
                 
                 console.log('Started dragging:', date, 'with shoot day', shootDay);
             });
             
             // Drag end
-            row.addEventListener('dragend', function() {
+            row.addEventListener('dragend', function(e) {
+                // Prevent default click navigation during drag
+                e.stopPropagation();
+                
                 this.classList.remove('dragging');
-                rows.forEach(r => r.classList.remove('drop-target'));
+                document.querySelectorAll('.calendar-row').forEach(r => r.classList.remove('drop-target'));
+                document.body.classList.remove('calendar-dragging');
                 draggedRow = null;
+                
+                console.log('Ended dragging');
             });
+        } else {
+            // Ensure non-shoot days aren't draggable
+            row.removeAttribute('draggable');
+            row.classList.remove('draggable');
+            row.style.cursor = '';
         }
     });
     
     // Set up drop zones
-    rows.forEach(row => {
+    calendarRows.forEach(row => {
         // Drag over - all rows can be drop targets
         row.addEventListener('dragover', function(e) {
             if (draggedRow && this !== draggedRow) {
@@ -76,7 +107,11 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Drop
         row.addEventListener('drop', function(e) {
+            // Prevent default behavior
             e.preventDefault();
+            e.stopPropagation();
+            
+            // Remove drop target styling
             this.classList.remove('drop-target');
             
             // Get source day information
@@ -86,9 +121,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Try to get the detailed JSON data first
                 const dayInfo = JSON.parse(e.dataTransfer.getData('application/json'));
                 sourceDate = dayInfo.date;
+                console.log('Drop with JSON data:', dayInfo);
             } catch (err) {
                 // Fallback to simple text
                 sourceDate = e.dataTransfer.getData('text/plain');
+                console.log('Drop with text data:', sourceDate);
             }
             
             targetDate = this.getAttribute('data-date');
@@ -133,10 +170,6 @@ document.addEventListener('DOMContentLoaded', function() {
         // Show loading overlay
         showLoading('Moving shoot day...');
         
-        // Get project ID from URL
-        const pathParts = window.location.pathname.split('/');
-        const projectId = pathParts[pathParts.length - 1];
-        
         // Send API request
         fetch(`/api/projects/${projectId}/calendar/move-day`, {
             method: 'POST',
@@ -144,8 +177,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                sourceDate: sourceDate,
-                targetDate: targetDate,
+                fromDate: sourceDate,
+                toDate: targetDate,
                 mode: 'swap' // Tell backend to use swap mode
             })
         })
@@ -260,4 +293,7 @@ document.addEventListener('DOMContentLoaded', function() {
             document.body.removeChild(overlay);
         }
     }
+    
+    // Signal initialization complete
+    console.log("Calendar drag and drop initialization complete");
 });

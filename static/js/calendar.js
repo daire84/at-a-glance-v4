@@ -75,14 +75,6 @@ function checkIfScrollable() {
 
 /**
  * Enhance location counters with proper color coding from location data
- * This function seems intended to ensure text contrast on counters.
- * NOTE: Ensure the logic here correctly targets what you intend.
- * It currently looks for `data-area-color` which might not be set
- * on the `.location-counters .counter-item` elements directly.
- * You might need to adjust the logic to get the intended color.
- */
-/**
- * Enhance location counters with proper color coding from location data
  */
 function enhanceLocationCounters() {
     console.log("Enhancing location counters with proper colors");
@@ -114,27 +106,6 @@ function enhanceLocationCounters() {
       // Ensure text contrast is appropriate for the background color
       ensureTextContrast(counter);
     });
-  }
-
-/**
- * Ensure text has proper contrast with background color.
- * Sets element's color style to black or white based on brightness.
- * (This definition should already be present from the previous step, ensure it is)
- * @param {HTMLElement} element - The element to check contrast for.
- */
-function ensureTextContrast(element) {
-    const bgColor = window.getComputedStyle(element).backgroundColor;
-    const rgbMatch = bgColor.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*[\d.]+)?\)/);
-    if (rgbMatch) {
-        const r = parseInt(rgbMatch[1]);
-        const g = parseInt(rgbMatch[2]);
-        const b = parseInt(rgbMatch[3]);
-        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-        element.style.color = brightness > 128 ? '#000000' : '#ffffff';
-    } else {
-        // Fallback if color couldn't be parsed (e.g., transparent)
-        element.style.color = '#000000'; // Default to dark text
-    }
 }
 
 // =======================================
@@ -170,8 +141,8 @@ function getLocationAreas() {
     console.log("Detected Location Areas:", areas);
     return areas;
 }
-// Make available globally if needed by other scripts?
-// window.getLocationAreas = getLocationAreas;
+// Make it available globally for other scripts
+window.getLocationAreas = getLocationAreas;
 
 /**
  * Apply location area colors as CSS variables to calendar rows.
@@ -209,10 +180,10 @@ function applyLocationAreaColors(areas) {
         }
       }
     });
-  }
+}
 
-// Make available globally if needed?
-// window.applyLocationAreaColors = applyLocationAreaColors;
+// Make it available globally for other scripts
+window.applyLocationAreaColors = applyLocationAreaColors;
 
 /**
  * Apply colors to department tags based on embedded or default data.
@@ -284,12 +255,6 @@ function toggleColumnVisibility(colName, isVisible) {
 
     headers.forEach(header => { header.style.display = displayValue; });
     cells.forEach(cell => { cell.style.display = displayValue; });
-
-    // Optional: Add/remove class on a container for more complex CSS rules if needed
-    // const calendarContainer = document.querySelector('.calendar-container');
-    // if (calendarContainer) {
-    //     calendarContainer.classList.toggle(`hide-col-${colName}`, !isVisible);
-    // }
 }
 
 /**
@@ -480,55 +445,17 @@ function initializeFilters() {
 }
 
 /**
- * Initializes the mobile menu toggle button functionality.
+ * OLD CODE PLACEHELD FOR RELIC CALLS - Initializes the mobile menu toggle button functionality.
  */
 function setupMobileMenu() {
-    console.log("Setting up mobile menu...");
-    const menuToggle = document.getElementById('mobile-menu-toggle');
-    const mainNav = document.getElementById('main-nav');
-
-    if (!menuToggle || !mainNav) {
-        console.warn("Mobile menu toggle button or nav container not found.");
-        return;
-    }
-
-    console.log("Mobile menu elements found:", menuToggle, mainNav);
-
-    // Click listener for the toggle button
-    menuToggle.addEventListener('click', function(event) {
-        console.log("Mobile menu toggle CLICKED!");
-        event.stopPropagation(); // Prevent click outside listener from firing immediately
-        mainNav.classList.toggle('active');
-        const isExpanded = mainNav.classList.contains('active');
-        menuToggle.setAttribute('aria-expanded', isExpanded);
-        console.log(`Mobile menu toggled. Active: ${isExpanded}`);
-    });
-    console.log("Mobile menu click listener attached.");
-
-    // Click listener for closing the menu when clicking outside
-    document.addEventListener('click', function(event) {
-        // Check if the nav container itself exists and is active
-        if (mainNav && mainNav.classList.contains('active')) {
-            const isClickInsideNav = mainNav.contains(event.target);
-            // Check if the toggle button exists before checking contains
-            const isClickOnToggle = menuToggle ? menuToggle.contains(event.target) : false;
-
-            if (!isClickInsideNav && !isClickOnToggle) {
-                console.log("Closing menu via outside click.");
-                mainNav.classList.remove('active');
-                if (menuToggle) { // Check again before setting attribute
-                    menuToggle.setAttribute('aria-expanded', 'false');
-                }
-            }
-        }
-    });
-    console.log("Mobile menu outside click listener attached.");
-    console.log("Mobile menu setup finished.");
+    console.log("Mobile menu setup skipped - handled by mobile-menu.js");
+    // Do nothing - mobile menu is now handled by mobile-menu.js
+    return;
 }
 
-
 /**
- * Sets up click handlers for calendar rows in admin mode.
+ * Sets up click handlers for calendar rows in admin mode - 
+ * IMPORTANT: No longer sets up drag and drop (moved to calendar-dragdrop.js)
  */
 function setupAdminEventHandlers() {
     // Check if we're in admin mode (presence of .admin-calendar class)
@@ -536,197 +463,48 @@ function setupAdminEventHandlers() {
     const projectIdElement = document.getElementById('project-id');
 
     if (isAdminMode && projectIdElement) {
-        console.log("Admin mode detected, setting up admin event handlers...");
+        console.log("Admin mode detected, setting up admin click handlers...");
         const projectId = projectIdElement.value;
         const calendarRows = document.querySelectorAll('.calendar-row');
 
         calendarRows.forEach(row => {
+            // We only set up click handlers here, not drag and drop
             // Remove existing listener before adding new one to prevent duplicates if called multiple times
-            row.removeEventListener('click', handleAdminRowClick); // Use named function
+            row.removeEventListener('click', handleAdminRowClick); 
             // Add listener for row click navigation
             row.addEventListener('click', handleAdminRowClick);
         });
-
-        // Setup drag and drop functionality
-        setupDragAndDrop(projectId); // Pass projectId if needed by moveShootDay
+        
         console.log("Admin event handlers setup complete.");
-
     } else {
         console.log("Not in admin mode or projectId not found, skipping admin event handlers.");
     }
 }
 
 // Named function for row click handling
-function handleAdminRowClick() {
+function handleAdminRowClick(event) {
+    // Don't navigate if we're in the middle of a drag operation
+    if (document.querySelector('.dragging')) {
+        console.log('Click ignored during drag operation');
+        return;
+    }
+    
+    // Don't navigate if the click was on an interactive element
+    if (event.target.closest('button, a')) {
+        console.log('Click on interactive element ignored');
+        return;
+    }
+    
     const date = this.dataset.date;
-    const projectId = document.getElementById('project-id').value; // Re-fetch projectId just in case
+    const projectId = document.getElementById('project-id').value;
+    
     if (date && projectId) {
-        // Avoid navigating if the click was on an interactive element within the row (e.g., a button if added later)
-        // if (event.target.closest('button, a')) return;
         console.log(`Navigating to admin day view: /admin/day/${projectId}/${date}`);
         window.location.href = `/admin/day/${projectId}/${date}`;
     } else {
-         console.warn("Could not navigate: Date or ProjectID missing from row.", {date, projectId});
+        console.warn("Could not navigate: Date or ProjectID missing from row.", {date, projectId});
     }
 }
-
-
-/**
- * Sets up drag and drop functionality for shoot day rows in admin mode.
- * @param {string} projectId - The current project ID.
- */
-function setupDragAndDrop(projectId) {
-    console.log("Setting up Drag and Drop...");
-    const calendarRows = document.querySelectorAll('.calendar-row[data-date]');
-    const tbody = document.querySelector('.calendar-table tbody');
-
-    if (!calendarRows.length || !tbody) {
-        console.warn("Cannot setup drag and drop: Rows or tbody not found.");
-        return;
-    }
-
-    // Make shoot days draggable
-    calendarRows.forEach(row => {
-        if (row.classList.contains('shoot')) {
-            row.setAttribute('draggable', 'true');
-            row.addEventListener('dragstart', handleDragStart);
-            row.addEventListener('dragend', handleDragEnd);
-        } else {
-             row.removeAttribute('draggable'); // Ensure non-shoot days aren't draggable
-        }
-    });
-
-    // Add drop zone listeners to all rows
-    calendarRows.forEach(row => {
-        row.addEventListener('dragover', handleDragOver);
-        row.addEventListener('dragleave', handleDragLeave);
-        row.addEventListener('drop', (event) => handleDrop(event, projectId)); // Pass projectId to handler
-    });
-    console.log("Drag and Drop setup complete.");
-}
-
-// Drag and Drop Event Handlers
-function handleDragStart(e) {
-    // console.log("Drag Start:", this.dataset.date);
-    e.dataTransfer.setData('text/plain', this.dataset.date);
-    e.dataTransfer.effectAllowed = 'move';
-    this.classList.add('dragging');
-    // Optional: Add a class to the body to style drop targets globally
-    document.body.classList.add('calendar-dragging-active');
-}
-
-function handleDragEnd() {
-    // console.log("Drag End");
-    this.classList.remove('dragging');
-    document.body.classList.remove('calendar-dragging-active');
-    // Clean up any lingering drop-target classes
-    document.querySelectorAll('.drop-target').forEach(el => el.classList.remove('drop-target'));
-}
-
-function handleDragOver(e) {
-    e.preventDefault(); // Necessary to allow drop
-    e.dataTransfer.dropEffect = 'move';
-    const draggingRow = document.querySelector('.dragging');
-    // Add drop target style only if it's not the row being dragged
-    if (draggingRow && draggingRow !== this) {
-        this.classList.add('drop-target');
-    }
-}
-
-function handleDragLeave() {
-    this.classList.remove('drop-target');
-}
-
-function handleDrop(e, projectId) {
-    e.preventDefault();
-    this.classList.remove('drop-target');
-    const draggingRow = document.querySelector('.dragging'); // Find the row being dragged
-    if (!draggingRow) return; // Should not happen if drag started correctly
-
-    const fromDate = e.dataTransfer.getData('text/plain');
-    const toDate = this.dataset.date;
-
-    // console.log(`Drop detected: Move from ${fromDate} to ${toDate}, Project: ${projectId}`);
-
-    // Prevent dropping onto itself or non-date rows or if data is missing
-    if (fromDate && toDate && projectId && fromDate !== toDate) {
-        // Check if the target row is a shoot day (for swap) or non-shoot day (for move)
-        const targetIsShootDay = this.classList.contains('shoot');
-        const mode = targetIsShootDay ? 'swap' : 'move'; // Determine mode based on target
-
-        // Optional: Add confirmation for overwriting non-shoot days?
-        // if (mode === 'move') {
-        //    if (!confirm(`Move shoot day ${fromDate} to non-shoot day ${toDate}? This will overwrite the target day's data.`)) {
-        //       return; // Abort if user cancels
-        //    }
-        // }
-
-        console.log(`Initiating moveShootDay with mode: ${mode}`);
-        moveShootDay(projectId, fromDate, toDate, mode); // Pass mode to the API call function
-    } else {
-         console.warn("Drop condition not met:", {fromDate, toDate, projectId, isSameDate: fromDate === toDate});
-    }
-}
-
-/**
- * Calls the API to move/swap a shoot day.
- * @param {string} projectId - The current project ID.
- * @param {string} fromDate - The source date (YYYY-MM-DD).
- * @param {string} toDate - The target date (YYYY-MM-DD).
- * @param {string} mode - 'swap' or 'move'.
- */
-function moveShootDay(projectId, fromDate, toDate, mode = 'swap') { // Default to swap if mode not provided
-    const url = `/api/projects/${projectId}/calendar/move-day`;
-
-    // Basic validation
-    if (!projectId || !fromDate || !toDate || !['swap', 'move'].includes(mode)) {
-        console.error("Invalid parameters for moveShootDay", { projectId, fromDate, toDate, mode });
-        alert("Error: Could not move day due to invalid parameters.");
-        return;
-    }
-
-    console.log(`API Call: Move day from ${fromDate} to ${toDate} (mode: ${mode})`);
-
-    // Show loading indicator
-    const loadingOverlay = document.createElement('div');
-    loadingOverlay.className = 'loading-overlay';
-    loadingOverlay.innerHTML = '<div class="spinner"></div>';
-    document.body.appendChild(loadingOverlay);
-
-    fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ fromDate, toDate, mode }) // Use shorthand
-    })
-    .then(response => {
-        if (!response.ok) {
-            // Try to get error message from response body
-            return response.json().then(errData => {
-                throw new Error(errData.message || `HTTP error! status: ${response.status}`);
-            }).catch(() => {
-                 // If response body is not JSON or empty
-                 throw new Error(`HTTP error! status: ${response.status}`);
-            });
-        }
-        return response.json();
-    })
-    .then(data => {
-        console.log("Move day successful:", data);
-        alert(data.message || "Shoot day moved successfully!"); // Show success message from API
-        window.location.reload(); // Reload to reflect changes
-    })
-    .catch(error => {
-        console.error('Error moving shoot day:', error);
-        alert(`Error moving shoot day: ${error.message}`);
-    })
-    .finally(() => {
-        // Remove loading indicator regardless of success/failure
-        if (document.body.contains(loadingOverlay)) {
-             document.body.removeChild(loadingOverlay);
-        }
-    });
-}
-
 
 /**
  * Initializes scrollable table detection and touch interactions.
@@ -814,13 +592,6 @@ function setupZoomControls() {
              tableWrapper.classList.add(`zoom-${currentZoom}`); // Use classes for 50, 75, 125, 150 if defined in CSS
         }
 
-        // Example direct scaling (might be simpler if classes aren't covering all steps)
-        // const table = tableWrapper.querySelector('.calendar-table');
-        // if (table) {
-        //     table.style.transform = `scale(${currentZoom / 100})`;
-        //     table.style.transformOrigin = 'top left'; // Adjust origin as needed
-        // }
-
         // Check scrollability after zoom might change layout
         setTimeout(checkIfScrollable, 50); // Defined globally
     };
@@ -870,7 +641,6 @@ function setupZoomControls() {
      console.log("Zoom controls setup finished.");
 }
 
-
 // =======================================
 // Main Initialization on DOMContentLoaded
 // =======================================
@@ -905,7 +675,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // --- 4. Admin-Specific Features ---
     // This checks internally if it's the admin page
     try {
-        setupAdminEventHandlers(); // Sets up row clicks and drag/drop if applicable
+        setupAdminEventHandlers(); // Sets up row clicks only, not drag/drop
     } catch (error) {
         console.error("Error during admin event handler setup:", error);
     }
@@ -926,4 +696,3 @@ document.addEventListener('DOMContentLoaded', function() {
 
     console.log("All initializers called.");
 });
-
