@@ -51,9 +51,9 @@
 
                     {# Theme Toggle Button Placement #}
                     <li class="nav-item">
-                         <button id="theme-toggle-btn" class="theme-toggle-btn" aria-label="Toggle theme">
-                             <span class="theme-icon"></span> {# Icon likely added via theme-toggle.js #}
-                         </button>
+                        <button id="theme-toggle" class="theme-toggle-btn">
+                            <span class="theme-icon">☀️</span>
+                        </button>
                     </li>
                 </ul>
             </nav>
@@ -89,7 +89,7 @@
         </div>
     </footer>
 
-    {# Combined JS blocks #}
+    {# Combined JS blocks - IMPORTANT CHANGE: Removed duplicate mobile menu toggle handler #}
     <script>
         // Close flash messages
         document.addEventListener('DOMContentLoaded', function() {
@@ -99,21 +99,13 @@
                 });
             });
 
-            // Mobile menu toggle logic
-            const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
-            const mainNav = document.getElementById('main-nav');
-            if (mobileMenuToggle && mainNav) {
-                mobileMenuToggle.addEventListener('click', function() {
-                    // Use a class like 'active' or 'is-open' defined in your CSS
-                    mainNav.classList.toggle('active');
-                });
-            }
-
-            // Removed admin dropdown logic as elements weren't in HTML provided
+            // REMOVED the mobile menu toggle code from here since it's handled in calendar.js
+            // This eliminates the duplicate event handler problem
         });
     </script>
     {# Use url_for for theme toggle JS #}
     <script src="{{ url_for('static', filename='js/theme-toggle.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/mobile-menu.js') }}"></script>
     {% block scripts %}{% endblock %} {# For page-specific scripts #}
 </body>
 </html>

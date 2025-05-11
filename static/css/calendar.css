@@ -231,7 +231,12 @@
 /* === CALENDAR TABLE - CORE STYLES ========== */
 /* ============================================= */
 .calendar-table-wrapper {
-  overflow-x: auto;
+  overflow-x: auto;  /* Keep existing horizontal scroll */
+  overflow-y: auto;  /* Add vertical scroll */
+  max-height: 70vh;  /* Set a maximum height (70% of viewport height) */
+  border: 1px solid var(--border-color);  /* Add border for visual clarity */
+  border-radius: 6px;  /* Match your design aesthetic */
+  position: relative;  /* Establish positioning context */
 }
 
 .calendar-table {
@@ -240,6 +245,19 @@
   border: 1px solid #dee2e6;
   font-size: 0.85rem;
   border-color: var(--border-color);
+}
+
+/* Ensure the table header sticks properly */
+.calendar-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+/* Shadow effect for scrolled header - will be toggled by JS */
+.calendar-table thead.scrolled th {
+  box-shadow: 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+  transition: box-shadow 0.3s ease;
 }
 
 .calendar-table th,
@@ -268,6 +286,13 @@ body.light-theme .calendar-table td {
   top: 0;
   z-index: 10;
   padding: 0.4rem 0.5rem;
+  /* Add a subtle bottom border for better visual separation */
+  border-bottom: 2px solid var(--border-color);
+}
+
+/* Ensure tbody takes up enough space to enable scrolling */
+.calendar-table tbody {
+  min-height: 300px; /* Minimum height to enable scrolling */
 }
 
 /* === COLUMN WIDTHS - REFINED === */
@@ -419,6 +444,27 @@ body .calendar-row.has-area-color.working-weekend {
   white-space: pre-line;
   line-height: 1.3; /* Slightly increased line height */
   color: var(--text-color);
+}
+
+/* Main Unit Textarea Styling */
+textarea#mainUnit {
+  font-family: inherit; /* Match your form font */
+  font-size: 0.95rem; /* Match your input text size */
+  line-height: 1.4; /* Better line spacing */
+  min-height: 2.5rem; /* Minimum height */
+  resize: vertical; /* Allow vertical resizing only */
+  padding: 0.75rem; /* Match your input padding */
+  width: 100%; /* Full width */
+  background-color: #f8f9fa; /* Match your input background */
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+}
+
+/* Ensure consistent styling with your other inputs */
+textarea#mainUnit:focus {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 3px rgba(30, 136, 229, 0.25);
+  outline: none;
 }
 
 .extras-cell,
@@ -1112,6 +1158,7 @@ body .calendar-row.has-area-color.working-weekend {
   /* Add horizontal scroll indicator */
   .calendar-table-wrapper {
     position: relative;
+    max-height: 75vh; /* Smaller height on mobile */
   }
   
   .calendar-table-wrapper::after {
@@ -1138,6 +1185,10 @@ body .calendar-row.has-area-color.working-weekend {
   .calendar-table .departments-col,
   .calendar-table .departments-cell {
     display: none; /* Hide departments column on very small screens */
+  }
+  
+  .calendar-table-wrapper {
+    max-height: 70vh; /* Still tall but slightly smaller for very small screens */
   }
   
   /* Stack project metadata for very small screens */

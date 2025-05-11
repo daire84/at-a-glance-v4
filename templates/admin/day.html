@@ -35,7 +35,8 @@
             <div class="form-row">
                 <div class="form-group full-width">
                     <label for="mainUnit">Main Unit Description</label>
-                    <input type="text" id="mainUnit" name="mainUnit" value="{{ day.mainUnit or '' }}" placeholder="E.g., JOHN'S HOUSE - KITCHEN">
+                    <textarea id="mainUnit" name="mainUnit" placeholder="E.g., JOHN'S HOUSE - KITCHEN" rows="2">{{ day.mainUnit or '' }}</textarea>
+                    <div class="field-hint">Press Enter for line breaks between locations or add notes like "Set Move"</div>
                 </div>
             </div>
             

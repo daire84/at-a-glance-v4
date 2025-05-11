@@ -135,9 +135,9 @@ def admin_calendar(project_id):
 def admin_day(project_id, date):
     """Day editor"""
     # Import helper function locally or ensure it's imported from app/utils
-    from app import update_day_from_form # Assuming it stays in app.py
+    from utils.helpers import update_day_from_form
     # Import update_calendar_with_location_areas if needed
-    from ..utils.calendar_generator import update_calendar_with_location_areas
+    from utils.calendar_generator import update_calendar_with_location_areas
 
     project = get_project(project_id)
     if not project:
